@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Упражнения | FitAdmin</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.is-active { background-color: #f0f8ff; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+.lvl.hard { color: red; }
+.lvl.med { color: orange; }
+.lvl.easy { color: green; }
+</style>
+</head>
+<body>
+<div class="admin-container">
+<nav class="sidebar">
+    <div class="logo">FitAdmin</div>
+    <ul>
+        <li><a href="users.html">Пользователи</a></li>
+        <li><a href="exercises.html" class="active">Упражнения</a></li>
+        <li><a href="nutrition.html">Питание</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+<header>
+    <h1>База упражнений</h1>
+    <button class="btn-add">+ Новое упражнение</button>
+</header>
+
+<section class="table-container">
+    <p class="hint">Нажмите на строку, чтобы увидеть действия</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Превью</th>
+                <th>Название</th>
+                <th>Группа мышц</th>
+                <th>Сложность</th>
+                <th class="actions-column">Действия</th>
+            </tr>
+        </thead>
+        <tbody id="exercises-table-body"></tbody>
+    </table>
+</section>
+</main>
+</div>
+
+<script>
+async function loadExercises() {
+    try {
+        const res = await fetch("http://localhost:3000/exercises");
+        const exercises = await res.json();
+        const tbody = document.getElementById("exercises-table-body");
+        tbody.innerHTML = "";
+
+        exercises.forEach(ex => {
+            const tr = document.createElement("tr");
+            tr.classList.add("exercise-row");
+            tr.innerHTML = `
+<td><div class="img-placeholder"></div></td>
+<td class="name">${ex.Name}</td>
+<td>${ex.MuscleGroups}</td>
+<td><span class="lvl ${ex.Difficulty.toLowerCase()}">${ex.Difficulty}</span></td>
+<td class="actions-cell">
+    <div class="action-group">
+        <button class="btn-ui edit">✎ <span>Изменить</span></button>
+        <button class="btn-ui delete">🗑 <span>Удалить</span></button>
+    </div>
+</td>
+`;
+            tr.addEventListener('click', () => {
+                document.querySelectorAll('.exercise-row').forEach(r => r.classList.remove('is-active'));
+                tr.classList.add('is-active');
+            });
+            tbody.appendChild(tr);
+        });
+    } catch (err) { console.error(err); }
+}
+
+loadExercises();
+</script>
+</body>
+</html>

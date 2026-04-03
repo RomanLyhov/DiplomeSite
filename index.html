@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | Fit&Eat</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <nav class="sidebar">
+            <div class="logo">FitAdmin</div>
+            <ul>
+                <li><a href="#" class="active">Пользователи</a></li>
+                <li><a href="#">Упражнения</a></li>
+                <li><a href="#">Тренировки</a></li>
+                <li><a href="#">Питание</a></li>
+                <li><a href="#">Настройки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <h1>Управление базой данных</h1>
+                <button class="btn-add">+ Добавить запись</button>
+            </header>
+
+            <section class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название/Имя</th>
+                            <th>Категория</th>
+                            <th>Ккал (для еды)</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>Приседания со штангой</td>
+                            <td>Силовые</td>
+                            <td>—</td>
+                            <td>
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete">Del</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

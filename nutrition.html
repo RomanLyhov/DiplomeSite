@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Дневник питания | FitAdmin</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.is-active { background-color: #f0f8ff; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+</style>
+</head>
+<body>
+<div class="admin-container">
+<nav class="sidebar">
+    <div class="logo">FitAdmin</div>
+    <ul>
+        <li><a href="users.html">Пользователи</a></li>
+        <li><a href="exercises.html">Упражнения</a></li>
+        <li><a href="nutrition.html" class="active">Питание</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+<header>
+    <h1>Журнал питания</h1>
+    <div class="user-selector">
+        <label>Пользователь:</label>
+        <select id="userFilter"></select>
+    </div>
+</header>
+
+<section class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Время / Приём</th>
+            <th>Продукт</th>
+            <th>Вес (г)</th>
+            <th>Ккал</th>
+            <th>Б / Ж / У</th>
+            <th class="actions-column">Действия</th>
+        </tr>
+    </thead>
+    <tbody id="nutrition-table-body"></tbody>
+</table>
+<button class="btn-add-meal">+ Добавить приём пищи</button>
+</section>
+</main>
+</div>
+
+<script>
+async function loadUsers() {
+    const res = await fetch("http://localhost:3000/users");
+    const users = await res.json();
+    const select = document.getElementById("userFilter");
+    select.innerHTML = "";
+    users.forEach(u => {
+        const option = document.createElement("option");
+        option.value = u.UserID;
+        option.textContent = u.name;
+        select.appendChild(option);
+    });
+}
+
+async function loadNutrition(userId) {
+    const res = await fetch(`http://localhost:3000/nutrition/${userId}`);
+    const meals = await res.json();
+    const tbody = document.getElementById("nutrition-table-body");
+    tbody.innerHTML = "";
+
+    meals.forEach(meal => {
+        const tr = document.createElement("tr");
+        tr.classList.add("meal-row");
+        tr.innerHTML = `
+<td><span class="meal-type ${meal.MealType.toLowerCase()}">${meal.MealType}</span><br><small>${meal.MealTime}</small></td>
+<td>${meal.Product}</td>
+<td>${meal.Weight}</td>
+<td>${meal.Calories}</td>
+<td>${meal.Protein} / ${meal.Fat} / ${meal.Carbs}</td>
+<td class="actions-cell">
+    <div class="action-group">
+        <button class="btn-ui edit">✎</button>
+        <button class="btn-ui delete">🗑</button>
+    </div>
+</td>
+`;
+        tr.addEventListener('click', () => {
+            document.querySelectorAll('.meal-row').forEach(r => r.classList.remove('is-active'));
+            tr.classList.add('is-active');
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+document.getElementById("userFilter").addEventListener("change", e => loadNutrition(e.target.value));
+
+loadUsers().then(() => {
+    const firstUserId = document.getElementById("userFilter").value;
+    loadNutrition(firstUserId);
+});
+</script>
+</body>
+</html>
