@@ -73,6 +73,7 @@ app.get("/users", async (req, res) => {
 app.post("/users", async (req, res) => {
     try {
         const { name, email, password, age, height, weight, targetWeight, activity, goal, gender } = req.body;
+        console.log("📝 Регистрация:", req.body);
         const check = await pool.query("SELECT 1 FROM users WHERE email=$1", [email]);
         if (check.rows.length > 0) {
             return res.status(409).json({ message: "User exists" });
