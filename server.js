@@ -72,18 +72,18 @@ app.get("/users", async (req, res) => {
 
 app.post("/users", async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, age, height, weight, targetWeight, activity, goal, gender } = req.body;
         const check = await pool.query("SELECT 1 FROM users WHERE email=$1", [email]);
         if (check.rows.length > 0) {
             return res.status(409).json({ message: "User exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await pool.query(
-            `INSERT INTO users(name, email, password, register_date)
-             VALUES ($1, $2, $3, NOW())
-             RETURNING userid`,
-            [name, email, hashedPassword]
-        );
+         const result = await pool.query(
+        `INSERT INTO users(name, email, password, age, height, weight, targetweight, activity, goal, gender, register_date)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+         RETURNING userid`,
+        [name, email, hashedPassword, age, height, weight, targetWeight, activity, goal, gender]
+    );
         res.json({ success: true, id: result.rows[0].userid });
     } catch (err) {
         res.status(500).send(err.message);
