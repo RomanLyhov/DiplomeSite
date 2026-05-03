@@ -76,7 +76,7 @@ async function loadExercises(){
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${ex.name}</td>
+      <tr>${ex.name}</td>
       <td>${ex.muscle_group || "-"}</td>
       <td><span class="badge ${ex.difficulty}">${ex.difficulty}</span></td>
       <td>
@@ -85,22 +85,18 @@ async function loadExercises(){
       </td>
     `;
 
-    tr.addEventListener("click", () => {
-      document.querySelectorAll("tr").forEach(r => r.classList.remove("active"));
-      tr.classList.add("active");
-    });
-
     tr.querySelector(".delete").addEventListener("click", async (e) => {
       e.stopPropagation();
       if (!confirm("Удалить упражнение?")) return;
-
-      await fetch(`/exercises/${ex.ExerciseID}`, { method:"DELETE" });
+      // ✅ исправлено: ex.exerciseid (а не ex.ExerciseID)
+      await fetch(`/exercises/${ex.exerciseid}`, { method: "DELETE" });
       loadExercises();
     });
 
     tr.querySelector(".edit").addEventListener("click", (e) => {
       e.stopPropagation();
-      location.href = `addEx.html?id=${ex.ExerciseID}`;
+      // ✅ исправлено: ex.exerciseid
+      location.href = `addEx.html?id=${ex.exerciseid}`;
     });
 
     tbody.appendChild(tr);

@@ -37,11 +37,9 @@
 </script>
 <script>
 document.getElementById("login-btn").addEventListener("click", async () => {
-
   const email = document.getElementById("login").value.trim();
   const password = document.getElementById("password").value.trim();
   const error = document.getElementById("error-msg");
-
   error.innerText = "";
 
   if (!email || !password) {
@@ -52,28 +50,25 @@ document.getElementById("login-btn").addEventListener("click", async () => {
   try {
     const res = await fetch("/login", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
-
     const data = await res.json();
 
-if (!data.success) {
-  error.innerText = "Неверный email или пароль";
-  return;
-}
+    if (!data.success) {
+      error.innerText = "Неверный email или пароль";
+      return;
+    }
 
-localStorage.setItem("userId", data.id);
-localStorage.setItem("role", data.role);
+    localStorage.setItem("userId", data.id);
+    localStorage.setItem("role", data.role);   // ✅ исправлено: data.role (а не data.rol)
 
-const role = data.rol;
-
-if (role === "admin") {
-  window.location.href = "/users.html";
-} else {
-  window.location.href = "/profil.html";
-}
-
+    const role = (localStorage.getItem("role") || "").toLowerCase().trim();
+    if (role === "admin") {
+      window.location.href = "/users.html";
+    } else {
+      window.location.href = "/profil.html";
+    }
   } catch (e) {
     error.innerText = "Ошибка сервера";
   }

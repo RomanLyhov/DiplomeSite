@@ -78,8 +78,9 @@ async function loadUsers(){
   const select = document.getElementById("userFilter");
   select.innerHTML = "";
 
-  users.forEach(u=>{
-    select.innerHTML += `<option value="${u.UserID}">${u.name}</option>`;
+  users.forEach(u => {
+    // ✅ исправлено: u.userid (а не u.UserID)
+    select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
   });
 }
 
