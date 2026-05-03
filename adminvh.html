@@ -27,7 +27,14 @@
 
 </div>
 </div>
-
+<script>
+  const userId = localStorage.getItem("userId");
+  const role = (localStorage.getItem("role") || "").toLowerCase();
+  if (userId) {
+    if (role === "admin") window.location.href = "/users.html";
+    else window.location.href = "/profil.html";
+  }
+</script>
 <script>
 document.getElementById("login-btn").addEventListener("click", async () => {
 

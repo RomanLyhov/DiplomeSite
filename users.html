@@ -91,7 +91,7 @@ async function loadUsers() {
 
         if (!Array.isArray(users)) return;
 
-        users.sort((a, b) => a.UserID - b.UserID);
+        users.sort((a, b) => a.userid - b.userid);
 
         const tbody = document.getElementById("users-table-body");
         tbody.innerHTML = "";
@@ -102,7 +102,7 @@ async function loadUsers() {
             tr.classList.add("user-row");
 
             tr.innerHTML = `
-                <td>${user.UserID}</td>
+                <td>${user.userid}</td>
                 <td class="name">${user.name || "-"}</td>
                 <td>${user.email || "-"}</td>
                 <td>
@@ -126,7 +126,7 @@ async function loadUsers() {
             tr.querySelector(".profile-btn").addEventListener("click", (e) => {
     e.stopPropagation();
 
-    localStorage.setItem("selectedUserId", user.UserID);
+    localStorage.setItem("selectedUserId", user.userid);
 
     window.location.href = "/profil.html";
 });
