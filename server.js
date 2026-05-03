@@ -51,7 +51,7 @@ app.post("/login", async (req, res) => {
         res.json({
             success: true,
             id: user.userid,
-            role: (user.role || "").trim().toLowerCase(), // если в таблице role
+            role: (user.rol || "").trim().toLowerCase(), // если в таблице role
             token
         });
     } catch (err) {
