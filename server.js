@@ -80,11 +80,27 @@ app.post("/users", async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
          const result = await pool.query(
-        `INSERT INTO users(name, email, password, age, height, weight, targetweight, activity, goal, gender, register_date)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
-         RETURNING userid`,
-        [name, email, hashedPassword, age, height, weight, targetWeight, activity, goal, gender]
-    );
+`INSERT INTO users(
+    name, email, password,
+    age, height, weight,
+    target_weight, activity, goal, gender,
+    register_date
+)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
+RETURNING userid`,
+[
+    name,
+    email,
+    hashedPassword,
+    age,
+    height,
+    weight,
+    targetWeight,   // ок, но ниже объясню
+    activity,
+    goal,
+    gender
+]
+);
         res.json({ success: true, id: result.rows[0].userid });
     } catch (err) {
         res.status(500).send(err.message);
@@ -114,7 +130,7 @@ app.put("/users/:id", async (req, res) => {
                 name=$1, email=$2,
                 password=COALESCE($3, password),
                 age=$4, height=$5, weight=$6,
-                targetWeight=$7, activity=$8, goal=$9, gender=$10,
+                target_weight=$7, activity=$8, goal=$9, gender=$10,
                 dailyCaloriesGoal=$11,
                 dailyProteinGoal=$12,
                 dailyFatGoal=$13,
