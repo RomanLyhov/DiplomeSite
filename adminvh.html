@@ -23,53 +23,65 @@
       <input type="password" id="password" placeholder="Пароль">
       <label>Password</label>
   </div>
-  <button type="submit" class="login-btn" id="submitBtn">Sing In</button>
+  <div id="error-msg" style="color: #ff6b6b; font-size: 14px; text-align: center; margin-top: 10px;"></div>
+  <button type="button" class="login-btn" id="submitBtn">SIGN IN</button>
 </form>
 </div>
+
 <script>
-  const userId = localStorage.getItem("userId");
-  const role = (localStorage.getItem("role") || "").toLowerCase();
-  if (userId) {
-    if (role === "admin") window.location.href = "/users.html";
-    else window.location.href = "/profil.html";
-  }
-</script>
-<script>
+// Проверка, не залогинен ли уже пользователь
+const userId = localStorage.getItem("userId");
+const role = (localStorage.getItem("role") || "").toLowerCase();
+if (userId && role) {
+  if (role === "admin") window.location.href = "/users.html";
+  else window.location.href = "/profil.html";
+}
+
+// Обработчик входа
 document.getElementById("submitBtn").addEventListener("click", async () => {
   const email = document.getElementById("login").value.trim();
   const password = document.getElementById("password").value.trim();
-  const error = document.getElementById("error-msg");
-  error.innerText = "";
+  const errorDiv = document.getElementById("error-msg");
+  errorDiv.innerText = "";
 
   if (!email || !password) {
-    error.innerText = "Введите email и пароль";
+    errorDiv.innerText = "Введите email и пароль";
     return;
   }
 
   try {
+    console.log("Отправка запроса на /login с:", { email, password: "***" });
+    
     const res = await fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
+    
+    console.log("Статус ответа:", res.status);
     const data = await res.json();
+    console.log("Ответ сервера:", data);
 
     if (!data.success) {
-      error.innerText = "Неверный email или пароль";
+      errorDiv.innerText = "Неверный email или пароль";
       return;
     }
 
     localStorage.setItem("userId", data.id);
-    localStorage.setItem("role", data.role);   // ✅ исправлено: data.role (а не data.rol)
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("token", data.token);
 
-    const role = (localStorage.getItem("role") || "").toLowerCase().trim();
-    if (role === "admin") {
+    const userRole = (data.role || "").toLowerCase().trim();
+    console.log("Роль пользователя:", userRole);
+    
+    if (userRole === "admin") {
       window.location.href = "/users.html";
     } else {
       window.location.href = "/profil.html";
     }
   } catch (e) {
-    error.innerText = "Ошибка сервера";
+    console.error("Ошибка:", e);
+    errorDiv.innerText = "Ошибка сервера. Проверьте консоль.";
   }
 });
 </script>
