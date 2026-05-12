@@ -23,6 +23,18 @@ body{
   align-items: center;
   padding: 0 15px;
 }
+.search-wrapper{
+    width:100%;
+    display:flex;
+    justify-content:center;
+}
+
+header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
 
 .serch:hover{
   width: 260px;
