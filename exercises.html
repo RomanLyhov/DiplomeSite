@@ -11,20 +11,16 @@
 </head>
 
 <body>
-<div class="navbar">
-
-<a href="/profil.html">Профиль</a>
-
-<a href="/exercises.html">Упражнения</a>
-
-<a href="/nutrition.html">Питание</a>
-
-<a href="/users.html"
-   id="adminBtn"
-   class="active"
-   style="display:none;">
-   Пользователи
-</a>
+<div class="top-nav">
+  <div class="navbar">
+      <a href="/profil.html">Профиль</a>
+      <a href="/exercises.html">Упражнения</a>
+      <a href="/nutrition.html">Питание</a>
+      <a href="/users.html"
+        id="adminBtn"
+        class="active"
+        style="display:none;">Пользователи</a>
+</div>
 </div>
 <script>
 const roleCheck = (localStorage.getItem("role") || "").toLowerCase();
