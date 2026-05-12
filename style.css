@@ -1,12 +1,12 @@
 /* ================= NAVBAR ================= */
 .navbar {
-position: relative;
-padding: 15px 20px;
-background: rgba(255,255,255,0.05);
-border-radius:60px;
-backdrop-filter: blur(15px);
-box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-border: 0.5px solid #ccc;
+display: flex;
+gap: 3rem;
+background: rgba(0,0,0,0.4);
+padding: 2rem 3rem;
+border-radius: 80px;
+backdrop-filter: blur(12px);
+border:2px solid rgba(236,72,153,0.5);
 }
 
 .nav-left,
