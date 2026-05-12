@@ -63,9 +63,31 @@ app.post("/login", async (req, res) => {
 // -------------------- USERS --------------------
 app.get("/users", async (req, res) => {
     try {
-        const result = await pool.query(`SELECT * FROM users ORDER BY userid DESC`);
+
+        const result = await pool.query(`
+SELECT
+    userid,
+    name,
+    email,
+    age,
+    height,
+    weight,
+    target_weight,
+    activity,
+    goal,
+    gender,
+    daily_calories_goal,
+    daily_protein_goal,
+    daily_fat_goal,
+    daily_carbs_goal
+FROM users
+ORDER BY userid DESC
+        `);
+
         res.json(result.rows);
+
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });
