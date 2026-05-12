@@ -9,7 +9,7 @@ body{
     min-height:100vh;
     background:#050816;
     font-family:'Inter',sans-serif;
-    padding-top:40px;
+    padding-top:40px 20px;
     color:white;
 }
 .serch{
@@ -26,6 +26,7 @@ body{
 .search-wrapper{
     width:100%;
     display:flex;
+    margin-bottom:20px;
     justify-content:center;
 }
 
@@ -71,7 +72,8 @@ header{
     width:100%;
     display:flex;
     justify-content:center;
-    margin-top:40px;
+    margin-top:20px;
+    margin-bottom: 10px;
 }
 
 /* LINKS */
@@ -138,10 +140,8 @@ header{
 
 /* ================= LAYOUT ================= */
 .container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 30px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
