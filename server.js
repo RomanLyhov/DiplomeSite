@@ -72,21 +72,52 @@ app.get("/users", async (req, res) => {
 
 app.post("/users", async (req, res) => {
     try {
-        const { name, email, password, age, height, weight, targetWeight, activity, goal, gender } = req.body;
+        const {
+    name,
+    email,
+    password,
+    age,
+    height,
+    weight,
+    targetWeight,
+    activity,
+    goal,
+    gender,
+    dailyCaloriesGoal,
+    dailyProteinGoal,
+    dailyFatGoal,
+    dailyCarbsGoal
+} = req.body;
         console.log("📝 Регистрация:", req.body);
         const check = await pool.query("SELECT 1 FROM users WHERE email=$1", [email]);
         if (check.rows.length > 0) {
             return res.status(409).json({ message: "User exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-         const result = await pool.query(
+
+const result = await pool.query(
 `INSERT INTO users(
-    name, email, password,
-    age, height, weight,
-    target_weight, activity, goal, gender,
+    name,
+    email,
+    password,
+    age,
+    height,
+    weight,
+    target_weight,
+    activity,
+    goal,
+    gender,
+    daily_calories_goal,
+    daily_protein_goal,
+    daily_fat_goal,
+    daily_carbs_goal,
     register_date
 )
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
+VALUES (
+    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
+    $11,$12,$13,$14,
+    NOW()
+)
 RETURNING userid`,
 [
     name,
@@ -95,10 +126,14 @@ RETURNING userid`,
     age,
     height,
     weight,
-    targetWeight,   // ок, но ниже объясню
+    targetWeight,
     activity,
     goal,
-    gender
+    gender,
+    dailyCaloriesGoal,
+    dailyProteinGoal,
+    dailyFatGoal,
+    dailyCarbsGoal
 ]
 );
         res.json({ success: true, id: result.rows[0].userid });
@@ -109,7 +144,26 @@ RETURNING userid`,
 
 app.get("/users/:id", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM users WHERE userid=$1", [req.params.id]);
+        const result = await pool.query(
+`SELECT
+    userid,
+    name,
+    email,
+    age,
+    height,
+    weight,
+    target_weight,
+    activity,
+    goal,
+    gender,
+    daily_calories_goal,
+    daily_protein_goal,
+    daily_fat_goal,
+    daily_carbs_goal
+FROM users
+WHERE userid=$1`,
+[req.params.id]
+);
         res.json(result.rows[0] || null);
     } catch (err) {
         res.status(500).send("Error");
@@ -131,10 +185,10 @@ app.put("/users/:id", async (req, res) => {
                 password=COALESCE($3, password),
                 age=$4, height=$5, weight=$6,
                 target_weight=$7, activity=$8, goal=$9, gender=$10,
-                dailyCaloriesGoal=$11,
-                dailyProteinGoal=$12,
-                dailyFatGoal=$13,
-                dailyCarbsGoal=$14
+                daily_calories_goal=$11,
+                daily_protein_goal=$12,
+                daily_fat_goal=$13,
+                daily_carbs_goal=$14
              WHERE userid=$15`,
             [
                 name, email, hashedPassword,
