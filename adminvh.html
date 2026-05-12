@@ -10,22 +10,21 @@
 </head>
 
 <body>
-<div class="login-wrapper">
-<div class="login-card">
-
-  <div class="logo">FitPlan</div>
-
-  <h1>Вход</h1>
-  <p>Добро пожаловать обратно</p>
-
-  <input type="text" id="login" placeholder="Email">
-  <input type="password" id="password" placeholder="Пароль">
-
-  <button id="login-btn">Войти</button>
-
-  <div id="error-msg"></div>
-
-</div>
+<div class="login-box">
+<form id="loginform">
+  <h2>Login</h2>
+  <div class="input-group">
+    <i class="fas fa-user"></i>
+      <input type="text" id="login" placeholder="Email">
+      <label>Username</label>
+  </div>
+  <div class="input-group">
+    <i class="fas fa-lock"></i>
+      <input type="password" id="password" placeholder="Пароль">
+      <label>Password</label>
+  </div>
+  <button type="submit" class="login-btn" id="submitBtn">Sing In</button>
+</form>
 </div>
 <script>
   const userId = localStorage.getItem("userId");
