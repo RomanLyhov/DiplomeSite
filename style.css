@@ -12,7 +12,26 @@ body{
     padding-top:40px;
     color:white;
 }
+.serch{
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 40px;
+  transition: width 0.4s;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+}
 
+.serch:hover{
+  width: 260px;
+}
+.serch input{
+  border: none;
+  outline: none;
+  width: 100%;
+}
 /* NAVBAR */
 
 .navbar{

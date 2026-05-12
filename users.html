@@ -4,15 +4,6 @@
     <meta charset="UTF-8">
     <title>FitPlan</title>
     <link rel="stylesheet" href="/style.css">
-
-    <style>
-        .is-active { background-color: #f0f8ff; }
-        .badge.active { color: green; }
-        .badge.blocked { color: red; }
-        .search-input { margin-bottom: 10px; padding: 5px; width: 200px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    </style>
 </head>
 
 <body>
@@ -48,7 +39,7 @@ if (role !== "admin") {
     <main class="main-content">
         <header>
             <h1>Управление пользователями</h1>
-            <input type="text" placeholder="Поиск по email..." class="search-input" id="search-input">
+            <input  type="text" placeholder="Поиск..." class="serch" id="search-input">
         </header>
 
         <section class="table-container">
