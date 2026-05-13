@@ -136,72 +136,56 @@ ORDER BY userid DESC
 app.post("/users", async (req, res) => {
     try {
         const {
-    name,
-    email,
-    password,
-    age,
-    height,
-    weight,
-    targetWeight,
-    activity,
-    goal,
-    gender,
-    dailyCaloriesGoal,
-    dailyProteinGoal,
-    dailyFatGoal,
-    dailyCarbsGoal
-} = req.body;
+            name, email, password,
+            age, height, weight,
+            targetWeight, activity, goal, gender,
+            dailyCaloriesGoal, dailyProteinGoal, dailyFatGoal, dailyCarbsGoal
+        } = req.body;
+        
         console.log("📝 Регистрация:", req.body);
+        
         const check = await pool.query("SELECT 1 FROM users WHERE email=$1", [email]);
         if (check.rows.length > 0) {
             return res.status(409).json({ message: "User exists" });
         }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
-
-const result = await pool.query(
-`INSERT INTO users(
-    name,
-    email,
-    password,
-    age,
-    height,
-    weight,
-    targetweight,
-    activity,
-    goal,
-    gender,
-    dailycaloriesgoal,
-    dailyproteingoal,
-    dailyfatgoal,
-    dailycarbsgoal,
-    register_date
-)
-VALUES (
-    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
-    $11,$12,$13,$14,
-    NOW()
-)
-RETURNING userid`,
-[
-    name,
-    email,
-    hashedPassword,
-    age,
-    height,
-    weight,
-    targetWeight,
-    activity,
-    goal,
-    gender,
-    dailyCaloriesGoal,
-    dailyProteinGoal,
-    dailyFatGoal,
-    dailyCarbsGoal
-]
-);
+        
+        // Принудительное преобразование в число
+        const ageNum = age ? parseInt(age) : null;
+        const heightNum = height ? parseInt(height) : null;
+        const weightNum = weight ? parseInt(weight) : null;
+        const targetWeightNum = targetWeight ? parseInt(targetWeight) : null;
+        const dailyCaloriesGoalNum = dailyCaloriesGoal ? parseInt(dailyCaloriesGoal) : null;
+        const dailyProteinGoalNum = dailyProteinGoal ? parseInt(dailyProteinGoal) : null;
+        const dailyFatGoalNum = dailyFatGoal ? parseInt(dailyFatGoal) : null;
+        const dailyCarbsGoalNum = dailyCarbsGoal ? parseInt(dailyCarbsGoal) : null;
+        
+        const result = await pool.query(
+            `INSERT INTO users(
+                name, email, password, age, height, weight, targetweight,
+                activity, goal, gender,
+                dailycaloriesgoal, dailyproteingoal, dailyfatgoal, dailycarbsgoal,
+                register_date, createdat, updated_at
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, NOW(), NOW(), NOW()
+            ) RETURNING userid`,
+            [
+                name, email, hashedPassword,
+                ageNum, heightNum, weightNum, targetWeightNum,
+                activity, goal, gender,
+                dailyCaloriesGoalNum, dailyProteinGoalNum,
+                dailyFatGoalNum, dailyCarbsGoalNum
+            ]
+        );
+        
+        console.log("✅ User created with ID:", result.rows[0].userid);
         res.json({ success: true, id: result.rows[0].userid });
+        
     } catch (err) {
-        res.status(500).send(err.message);
+        console.error("❌ Registration error:", err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
