@@ -226,21 +226,21 @@ app.put("/users/:id", async (req, res) => {
         console.log("🔥 UPDATE USER ID:", req.params.id);
 
         const {
-            name,
-            email,
-            password,
-            age,
-            height,
-            weight,
-            targetWeight,
-            activity,
-            goal,
-            gender,
-            dailyCaloriesGoal,
-            dailyProteinGoal,
-            dailyFatGoal,
-            dailyCarbsGoal
-        } = req.body;
+    name,
+    email,
+    password,
+    age,
+    height,
+    weight,
+    targetWeight,
+    activity,
+    goal,
+    gender,
+    dailyCaloriesGoal,
+    dailyProteinGoal,
+    dailyFatGoal,
+    dailyCarbsGoal
+} = req.body;
 
         // хеш пароля только если он есть
         const hashedPassword = password
