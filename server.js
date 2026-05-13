@@ -234,6 +234,8 @@ WHERE userid=$1
 
 app.put("/users/:id", async (req, res) => {
     try {
+           console.log("🔥 UPDATE USER BODY:", req.body);
+        console.log("🔥 UPDATE USER ID:", req.params.id);
         const {
             name, email, password,
             age, height, weight,
