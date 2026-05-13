@@ -111,6 +111,7 @@ app.get("/users", async (req, res) => {
 
         const result = await pool.query(`
 SELECT
+    userid,
     userid as id,
     name,
     email,
@@ -197,6 +198,7 @@ app.get("/users/:id", async (req, res) => {
     try {
         const result = await pool.query(`
 SELECT
+    userid,
     userid as id,
     name,
     email,
