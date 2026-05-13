@@ -227,7 +227,7 @@ app.put("/users/:id", async (req, res) => {
             dailyCaloriesGoal, dailyProteinGoal, dailyFatGoal, dailyCarbsGoal
         } = req.body;
         const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-        await pool.query(
+       await pool.query(
 `UPDATE users SET
     name=$1,
     email=$2,
@@ -239,10 +239,12 @@ app.put("/users/:id", async (req, res) => {
     activity=$8,
     goal=$9,
     gender=$10,
-    dailycaloriesgoal=$11,
-    dailyproteingoal=$12,
-    dailyfatgoal=$13,
-    dailycarbsgoal=$14
+
+    dailycaloriesgoal = COALESCE($11, dailycaloriesgoal),
+    dailyproteingoal  = COALESCE($12, dailyproteingoal),
+    dailyfatgoal      = COALESCE($13, dailyfatgoal),
+    dailycarbsgoal    = COALESCE($14, dailycarbsgoal)
+
 WHERE userid=$15`,
 [
     name,
