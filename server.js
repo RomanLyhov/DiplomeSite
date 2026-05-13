@@ -30,33 +30,74 @@ const pool = new Pool({
 // -------------------- LOGIN --------------------
 app.post("/login", async (req, res) => {
     try {
+
         const { email, password } = req.body;
+
         const result = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [email]
         );
+
         const user = result.rows[0];
+
         if (!user) {
-            return res.json({ success: false, message: "USER_NOT_FOUND" });
+            return res.json({
+                success: false,
+                message: "USER_NOT_FOUND"
+            });
         }
+
         const ok = await bcrypt.compare(password, user.password);
+
         if (!ok) {
-            return res.json({ success: false, message: "WRONG_PASSWORD" });
+            return res.json({
+                success: false,
+                message: "WRONG_PASSWORD"
+            });
         }
+
         const token = jwt.sign(
-            { id: user.userid, email: user.email },
+            {
+                id: user.userid,
+                email: user.email
+            },
             SECRET,
-            { expiresIn: "7d" }
+            {
+                expiresIn: "7d"
+            }
         );
+
         res.json({
             success: true,
+
             id: user.userid,
-            role: (user.rol || "").trim().toLowerCase(), // если в таблице role
+            name: user.name,
+            email: user.email,
+
+            age: user.age,
+            height: user.height,
+            weight: user.weight,
+
+            targetWeight: user.targetweight,
+
+            activity: user.activity,
+            goal: user.goal,
+            gender: user.gender,
+
+            dailyCaloriesGoal: user.dailycaloriesgoal,
+            dailyProteinGoal: user.dailyproteingoal,
+            dailyFatGoal: user.dailyfatgoal,
+            dailyCarbsGoal: user.dailycarbsgoal,
+
+            role: (user.rol || "").trim().toLowerCase(),
             token
         });
+
     } catch (err) {
+
         console.error(err);
         res.status(500).send("Error");
+
     }
 });
 
@@ -66,23 +107,23 @@ app.get("/users", async (req, res) => {
 
         const result = await pool.query(`
 SELECT
-    userid,
+    userid as id,
     name,
     email,
     age,
     height,
     weight,
-    target_weight,
+    targetweight AS "targetWeight",
     activity,
     goal,
     gender,
-    daily_calories_goal,
-    daily_protein_goal,
-    daily_fat_goal,
-    daily_carbs_goal
+    dailycaloriesgoal AS "dailyCaloriesGoal",
+    dailyproteingoal AS "dailyProteinGoal",
+    dailyfatgoal AS "dailyFatGoal",
+    dailycarbsgoal AS "dailyCarbsGoal"
 FROM users
 ORDER BY userid DESC
-        `);
+`);
 
         res.json(result.rows);
 
@@ -125,14 +166,14 @@ const result = await pool.query(
     age,
     height,
     weight,
-    target_weight,
+    targetweight,
     activity,
     goal,
     gender,
-    daily_calories_goal,
-    daily_protein_goal,
-    daily_fat_goal,
-    daily_carbs_goal,
+    dailycaloriesgoal,
+    dailyproteingoal,
+    dailyfatgoal,
+    dailycarbsgoal,
     register_date
 )
 VALUES (
@@ -166,26 +207,25 @@ RETURNING userid`,
 
 app.get("/users/:id", async (req, res) => {
     try {
-        const result = await pool.query(
-`SELECT
-    userid,
+        const result = await pool.query(`
+SELECT
+    userid as id,
     name,
     email,
     age,
     height,
     weight,
-    target_weight,
+    targetweight AS "targetWeight",
     activity,
     goal,
     gender,
-    daily_calories_goal,
-    daily_protein_goal,
-    daily_fat_goal,
-    daily_carbs_goal
+    dailycaloriesgoal AS "dailyCaloriesGoal",
+    dailyproteingoal AS "dailyProteinGoal",
+    dailyfatgoal AS "dailyFatGoal",
+    dailycarbsgoal AS "dailyCarbsGoal"
 FROM users
-WHERE userid=$1`,
-[req.params.id]
-);
+WHERE userid=$1
+`, [req.params.id]);
         res.json(result.rows[0] || null);
     } catch (err) {
         res.status(500).send("Error");
@@ -202,24 +242,40 @@ app.put("/users/:id", async (req, res) => {
         } = req.body;
         const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
         await pool.query(
-            `UPDATE users SET
-                name=$1, email=$2,
-                password=COALESCE($3, password),
-                age=$4, height=$5, weight=$6,
-                target_weight=$7, activity=$8, goal=$9, gender=$10,
-                daily_calories_goal=$11,
-                daily_protein_goal=$12,
-                daily_fat_goal=$13,
-                daily_carbs_goal=$14
-             WHERE userid=$15`,
-            [
-                name, email, hashedPassword,
-                age, height, weight,
-                targetWeight, activity, goal, gender,
-                dailyCaloriesGoal, dailyProteinGoal, dailyFatGoal, dailyCarbsGoal,
-                req.params.id
-            ]
-        );
+`UPDATE users SET
+    name=$1,
+    email=$2,
+    password=COALESCE($3, password),
+    age=$4,
+    height=$5,
+    weight=$6,
+    targetweight=$7,
+    activity=$8,
+    goal=$9,
+    gender=$10,
+    dailycaloriesgoal=$11,
+    dailyproteingoal=$12,
+    dailyfatgoal=$13,
+    dailycarbsgoal=$14
+WHERE userid=$15`,
+[
+    name,
+    email,
+    hashedPassword,
+    age,
+    height,
+    weight,
+    targetWeight,
+    activity,
+    goal,
+    gender,
+    dailyCaloriesGoal,
+    dailyProteinGoal,
+    dailyFatGoal,
+    dailyCarbsGoal,
+    req.params.id
+]
+);
         res.json({ success: true });
     } catch (err) {
         res.status(500).send(err.message);
