@@ -6,6 +6,10 @@ process.on("unhandledRejection", (err) => {
 });
 
 const express = require("express");
+const safeNumber = (v) => {
+    const n = parseInt(v);
+    return isNaN(n) ? null : n;
+};
 const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
@@ -156,10 +160,10 @@ app.post("/users", async (req, res) => {
         const heightNum = height ? parseInt(height) : null;
         const weightNum = weight ? parseInt(weight) : null;
         const targetWeightNum = targetWeight ? parseInt(targetWeight) : null;
-        const dailyCaloriesGoalNum = dailyCaloriesGoal ? parseInt(dailyCaloriesGoal) : null;
-        const dailyProteinGoalNum = dailyProteinGoal ? parseInt(dailyProteinGoal) : null;
-        const dailyFatGoalNum = dailyFatGoal ? parseInt(dailyFatGoal) : null;
-        const dailyCarbsGoalNum = dailyCarbsGoal ? parseInt(dailyCarbsGoal) : null;
+        const dailyCaloriesGoalNum = safeNumber(dailyCaloriesGoal);
+const dailyProteinGoalNum = safeNumber(dailyProteinGoal);
+const dailyFatGoalNum = safeNumber(dailyFatGoal);
+const dailyCarbsGoalNum = safeNumber(dailyCarbsGoal);
         
         const result = await pool.query(
             `INSERT INTO users(
@@ -218,54 +222,79 @@ WHERE userid=$1
 
 app.put("/users/:id", async (req, res) => {
     try {
-           console.log("🔥 UPDATE USER BODY:", req.body);
+        console.log("🔥 UPDATE USER BODY:", req.body);
         console.log("🔥 UPDATE USER ID:", req.params.id);
+
         const {
-            name, email, password,
-            age, height, weight,
-            targetWeight, activity, goal, gender,
-            dailyCaloriesGoal, dailyProteinGoal, dailyFatGoal, dailyCarbsGoal
+            name,
+            email,
+            password,
+            age,
+            height,
+            weight,
+            targetWeight,
+            activity,
+            goal,
+            gender,
+            dailyCaloriesGoal,
+            dailyProteinGoal,
+            dailyFatGoal,
+            dailyCarbsGoal
         } = req.body;
-        const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-       await pool.query(
-`UPDATE users SET
-    name=$1,
-    email=$2,
-    password=COALESCE($3, password),
-    age=$4,
-    height=$5,
-    weight=$6,
-    targetweight=$7,
-    activity=$8,
-    goal=$9,
-    gender=$10,
 
-    dailycaloriesgoal = COALESCE($11, dailycaloriesgoal),
-    dailyproteingoal  = COALESCE($12, dailyproteingoal),
-    dailyfatgoal      = COALESCE($13, dailyfatgoal),
-    dailycarbsgoal    = COALESCE($14, dailycarbsgoal)
+        // хеш пароля только если он есть
+        const hashedPassword = password
+            ? await bcrypt.hash(password, 10)
+            : null;
 
-WHERE userid=$15`,
-[
-    name,
-    email,
-    hashedPassword,
-    age,
-    height,
-    weight,
-    targetWeight,
-    activity,
-    goal,
-    gender,
-    dailyCaloriesGoal,
-    dailyProteinGoal,
-    dailyFatGoal,
-    dailyCarbsGoal,
-    req.params.id
-]
-);
+        // безопасное преобразование КБЖУ
+        const cal = safeNumber(dailyCaloriesGoal);
+        const protein = safeNumber(dailyProteinGoal);
+        const fat = safeNumber(dailyFatGoal);
+        const carbs = safeNumber(dailyCarbsGoal);
+
+        await pool.query(
+            `UPDATE users SET
+                name=$1,
+                email=$2,
+                password=COALESCE($3, password),
+                age=$4,
+                height=$5,
+                weight=$6,
+                targetweight=$7,
+                activity=$8,
+                goal=$9,
+                gender=$10,
+
+                dailycaloriesgoal=$11,
+                dailyproteingoal=$12,
+                dailyfatgoal=$13,
+                dailycarbsgoal=$14
+
+            WHERE userid=$15`,
+            [
+                name,
+                email,
+                hashedPassword,
+                age,
+                height,
+                weight,
+                targetWeight,
+                activity,
+                goal,
+                gender,
+                cal,
+                protein,
+                fat,
+                carbs,
+                req.params.id
+            ]
+        );
+
         res.json({ success: true });
+
     } catch (err) {
+        console.error("❌ UPDATE ERROR:", err);
         res.status(500).send(err.message);
     }
 });
