@@ -53,7 +53,6 @@
                         <th>ФИО</th>
                         <th>Email</th>
                         <th>Параметры (вес/рост)</th>
-                        <th>Статус</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -115,11 +114,8 @@ function renderUsers(users) {
             <td class="name">${escapeHtml(user.name) || "-"}</td>
             <td>${escapeHtml(user.email) || "-"}</td>
             <td>
-                <span class="tag">⚖️ ${user.weight ?? "-"} кг</span>
-                <span class="tag">📏 ${user.height ?? "-"} см</span>
-            </td>
-            <td>
-                <span class="badge active">✅ Активен</span>
+                <span class="tag"> ${user.weight ?? "-"} кг</span>
+                <span class="tag"> ${user.height ?? "-"} см</span>
             </td>
             <td>
                 <button class="btn-ui profile-btn" data-id="${user.id}">👤 Профиль</button>
