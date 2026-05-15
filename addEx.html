@@ -95,23 +95,44 @@ document.getElementById("addExerciseForm").addEventListener("submit", async (e) 
   const msg = document.getElementById("formMessage");
 
   try {
-    const url = editId ? `${API}/exercises/${editId}` : `${API}/exercises`;
+
+    const url = editId
+      ? `${API}/exercises/${editId}`
+      : `${API}/exercises`;
+
     const method = editId ? "PUT" : "POST";
 
-    await fetch(url, {
+    const response = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, muscleGroup, difficulty })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        muscleGroup,
+        difficulty
+      })
     });
 
-    msg.innerText = " Успешно сохранено";
+    const data = await response.json();
+
+    console.log("SERVER RESPONSE:", data);
+
+    if (!response.ok) {
+      throw new Error(data.error || "SERVER ERROR");
+    }
+
+    msg.innerText = "✅ Успешно сохранено";
 
     setTimeout(() => {
       window.location.href = "exercises.html";
     }, 700);
 
   } catch (err) {
-    msg.innerText = " Ошибка";
+
+    console.error(err);
+
+    msg.innerText = "❌ " + err.message;
   }
 });
 
