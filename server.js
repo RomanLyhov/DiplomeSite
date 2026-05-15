@@ -304,12 +304,14 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        console.log("🔥 RAW PARAM:", req.params.userId);
 
-        console.log("📥 GET /workouts userId =", userId);
+        const userId = Number(req.params.userId);
 
-        if (!userId) {
-            console.log("❌ invalid userId");
+        console.log("📥 PARSED userId:", userId);
+
+        if (Number.isNaN(userId)) {
+            console.log("❌ BAD USER ID");
             return res.status(400).json({ error: "invalid userId" });
         }
 
@@ -328,14 +330,19 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
-        console.log("📤 workouts found:", result.rows.length);
-        console.log(result.rows);
+        console.log("📦 SQL RESULT ROWS:", result.rows);
+        console.log("📦 COUNT:", result.rows.length);
 
-        return res.json(result.rows);
+        // 🔥 ВАЖНО: всегда возвращаем массив
+        return res.json({
+            success: true,
+            data: result.rows
+        });
 
     } catch (err) {
-        console.error("❌ GET WORKOUTS ERROR:", err);
+        console.error("❌ WORKOUTS ERROR:", err);
         return res.status(500).json({
+            success: false,
             error: err.message
         });
     }
