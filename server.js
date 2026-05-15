@@ -304,16 +304,19 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
+        console.log("RAW PARAM:", req.params.userId);
+
         const userId = Number(req.params.userId);
 
         if (Number.isNaN(userId)) {
+            console.log("❌ BAD USER ID");
             return res.json([]);
         }
 
         const result = await pool.query(
             `
             SELECT
-                workoutid,
+                workoutid AS id,
                 server_id AS "serverId",
                 user_id AS "userId",
                 name,
@@ -325,6 +328,9 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
+        console.log("📦 WORKOUTS FROM DB:", result.rows);
+
+        // 🔥 ВАЖНО: ТОЛЬКО МАССИВ
         res.json(result.rows);
 
     } catch (err) {
