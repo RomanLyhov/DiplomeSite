@@ -311,8 +311,7 @@ app.get("/workouts/:userId", async (req, res) => {
         console.log("📥 PARSED userId:", userId);
 
         if (Number.isNaN(userId)) {
-            console.log("❌ BAD USER ID");
-            return res.status(400).json({ error: "invalid userId" });
+            return res.status(400).json([]);
         }
 
         const result = await pool.query(
@@ -330,21 +329,14 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
-        console.log("📦 SQL RESULT ROWS:", result.rows);
-        console.log("📦 COUNT:", result.rows.length);
+        console.log("📦 workouts:", result.rows);
 
-        // 🔥 ВАЖНО: всегда возвращаем массив
-        return res.json({
-            success: true,
-            data: result.rows
-        });
+        // 🔥 ВАЖНО: возвращаем ТОЛЬКО МАССИВ
+        res.json(result.rows);
 
     } catch (err) {
         console.error("❌ WORKOUTS ERROR:", err);
-        return res.status(500).json({
-            success: false,
-            error: err.message
-        });
+        res.status(500).json([]);
     }
 });
 
