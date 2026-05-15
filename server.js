@@ -483,7 +483,7 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
 
         res.json(result.rows);
     } catch (err) {
-        console.error(err);
+        console.error("GET workout-exercises ERROR:", err);
         res.status(500).send("Error");
     }
 });
@@ -491,6 +491,13 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
 app.post("/workout-exercises", async (req, res) => {
     try {
         const { workoutId, exerciseId } = req.body;
+
+        if (!workoutId || !exerciseId) {
+            return res.status(400).json({
+                success: false,
+                error: "workoutId or exerciseId missing"
+            });
+        }
 
         const exists = await pool.query(
             `
@@ -515,7 +522,7 @@ app.post("/workout-exercises", async (req, res) => {
         res.json({ success: true });
 
     } catch (err) {
-        console.error(err);
+        console.error("POST workout-exercises ERROR:", err);
         res.status(500).json({ success: false });
     }
 });
