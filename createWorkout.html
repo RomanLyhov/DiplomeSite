@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FitPlan — Создание тренировки</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="navbar">
+      <a href="/workouts.html">← Назад</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>🏋️ Создание тренировки</h1>
+
+    <p style="opacity:0.7; margin-bottom:15px;">
+      Введите название и создайте свою тренировку
+    </p>
+
+    <div class="form-group">
+      <label>Название тренировки</label>
+      <input type="text" id="workoutName" placeholder="Например: День ног">
+    </div>
+
+    <button class="btn" id="createBtn">
+      Создать
+    </button>
+
+    <div id="msg" style="margin-top:10px;"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+  location.href = "/adminvh.html";
+}
+
+document.getElementById("createBtn").addEventListener("click", async () => {
+
+  const name = document.getElementById("workoutName").value.trim();
+
+  const msg = document.getElementById("msg");
+
+  if (!name) {
+    msg.innerText = "❌ Введите название";
+    msg.style.color = "red";
+    return;
+  }
+
+  try {
+
+    const res = await fetch("/workouts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId,
+        name
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      msg.innerText = "✅ Тренировка создана!";
+      msg.style.color = "lightgreen";
+
+      setTimeout(() => {
+        location.href = "/workouts.html";
+      }, 800);
+    } else {
+      msg.innerText = "❌ Ошибка создания";
+      msg.style.color = "red";
+    }
+
+  } catch (err) {
+    console.error(err);
+    msg.innerText = "❌ Сервер ошибка";
+    msg.style.color = "red";
+  }
+
+});
+
+</script>
+
+</body>
+</html>
