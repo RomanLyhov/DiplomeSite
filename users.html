@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>FitPlan</title>
+    <title>FitPlan - Управление пользователями</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -11,36 +11,36 @@
 <script>
 
     const userId = localStorage.getItem("userId");
-const role = (localStorage.getItem("role") || "").toLowerCase();
+    const role = (localStorage.getItem("role") || "").toLowerCase();
 
-if (!userId) {
-    window.location.href = "/adminvh.html";
-}
+    if (!userId) {
+        window.location.href = "/adminvh.html";
+    }
 
-if (role !== "admin") {
-    window.location.href = "/profil.html";
-}
+    if (role !== "admin") {
+        window.location.href = "/profil.html";
+    }
 
 </script>
 
 <div class="admin-container">
-<div class="top-nav">
-  <div class="navbar">
-      <a href="/profil.html">Профиль</a>
-      <a href="/exercises.html">Упражнения</a>
-      <a href="/nutrition.html">Питание</a>
-      <a href="/workouts.html">Тренировки</a>
-      <a href="/users.html"
-        id="adminBtn"
-        class="active"
-        style="display:none;">Пользователи</a>
-</div>
-</div>
+    <div class="top-nav">
+        <div class="navbar">
+            <a href="/profil.html">Профиль</a>
+            <a href="/exercises.html">Упражнения</a>
+            <a href="/nutrition.html">Питание</a>
+            <a href="/workouts.html">Тренировки</a>
+            <a href="/users.html"
+               id="adminBtn"
+               class="active"
+               style="display:none;">Пользователи</a>
+        </div>
+    </div>
 
     <main class="main-content">
         <div class="search-wrapper">
             <div class="serch">
-                 <input  type="text" placeholder="Поиск..." class="serch" id="search-input" >
+                <input type="text" placeholder="🔍 Поиск по имени или email..." class="serch" id="search-input">
             </div>
         </div>
         <section class="table-container">
@@ -52,7 +52,7 @@ if (role !== "admin") {
                         <th>ID</th>
                         <th>ФИО</th>
                         <th>Email</th>
-                        <th>Параметры</th>
+                        <th>Параметры (вес/рост)</th>
                         <th>Статус</th>
                         <th>Действия</th>
                     </tr>
@@ -65,6 +65,8 @@ if (role !== "admin") {
 </div>
 
 <script>
+let allUsers = []; // Храним всех пользователей для поиска
+
 async function loadUsers() {
     try {
         const response = await fetch("/users");
@@ -73,65 +75,137 @@ async function loadUsers() {
             throw new Error("Ошибка загрузки пользователей");
         }
 
-        let users = await response.json();
+        allUsers = await response.json();
 
-        if (!Array.isArray(users)) return;
+        if (!Array.isArray(allUsers)) return;
 
-      users.sort((a, b) => a.id - b.id);
-
-        const tbody = document.getElementById("users-table-body");
-        tbody.innerHTML = "";
-
-        users.forEach(user => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${user.id}</td>
-    <td class="name">${user.name || "-"}</td>
-    <td>${user.email || "-"}</td>
-                <td>
-                    <span class="tag">${user.weight ?? "-"}</span>
-                    <span class="tag">${user.height ?? "-"}</span>
-                </td>
-                <td>
-                    <span class="badge active">Активен</span>
-                </td>
-                <td>
-                    <button class="btn-ui profile-btn">👤 Профиль</button>
-                </td>
-            `;
-
-            tr.addEventListener("click", () => {
-                document.querySelectorAll(".user-row")
-                    .forEach(r => r.classList.remove("is-active"));
-                tr.classList.add("is-active");
-            });
-
-            tr.querySelector(".profile-btn").addEventListener("click", (e) => {
-    e.stopPropagation();
-
-   localStorage.setItem("selectedUserId", user.id);
-
-    window.location.href = "/profil.html";
-});
-
-            tbody.appendChild(tr);
-        });
+        allUsers.sort((a, b) => a.id - b.id);
+        
+        renderUsers(allUsers);
 
     } catch (err) {
         console.error("Ошибка загрузки пользователей:", err);
+        document.getElementById("users-table-body").innerHTML = `
+            <tr><td colspan="6" style="text-align:center; color:red;">
+                ❌ Ошибка загрузки пользователей
+            </td></tr>
+        `;
     }
 }
 
+// Функция для отображения пользователей
+function renderUsers(users) {
+    const tbody = document.getElementById("users-table-body");
+    tbody.innerHTML = "";
+
+    if (users.length === 0) {
+        tbody.innerHTML = `
+            <tr><td colspan="6" style="text-align:center; padding:40px;">
+                🔍 Пользователи не найдены
+            </td></tr>
+        `;
+        return;
+    }
+
+    users.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.className = "user-row";
+        tr.innerHTML = `
+            <td>${user.id}</td>
+            <td class="name">${escapeHtml(user.name) || "-"}</td>
+            <td>${escapeHtml(user.email) || "-"}</td>
+            <td>
+                <span class="tag">⚖️ ${user.weight ?? "-"} кг</span>
+                <span class="tag">📏 ${user.height ?? "-"} см</span>
+            </td>
+            <td>
+                <span class="badge active">✅ Активен</span>
+            </td>
+            <td>
+                <button class="btn-ui profile-btn" data-id="${user.id}">👤 Профиль</button>
+            </td>
+        `;
+
+        // Подсветка выбранной строки
+        tr.addEventListener("click", (e) => {
+            if (e.target.classList.contains("profile-btn")) return;
+            document.querySelectorAll(".user-row").forEach(r => r.classList.remove("is-active"));
+            tr.classList.add("is-active");
+        });
+
+        // Кнопка профиля
+        const profileBtn = tr.querySelector(".profile-btn");
+        profileBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            localStorage.setItem("selectedUserId", user.id);
+            window.location.href = "/profil.html";
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+// Функция для поиска (работает и по имени, и по email)
+function searchUsers(searchTerm) {
+    if (!searchTerm || searchTerm.trim() === "") {
+        renderUsers(allUsers);
+        return;
+    }
+
+    const term = searchTerm.toLowerCase().trim();
+    
+    const filtered = allUsers.filter(user => {
+        const nameMatch = user.name && user.name.toLowerCase().includes(term);
+        const emailMatch = user.email && user.email.toLowerCase().includes(term);
+        return nameMatch || emailMatch;
+    });
+
+    renderUsers(filtered);
+}
+
+// Функция для защиты от XSS
+function escapeHtml(str) {
+    if (!str) return str;
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+// Загружаем пользователей
 loadUsers();
+
+// Навешиваем обработчик поиска
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search-input");
+    
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchUsers(e.target.value);
+        });
+        
+        // Делаем поиск с задержкой (debounce) для лучшей производительности
+        let debounceTimer;
+        searchInput.addEventListener("input", (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                searchUsers(e.target.value);
+            }, 300);
+        });
+    }
+});
 </script>
+
 <script>
 const roleCheck = (localStorage.getItem("role") || "").toLowerCase();
 
 if (roleCheck === "admin") {
-    document.getElementById("adminBtn").style.display = "inline-block";
+    const adminBtn = document.getElementById("adminBtn");
+    if (adminBtn) adminBtn.style.display = "inline-block";
 }
-</script>
-<script>
+
 function logout() {
     localStorage.clear();
     window.location.href = "/adminvh.html";
