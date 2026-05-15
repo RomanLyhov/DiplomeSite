@@ -320,17 +320,21 @@ app.get("/workouts/:userId", async (req, res) => {
 
 app.post("/workouts", async (req, res) => {
     try {
-        const { userId, name } = req.body;
+
+        console.log("📥 WORKOUT BODY:", req.body);
+
+        const { user_id, name } = req.body;
 
         const result = await pool.query(
             `INSERT INTO workouts(user_id, name, created_at)
              VALUES ($1,$2,NOW())
              RETURNING id, user_id, name`,
-            [userId, name]
+            [user_id, name]
         );
 
         res.json({
             success: true,
+            id: result.rows[0].id,
             workout: result.rows[0]
         });
 
