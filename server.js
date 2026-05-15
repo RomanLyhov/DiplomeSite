@@ -304,24 +304,40 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
+        const userId = parseInt(req.params.userId);
+
+        console.log("📥 GET /workouts userId =", userId);
+
+        if (!userId) {
+            console.log("❌ invalid userId");
+            return res.status(400).json({ error: "invalid userId" });
+        }
+
         const result = await pool.query(
             `
             SELECT
                 workoutid AS id,
                 server_id AS "serverId",
                 user_id AS "userId",
-                name
+                name,
+                created_at
             FROM workouts
-            WHERE user_id=$1
-            ORDER BY created_at DESC
+            WHERE user_id = $1
+            ORDER BY workoutid DESC
             `,
-            [req.params.userId]
+            [userId]
         );
 
-        res.json(result.rows);
+        console.log("📤 workouts found:", result.rows.length);
+        console.log(result.rows);
+
+        return res.json(result.rows);
+
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error");
+        console.error("❌ GET WORKOUTS ERROR:", err);
+        return res.status(500).json({
+            error: err.message
+        });
     }
 });
 
