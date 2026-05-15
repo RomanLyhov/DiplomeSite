@@ -333,12 +333,24 @@ app.post("/workouts", async (req, res) => {
 
         console.log("📥 WORKOUT BODY:", req.body);
 
-        const { userId, name } = req.body;
+        const userId = req.body.userId || req.body.user_id;
+        const name = req.body.name;
+
+        console.log("USER ID:", userId);
+
+        if (!userId || !name) {
+            return res.status(400).json({
+                success: false,
+                error: "userId or name missing"
+            });
+        }
 
         const result = await pool.query(
-            `INSERT INTO workouts(user_id, name, created_at)
-             VALUES ($1,$2,NOW())
-             RETURNING id, user_id, name`,
+            `
+            INSERT INTO workouts(user_id, name, created_at)
+            VALUES ($1, $2, NOW())
+            RETURNING id, user_id, name
+            `,
             [userId, name]
         );
 
