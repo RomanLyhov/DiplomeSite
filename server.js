@@ -308,10 +308,9 @@ app.get("/workouts/:userId", async (req, res) => {
 
         const userId = Number(req.params.userId);
 
-        console.log("📥 PARSED userId:", userId);
-
         if (Number.isNaN(userId)) {
-            return res.status(400).json([]);
+            console.log("❌ BAD USER ID");
+            return res.json([]);
         }
 
         const result = await pool.query(
@@ -329,14 +328,20 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
-        console.log("📦 workouts:", result.rows);
+        console.log("📦 FOUND:", result.rows);
 
-        // 🔥 ВАЖНО: возвращаем ТОЛЬКО МАССИВ
-        res.json(result.rows);
+        // 🔥 ВАЖНО: отдаём И МАССИВ И ОБЪЕКТ (чтобы фронт точно не умер)
+        return res.json({
+            success: true,
+            workouts: result.rows
+        });
 
     } catch (err) {
         console.error("❌ WORKOUTS ERROR:", err);
-        res.status(500).json([]);
+        return res.status(500).json({
+            success: false,
+            workouts: []
+        });
     }
 });
 
