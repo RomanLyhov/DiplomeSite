@@ -359,6 +359,43 @@ app.put("/exercises/:id", async (req, res) => {
     }
 });
 
+// -------------------- ADD EXERCISE --------------------
+app.post("/exercises", async (req, res) => {
+    try {
+
+        const { name, muscleGroup, difficulty } = req.body;
+
+        await pool.query(
+            `
+            INSERT INTO exercises(
+                name,
+                muscle_group,
+                difficulty
+            )
+            VALUES($1, $2, $3)
+            `,
+            [
+                name,
+                muscleGroup,
+                difficulty
+            ]
+        );
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        console.error("❌ ADD EXERCISE ERROR:", err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+    }
+});
+
 app.delete("/exercises/:id", async (req, res) => {
     try {
         await pool.query("DELETE FROM workout_exercises WHERE exercise_id=$1", [req.params.id]);

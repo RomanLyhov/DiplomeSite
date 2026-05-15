@@ -77,14 +77,18 @@ async function loadExercises(){
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <tr>${ex.name}</td>
-      <td>${ex.muscle_group || "-"}</td>
-      <td><span class="badge ${ex.difficulty}">${ex.difficulty}</span></td>
-      <td>
-        <button class="btn edit">✎</button>
-        <button class="btn delete">🗑</button>
-      </td>
-    `;
+  <td>${ex.name}</td>
+  <td>${ex.muscle_group || "-"}</td>
+  <td>
+    <span class="badge ${ex.difficulty}">
+      ${ex.difficulty}
+    </span>
+  </td>
+  <td>
+    <button class="btn edit">✎</button>
+    <button class="btn delete">🗑</button>
+  </td>
+`;
 
     tr.querySelector(".delete").addEventListener("click", async (e) => {
       e.stopPropagation();
