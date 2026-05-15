@@ -3,41 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>FitPlan — Упражнения</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
+
+<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
-  <div class="top-nav">
   <div class="navbar">
       <a href="/profil.html">Профиль</a>
       <a href="/exercises.html">Упражнения</a>
       <a href="/nutrition.html">Питание</a>
       <a href="/workouts.html">Тренировки</a>
-      <a href="/users.html"
-      
-        id="adminBtn"
-        style="display:none;">Пользователи</a>
-</div>
-</div>
-<script>
-const roleCheck = (localStorage.getItem("role") || "").toLowerCase();
 
-if (roleCheck === "admin") {
-  document.getElementById("adminBtn").style.display = "inline-block";
-}
-</script>
+      <a href="/users.html"
+         id="adminBtn"
+         style="display:none;">Пользователи</a>
+  </div>
+</div>
+
+<!-- ================= PAGE ================= -->
 <div class="container">
 
   <div class="header">
     <h1>🏋️ Упражнения</h1>
-    <a class="add-btn" href="addEx.html" id="addExerciseBtn" style="display:none;">
-  + Добавить
-</a>
+
+    <a class="add-btn"
+       href="addEx.html"
+       id="addExerciseBtn"
+       style="display:none;">
+      + Добавить
+    </a>
   </div>
 
   <div class="card">
@@ -51,6 +51,7 @@ if (roleCheck === "admin") {
           <th>Действия</th>
         </tr>
       </thead>
+
       <tbody id="exercises-table-body"></tbody>
     </table>
 
@@ -58,73 +59,106 @@ if (roleCheck === "admin") {
 
 </div>
 
+<!-- ================= SCRIPT ================= -->
 <script>
-const role = (localStorage.getItem("role") || "").toLowerCase();
-if (role === "admin") {
-  document.getElementById("adminBtn").style.display = "inline-block";
 
-  const addBtn = document.getElementById("addExerciseBtn");
-  if (addBtn) addBtn.style.display = "inline-block";
-}
+const role = (localStorage.getItem("role") || "").toLowerCase();
 const userId = localStorage.getItem("userId");
 
-if (!role || !userId) {
+// 🔥 защита от null (чтобы JS не падал)
+const adminBtn = document.getElementById("adminBtn");
+const addBtn = document.getElementById("addExerciseBtn");
+
+if (role === "admin") {
+  if (adminBtn) adminBtn.style.display = "inline-block";
+  if (addBtn) addBtn.style.display = "inline-block";
+}
+
+// 🔥 проверка авторизации
+if (!userId) {
   window.location.href = "/adminvh.html";
 }
 
-function logout(){
-  localStorage.clear();
-  location.href="/adminvh.html";
-}
+// ================= LOAD EXERCISES =================
+async function loadExercises() {
+  try {
 
-async function loadExercises(){
-  const res = await fetch("/exercises");
-  const data = await res.json();
+    const res = await fetch("/exercises");
+    const data = await res.json();
 
-  const tbody = document.getElementById("exercises-table-body");
-  tbody.innerHTML = "";
+    console.log("EXERCISES:", data); // 🔥 для проверки
 
-  data.forEach(ex => {
-    const tr = document.createElement("tr");
+    const tbody = document.getElementById("exercises-table-body");
 
-    tr.innerHTML = `
-  <td>${ex.name}</td>
-  <td>${ex.muscle_group || "-"}</td>
-  <td>
-    <span class="badge ${ex.difficulty}">
-      ${ex.difficulty}
-    </span>
-  </td>
-  <td>
-  ${role === "admin"
-    ? `
-      <button class="btn edit">✎</button>
-      <button class="btn delete">🗑</button>
-    `
-    : `<span style="color:#888;">Только просмотр</span>`
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    data.forEach(ex => {
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${ex.name}</td>
+        <td>${ex.muscle_group || "-"}</td>
+        <td>
+          <span class="badge ${ex.difficulty}">
+            ${ex.difficulty}
+          </span>
+        </td>
+        <td>
+          ${
+            role === "admin"
+              ? `
+                <button class="btn edit">✎</button>
+                <button class="btn delete">🗑</button>
+              `
+              : `<span style="opacity:0.6;">Только просмотр</span>`
+          }
+        </td>
+      `;
+
+      // ================= DELETE =================
+      if (role === "admin") {
+
+        const delBtn = tr.querySelector(".delete");
+
+        if (delBtn) {
+          delBtn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+
+            if (!confirm("Удалить упражнение?")) return;
+
+            await fetch(`/exercises/${ex.exerciseid}`, {
+              method: "DELETE"
+            });
+
+            loadExercises();
+          });
+        }
+
+        // ================= EDIT =================
+        const editBtn = tr.querySelector(".edit");
+
+        if (editBtn) {
+          editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            location.href = `addEx.html?id=${ex.exerciseid}`;
+          });
+        }
+      }
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("ERROR LOAD EXERCISES:", err);
   }
-</td>
-`;
-
-    tr.querySelector(".delete").addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (!confirm("Удалить упражнение?")) return;
-      // ✅ исправлено: ex.exerciseid (а не ex.ExerciseID)
-      await fetch(`/exercises/${ex.exerciseid}`, { method: "DELETE" });
-      loadExercises();
-    });
-
-    tr.querySelector(".edit").addEventListener("click", (e) => {
-      e.stopPropagation();
-      // ✅ исправлено: ex.exerciseid
-      location.href = `addEx.html?id=${ex.exerciseid}`;
-    });
-
-    tbody.appendChild(tr);
-  });
 }
 
+// старт
 loadExercises();
+
 </script>
 
 </body>
