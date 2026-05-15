@@ -304,7 +304,7 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
-        console.log("🔥🔥🔥 REQUEST RECEIVED");
+        console.log("🔥 REQUEST RECEIVED");
         console.log("PARAM:", req.params.userId);
 
         const userId = Number(req.params.userId);
@@ -321,7 +321,6 @@ app.get("/workouts/:userId", async (req, res) => {
             SELECT
                 workoutid,
                 workoutid as id,
-                server_id AS "serverId",
                 user_id AS "userId",
                 name,
                 created_at AS "createdAt"
@@ -332,15 +331,14 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
-        console.log("🔥🔥🔥 DB RESULT ROWS:", result.rows);
-        console.log("🔥🔥🔥 NUMBER OF ROWS:", result.rows.length);
+        console.log("🔥 DB RESULT ROWS:", result.rows);
+        console.log("🔥 NUMBER OF ROWS:", result.rows.length);
         
-        // ВАЖНО: отправляем как есть
         res.json(result.rows);
 
     } catch (err) {
         console.error("❌ WORKOUTS ERROR:", err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json([]);
     }
 });
 
@@ -348,7 +346,6 @@ app.post("/workouts", async (req, res) => {
     try {
         const userId = req.body.userId || req.body.user_id;
         const name = req.body.name;
-        const serverId = req.body.id; // <-- ВАЖНО (id с Android/сервера)
 
         if (!userId || !name) {
             return res.status(400).json({
@@ -357,31 +354,13 @@ app.post("/workouts", async (req, res) => {
             });
         }
 
-        // 🔥 UPSERT ЛОГИКА
-        const existing = await pool.query(
-            "SELECT workoutid FROM workouts WHERE server_id = $1",
-            [serverId]
-        );
-
-        if (serverId && existing.rows.length > 0) {
-            await pool.query(
-                `UPDATE workouts SET name=$1 WHERE server_id=$2`,
-                [name, serverId]
-            );
-
-            return res.json({
-                success: true,
-                id: existing.rows[0].workoutid
-            });
-        }
-
         const result = await pool.query(
             `
-            INSERT INTO workouts(user_id, name, server_id, created_at)
-            VALUES ($1, $2, $3, NOW())
+            INSERT INTO workouts(user_id, name, created_at)
+            VALUES ($1, $2, NOW())
             RETURNING workoutid
             `,
-            [userId, name, serverId || null]
+            [userId, name]
         );
 
         res.json({
@@ -561,17 +540,15 @@ app.get("/api/profile/:id", async (req, res) => {
 app.put("/workouts/:id", async (req, res) => {
     try {
         const { name } = req.body;
-
         await pool.query(
-    "UPDATE workouts SET name=$1 WHERE workoutid=$2",
-    [name, req.params.id]
-);
+            "UPDATE workouts SET name=$1 WHERE workoutid=$2",
+            [name, req.params.id]
+        );
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false });
     }
 });
-
 
 
 app.get("/worckouts.html", (req, res) =>
