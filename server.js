@@ -411,6 +411,73 @@ app.delete("/exercises/:id", async (req, res) => {
     }
 });
 
+// -------------------- WORKOUT EXERCISES --------------------
+
+app.get("/workout-exercises/:workoutId", async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT
+                e.*
+            FROM workoutexercises we
+            JOIN exercises e
+                ON e.exerciseid = we.exercise_id
+            WHERE we.workout_id = $1
+            `,
+            [req.params.workoutId]
+        );
+
+        res.json(result.rows);
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).send("Error");
+    }
+
+});
+
+app.post("/workout-exercises", async (req, res) => {
+
+    try {
+
+        const {
+            workoutId,
+            exerciseId
+        } = req.body;
+
+        await pool.query(
+            `
+            INSERT INTO workoutexercises(
+                workout_id,
+                exercise_id
+            )
+            VALUES($1, $2)
+            `,
+            [
+                workoutId,
+                exerciseId
+            ]
+        );
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false
+        });
+    }
+
+});
+
 // -------------------- PROFILE --------------------
 app.get("/api/profile/:id", async (req, res) => {
     try {
@@ -423,6 +490,14 @@ app.get("/api/profile/:id", async (req, res) => {
         res.status(500).send("Error");
     }
 });
+
+app.get("/worckouts.html", (req, res) =>
+    res.sendFile(path.join(__dirname, "workouts.html"))
+);
+
+app.get("/worck.html", (req, res) =>
+    res.sendFile(path.join(__dirname, "workout.html"))
+);
 
 // -------------------- STATIC HTML --------------------
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "adminvh.html")));

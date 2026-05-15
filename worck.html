@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FitPlan — Тренировка</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+
+</head>
+<body>
+
+<div class="navbar">
+
+  <div class="logo">FitPlan</div>
+
+  <div style="display:flex; gap:10px;">
+    <a href="/workouts.html">← Назад</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="header">
+
+    <h1>🏋️ Тренировка</h1>
+
+    <button class="add-btn" id="addExerciseBtn">
+      + Добавить упражнение
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Группа</th>
+          <th>Сложность</th>
+        </tr>
+      </thead>
+
+      <tbody id="exerciseTable"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+<script>
+
+const workoutId =
+  new URLSearchParams(window.location.search).get("id");
+
+async function loadWorkoutExercises() {
+
+  const res = await fetch(`/workout-exercises/${workoutId}`);
+
+  const data = await res.json();
+
+  const tbody = document.getElementById("exerciseTable");
+
+  tbody.innerHTML = "";
+
+  data.forEach(ex => {
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${ex.name}</td>
+      <td>${ex.muscle_group}</td>
+      <td>${ex.difficulty}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+document.getElementById("addExerciseBtn")
+.addEventListener("click", async () => {
+
+  const res = await fetch("/exercises");
+
+  const exercises = await res.json();
+
+  let text = "Введите ID упражнения:\n\n";
+
+  exercises.forEach(ex => {
+
+    text += `
+${ex.exerciseid} — ${ex.name}
+`;
+
+  });
+
+  const exerciseId = prompt(text);
+
+  if (!exerciseId) return;
+
+  const addRes = await fetch("/workout-exercises", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      workoutId,
+      exerciseId
+    })
+
+  });
+
+  const data = await addRes.json();
+
+  if (data.success) {
+    loadWorkoutExercises();
+  }
+
+});
+
+loadWorkoutExercises();
+
+</script>
+
+</body>
+</html>

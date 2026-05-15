@@ -32,7 +32,9 @@ if (roleCheck === "admin") {
 
   <div class="header">
     <h1>🏋️ Упражнения</h1>
-    <a class="add-btn" href="addEx.html">+ Добавить</a>
+    <a class="add-btn" href="addEx.html" id="addExerciseBtn" style="display:none;">
+  + Добавить
+</a>
   </div>
 
   <div class="card">
@@ -55,6 +57,12 @@ if (roleCheck === "admin") {
 
 <script>
 const role = (localStorage.getItem("role") || "").toLowerCase();
+if (role === "admin") {
+  document.getElementById("adminBtn").style.display = "inline-block";
+
+  const addBtn = document.getElementById("addExerciseBtn");
+  if (addBtn) addBtn.style.display = "inline-block";
+}
 const userId = localStorage.getItem("userId");
 
 if (!role || !userId) {
@@ -85,9 +93,14 @@ async function loadExercises(){
     </span>
   </td>
   <td>
-    <button class="btn edit">✎</button>
-    <button class="btn delete">🗑</button>
-  </td>
+  ${role === "admin"
+    ? `
+      <button class="btn edit">✎</button>
+      <button class="btn delete">🗑</button>
+    `
+    : `<span style="color:#888;">Только просмотр</span>`
+  }
+</td>
 `;
 
     tr.querySelector(".delete").addEventListener("click", async (e) => {

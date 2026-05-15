@@ -10,6 +10,13 @@
 </head>
 
 <body>
+  <script>
+const role = (localStorage.getItem("role") || "").toLowerCase();
+
+if (role !== "admin") {
+  location.href = "/exercises.html";
+}
+</script>
 
 <div class="navbar">
   <div class="logo">FitPlan</div>
@@ -66,7 +73,7 @@
 </div>
 
 <script>
-const API = "http://217.114.13.252:2288";
+const API = "";
 
 async function loadEdit() {
   const id = new URLSearchParams(window.location.search).get("id");
@@ -83,65 +90,64 @@ async function loadEdit() {
 }
 
 document.getElementById("addExerciseForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
 
-  const form = e.target;
-  const editId = form.dataset.editId;
+    e.preventDefault();
 
-  const name = document.getElementById("exerciseName").value;
-  const muscleGroup = document.getElementById("muscleGroup").value;
-  const difficulty = document.getElementById("difficulty").value;
+    const form = e.target;
+    const editId = form.dataset.editId;
 
-  const msg = document.getElementById("formMessage");
+    const name = document.getElementById("exerciseName").value;
+    const muscleGroup = document.getElementById("muscleGroup").value;
+    const difficulty = document.getElementById("difficulty").value;
 
-  try {
+    const msg = document.getElementById("formMessage");
 
-    const url = editId
-      ? `${API}/exercises/${editId}`
-      : `${API}/exercises`;
+    try {
 
-    const method = editId ? "PUT" : "POST";
+        const url = editId
+            ? `/exercises/${editId}`
+            : `/exercises`;
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name,
-        muscleGroup,
-        difficulty
-      })
-    });
+        const method = editId
+            ? "PUT"
+            : "POST";
 
-    const text = await response.text();
+        console.log("URL:", url);
+        console.log("METHOD:", method);
 
-console.log("SERVER RAW RESPONSE:", text);
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                muscleGroup,
+                difficulty
+            })
+        });
 
-let data;
+        const data = await response.json();
 
-try {
-    data = JSON.parse(text);
-} catch {
-    throw new Error("Сервер вернул HTML вместо JSON");
-}
+        console.log("SERVER RESPONSE:", data);
 
-    if (!response.ok) {
-      throw new Error(data.error || "SERVER ERROR");
+        if (!response.ok) {
+            throw new Error(data.error || "SERVER ERROR");
+        }
+
+        msg.innerText = "✅ Успешно сохранено";
+
+        setTimeout(() => {
+            window.location.href = "exercises.html";
+        }, 700);
+
+    } catch (err) {
+
+        console.error("❌ CLIENT ERROR:", err);
+
+        msg.innerText = "❌ " + err.message;
     }
 
-    msg.innerText = "✅ Успешно сохранено";
-
-    setTimeout(() => {
-      window.location.href = "exercises.html";
-    }, 700);
-
-  } catch (err) {
-
-    console.error(err);
-
-    msg.innerText = "❌ " + err.message;
-  }
 });
 
 loadEdit();
