@@ -304,7 +304,8 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
-        console.log("RAW PARAM:", req.params.userId);
+        console.log("🔥🔥🔥 REQUEST RECEIVED");
+        console.log("PARAM:", req.params.userId);
 
         const userId = Number(req.params.userId);
 
@@ -313,11 +314,13 @@ app.get("/workouts/:userId", async (req, res) => {
             return res.json([]);
         }
 
+        console.log("🔥 QUERYING DB FOR USER:", userId);
+
         const result = await pool.query(
             `
             SELECT
                 workoutid,
-                workoutid as id,     // ← ДОБАВИЛИ оба поля
+                workoutid as id,
                 server_id AS "serverId",
                 user_id AS "userId",
                 name,
@@ -329,12 +332,15 @@ app.get("/workouts/:userId", async (req, res) => {
             [userId]
         );
 
-        console.log("📦 WORKOUTS FROM DB:", result.rows);
+        console.log("🔥🔥🔥 DB RESULT ROWS:", result.rows);
+        console.log("🔥🔥🔥 NUMBER OF ROWS:", result.rows.length);
+        
+        // ВАЖНО: отправляем как есть
         res.json(result.rows);
 
     } catch (err) {
         console.error("❌ WORKOUTS ERROR:", err);
-        res.status(500).json([]);
+        res.status(500).json({ error: err.message });
     }
 });
 
