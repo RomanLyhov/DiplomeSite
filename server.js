@@ -361,6 +361,9 @@ app.put("/exercises/:id", async (req, res) => {
 
 console.log("✅ EXERCISES POST ROUTE LOADED");
 app.post("/exercises", async (req, res) => {
+
+    console.log("📥 BODY:", req.body);
+
     try {
 
         const { name, muscleGroup, difficulty } = req.body;
@@ -380,6 +383,8 @@ app.post("/exercises", async (req, res) => {
                 difficulty
             ]
         );
+
+        console.log("✅ EXERCISE ADDED");
 
         res.json({
             success: true
