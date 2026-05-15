@@ -310,7 +310,7 @@ app.get("/workouts/:userId", async (req, res) => {
 
         if (Number.isNaN(userId)) {
             console.log("❌ BAD USER ID");
-            return res.json([]);
+            return res.json([]);  // возвращаем пустой массив
         }
 
         const result = await pool.query(
@@ -320,7 +320,7 @@ app.get("/workouts/:userId", async (req, res) => {
                 server_id AS "serverId",
                 user_id AS "userId",
                 name,
-                created_at
+                created_at AS "createdAt"
             FROM workouts
             WHERE user_id = $1
             ORDER BY workoutid DESC
@@ -330,18 +330,12 @@ app.get("/workouts/:userId", async (req, res) => {
 
         console.log("📦 FOUND:", result.rows);
 
-        // 🔥 ВАЖНО: отдаём И МАССИВ И ОБЪЕКТ (чтобы фронт точно не умер)
-        return res.json({
-            success: true,
-            workouts: result.rows
-        });
+        // 🔥 ВАЖНО: возвращаем ТОЛЬКО массив (как ожидает фронт)
+        res.json(result.rows);
 
     } catch (err) {
         console.error("❌ WORKOUTS ERROR:", err);
-        return res.status(500).json({
-            success: false,
-            workouts: []
-        });
+        res.status(500).json([]);  // при ошибке тоже массив
     }
 });
 
