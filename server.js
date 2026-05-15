@@ -303,25 +303,22 @@ app.put("/users/:id", async (req, res) => {
 
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
-   try {
-
-        const { userId } = req.params;
-
+    try {
         const result = await pool.query(
             `
             SELECT
                 workoutid AS id,
+                server_id AS "serverId",
                 user_id AS "userId",
                 name
             FROM workouts
             WHERE user_id=$1
             ORDER BY created_at DESC
             `,
-            [userId]
+            [req.params.userId]
         );
 
         res.json(result.rows);
-
     } catch (err) {
         console.error(err);
         res.status(500).send("Error");
@@ -330,9 +327,9 @@ app.get("/workouts/:userId", async (req, res) => {
 
 app.post("/workouts", async (req, res) => {
     try {
-
         const userId = req.body.userId || req.body.user_id;
         const name = req.body.name;
+        const serverId = req.body.id; // <-- ВАЖНО (id с Android/сервера)
 
         if (!userId || !name) {
             return res.status(400).json({
@@ -341,13 +338,31 @@ app.post("/workouts", async (req, res) => {
             });
         }
 
+        // 🔥 UPSERT ЛОГИКА
+        const existing = await pool.query(
+            "SELECT workoutid FROM workouts WHERE server_id = $1",
+            [serverId]
+        );
+
+        if (serverId && existing.rows.length > 0) {
+            await pool.query(
+                `UPDATE workouts SET name=$1 WHERE server_id=$2`,
+                [name, serverId]
+            );
+
+            return res.json({
+                success: true,
+                id: existing.rows[0].workoutid
+            });
+        }
+
         const result = await pool.query(
             `
-            INSERT INTO workouts(user_id, name, created_at)
-            VALUES ($1, $2, NOW())
+            INSERT INTO workouts(user_id, name, server_id, created_at)
+            VALUES ($1, $2, $3, NOW())
             RETURNING workoutid
             `,
-            [userId, name]
+            [userId, name, serverId || null]
         );
 
         res.json({
@@ -450,13 +465,14 @@ app.delete("/exercises/:id", async (req, res) => {
 // -------------------- WORKOUT EXERCISES --------------------
 
 app.get("/workout-exercises/:workoutId", async (req, res) => {
-
     try {
-
         const result = await pool.query(
             `
             SELECT
-                e.*
+                e.exerciseid AS id,
+                e.name,
+                e.muscle_group AS "muscleGroup",
+                e.difficulty
             FROM workoutexercises we
             JOIN exercises e
                 ON e.exerciseid = we.exercise_id
@@ -466,52 +482,42 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
         );
 
         res.json(result.rows);
-
     } catch (err) {
-
         console.error(err);
-
         res.status(500).send("Error");
     }
-
 });
 
 app.post("/workout-exercises", async (req, res) => {
-
     try {
+        const { workoutId, exerciseId } = req.body;
 
-        const {
-            workoutId,
-            exerciseId
-        } = req.body;
+        const exists = await pool.query(
+            `
+            SELECT 1 FROM workoutexercises
+            WHERE workout_id=$1 AND exercise_id=$2
+            `,
+            [workoutId, exerciseId]
+        );
+
+        if (exists.rows.length > 0) {
+            return res.json({ success: true, message: "already exists" });
+        }
 
         await pool.query(
             `
-            INSERT INTO workoutexercises(
-                workout_id,
-                exercise_id
-            )
+            INSERT INTO workoutexercises(workout_id, exercise_id)
             VALUES($1, $2)
             `,
-            [
-                workoutId,
-                exerciseId
-            ]
+            [workoutId, exerciseId]
         );
 
-        res.json({
-            success: true
-        });
+        res.json({ success: true });
 
     } catch (err) {
-
         console.error(err);
-
-        res.status(500).json({
-            success: false
-        });
+        res.status(500).json({ success: false });
     }
-
 });
 
 // -------------------- PROFILE --------------------
@@ -531,15 +537,16 @@ app.put("/workouts/:id", async (req, res) => {
         const { name } = req.body;
 
         await pool.query(
-            "UPDATE workouts SET name=$1 WHERE id=$2",
-            [name, req.params.id]
-        );
-
+    "UPDATE workouts SET name=$1 WHERE workoutid=$2",
+    [name, req.params.id]
+);
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false });
     }
 });
+
+
 
 app.get("/worckouts.html", (req, res) =>
     res.sendFile(path.join(__dirname, "workouts.html"))
