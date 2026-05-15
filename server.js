@@ -316,7 +316,8 @@ app.get("/workouts/:userId", async (req, res) => {
         const result = await pool.query(
             `
             SELECT
-                workoutid AS id,
+                workoutid,
+                workoutid as id,     // ← ДОБАВИЛИ оба поля
                 server_id AS "serverId",
                 user_id AS "userId",
                 name,
@@ -329,8 +330,6 @@ app.get("/workouts/:userId", async (req, res) => {
         );
 
         console.log("📦 WORKOUTS FROM DB:", result.rows);
-
-        // 🔥 ВАЖНО: ТОЛЬКО МАССИВ
         res.json(result.rows);
 
     } catch (err) {

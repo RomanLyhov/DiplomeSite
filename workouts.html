@@ -89,7 +89,7 @@ async function loadWorkouts() {
           🏋️ ${w.name}
         </div>
         <div style="font-size:12px; opacity:0.6;">
-          ID: ${w.workoutid}
+          ID: ${w.id}        // ← ИСПРАВЛЕНО
         </div>
       </div>
 
@@ -99,11 +99,11 @@ async function loadWorkouts() {
     `;
 
     div.querySelector("button").onclick = () => {
-      location.href = `/workout.html?id=${w.workoutid}`;
+      location.href = `/workout.html?id=${w.id}`;  // ← ИСПРАВЛЕНО
     };
 
     container.appendChild(div);
-  });
+});
 }
 
 loadWorkouts();
