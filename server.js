@@ -359,7 +359,7 @@ app.put("/exercises/:id", async (req, res) => {
     }
 });
 
-// -------------------- ADD EXERCISE --------------------
+console.log("✅ EXERCISES POST ROUTE LOADED");
 app.post("/exercises", async (req, res) => {
     try {
 
