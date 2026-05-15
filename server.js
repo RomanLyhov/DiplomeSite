@@ -490,6 +490,20 @@ app.get("/api/profile/:id", async (req, res) => {
         res.status(500).send("Error");
     }
 });
+app.put("/workouts/:id", async (req, res) => {
+    try {
+        const { name } = req.body;
+
+        await pool.query(
+            "UPDATE workouts SET name=$1 WHERE id=$2",
+            [name, req.params.id]
+        );
+
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false });
+    }
+});
 
 app.get("/worckouts.html", (req, res) =>
     res.sendFile(path.join(__dirname, "workouts.html"))
