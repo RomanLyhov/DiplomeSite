@@ -304,14 +304,24 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
    try {
+
         const { userId } = req.params;
 
         const result = await pool.query(
-            "SELECT * FROM workouts WHERE user_id=$1 ORDER BY created_at DESC",
+            `
+            SELECT
+                id,
+                user_id AS "userId",
+                name
+            FROM workouts
+            WHERE user_id=$1
+            ORDER BY created_at DESC
+            `,
             [userId]
         );
 
         res.json(result.rows);
+
     } catch (err) {
         console.error(err);
         res.status(500).send("Error");
@@ -323,13 +333,13 @@ app.post("/workouts", async (req, res) => {
 
         console.log("📥 WORKOUT BODY:", req.body);
 
-        const { user_id, name } = req.body;
+        const { userId, name } = req.body;
 
         const result = await pool.query(
             `INSERT INTO workouts(user_id, name, created_at)
              VALUES ($1,$2,NOW())
              RETURNING id, user_id, name`,
-            [user_id, name]
+            [userId, name]
         );
 
         res.json({
@@ -339,7 +349,9 @@ app.post("/workouts", async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+
+        console.error("❌ WORKOUT ERROR:", err);
+
         res.status(500).send("Error");
     }
 });
