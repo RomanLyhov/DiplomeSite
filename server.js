@@ -489,8 +489,7 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
 app.post("/workout-exercises", async (req, res) => {
     try {
 
-        console.log("📥 WORKOUT EXERCISE BODY:");
-        console.log(req.body);
+        console.log("🔥 WORKOUT EXERCISE BODY:", req.body);
 
         const {
             workoutId,
@@ -501,8 +500,7 @@ app.post("/workout-exercises", async (req, res) => {
             rest
         } = req.body;
 
-        console.log("🔥 PARSED:");
-        console.log({
+        console.log("🔥 VALUES:", {
             workoutId,
             exerciseId,
             sets,
@@ -511,23 +509,43 @@ app.post("/workout-exercises", async (req, res) => {
             rest
         });
 
-        await pool.query(
-            `INSERT INTO workoutexercises(
+        const result = await pool.query(
+            `
+            INSERT INTO workoutexercises(
                 workout_id,
                 exercise_id,
                 sets,
                 reps,
                 weight,
                 rest
-            ) VALUES ($1,$2,$3,$4,$5,$6)`,
-            [workoutId, exerciseId, sets, reps, weight, rest]
+            )
+            VALUES($1,$2,$3,$4,$5,$6)
+            RETURNING *
+            `,
+            [
+                workoutId,
+                exerciseId,
+                sets,
+                reps,
+                weight,
+                rest
+            ]
         );
 
-        res.json({ success: true });
+        console.log("✅ INSERTED:", result.rows[0]);
+
+        res.json({
+            success: true
+        });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false });
+
+        console.error("❌ SAVE WORKOUT EXERCISE ERROR:", err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
     }
 });
 
