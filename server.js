@@ -488,39 +488,45 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
 
 app.post("/workout-exercises", async (req, res) => {
     try {
-        const { workoutId, exerciseId } = req.body;
 
-        if (!workoutId || !exerciseId) {
-            return res.status(400).json({
-                success: false,
-                error: "workoutId or exerciseId missing"
-            });
-        }
+        console.log("📥 WORKOUT EXERCISE BODY:");
+        console.log(req.body);
 
-        const exists = await pool.query(
-            `
-            SELECT 1 FROM workoutexercises
-            WHERE workout_id=$1 AND exercise_id=$2
-            `,
-            [workoutId, exerciseId]
-        );
+        const {
+            workoutId,
+            exerciseId,
+            sets,
+            reps,
+            weight,
+            rest
+        } = req.body;
 
-        if (exists.rows.length > 0) {
-            return res.json({ success: true, message: "already exists" });
-        }
+        console.log("🔥 PARSED:");
+        console.log({
+            workoutId,
+            exerciseId,
+            sets,
+            reps,
+            weight,
+            rest
+        });
 
         await pool.query(
-            `
-            INSERT INTO workoutexercises(workout_id, exercise_id)
-            VALUES($1, $2)
-            `,
-            [workoutId, exerciseId]
+            `INSERT INTO workoutexercises(
+                workout_id,
+                exercise_id,
+                sets,
+                reps,
+                weight,
+                rest
+            ) VALUES ($1,$2,$3,$4,$5,$6)`,
+            [workoutId, exerciseId, sets, reps, weight, rest]
         );
 
         res.json({ success: true });
 
     } catch (err) {
-        console.error("POST workout-exercises ERROR:", err);
+        console.error(err);
         res.status(500).json({ success: false });
     }
 });
