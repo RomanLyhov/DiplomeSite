@@ -303,7 +303,8 @@ app.put("/users/:id", async (req, res) => {
 
 app.post("/meals", async (req, res) => {
     try {
-         console.log("🔥 MEAL RECEIVED:", req.body);
+        console.log("🔥 MEAL RECEIVED:", req.body);
+
         const {
             userId,
             productId,
@@ -315,6 +316,13 @@ app.post("/meals", async (req, res) => {
             mealType,
             date
         } = req.body;
+
+        if (!userId || !productId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
 
         const result = await pool.query(
             `INSERT INTO nutritionlog(
@@ -333,13 +341,13 @@ app.post("/meals", async (req, res) => {
             [
                 userId,
                 productId,
-                quantity,
-                calories,
-                protein,
-                fat,
-                carbs,
-                mealType,
-                date
+                quantity || 0,
+                calories || 0,
+                protein || 0,
+                fat || 0,
+                carbs || 0,
+                mealType || null,
+                date || Date.now()
             ]
         );
 
@@ -350,7 +358,7 @@ app.post("/meals", async (req, res) => {
 
     } catch (err) {
         console.error("MEAL ERROR:", err);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 // -------------------- WORKOUTS --------------------
