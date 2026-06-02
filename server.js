@@ -300,9 +300,10 @@ app.put("/users/:id", async (req, res) => {
         res.status(500).send(err.message);
     }
 });
-console.log("🔥 MEAL RECEIVED:", req.body);
+
 app.post("/meals", async (req, res) => {
     try {
+         console.log("🔥 MEAL RECEIVED:", req.body);
         const {
             userId,
             productId,
