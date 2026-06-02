@@ -411,29 +411,55 @@ app.put("/exercises/:id", async (req, res) => {
 console.log("✅ EXERCISES POST ROUTE LOADED");
 app.post("/exercises", async (req, res) => {
 
-    console.log("📥 BODY:", req.body);
-
     try {
 
-        const { name, muscleGroup, difficulty } = req.body;
+        console.log("📥 EXERCISE BODY:", req.body);
 
-        await pool.query(
+        const {
+            workoutId,
+            name,
+            sets,
+            reps,
+            weight,
+            rest
+        } = req.body;
+
+        const exerciseResult = await pool.query(
             `
             INSERT INTO exercises(
                 name,
                 muscle_group,
                 difficulty
             )
-            VALUES($1, $2, $3)
+            VALUES($1,'-', '-')
+            RETURNING exerciseid
             `,
-            [
-                name,
-                muscleGroup,
-                difficulty
-            ]
+            [name]
         );
 
-        console.log("✅ EXERCISE ADDED");
+        const exerciseId = exerciseResult.rows[0].exerciseid;
+
+        await pool.query(
+            `
+            INSERT INTO workoutexercises(
+                workout_id,
+                exercise_id,
+                sets,
+                reps,
+                weight,
+                rest
+            )
+            VALUES($1,$2,$3,$4,$5,$6)
+            `,
+            [
+                workoutId,
+                exerciseId,
+                sets,
+                reps,
+                weight,
+                rest
+            ]
+        );
 
         res.json({
             success: true
@@ -441,7 +467,7 @@ app.post("/exercises", async (req, res) => {
 
     } catch (err) {
 
-        console.error("❌ ADD EXERCISE ERROR:", err);
+        console.error("❌ EXERCISE SAVE ERROR:", err);
 
         res.status(500).json({
             success: false,
