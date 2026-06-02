@@ -493,6 +493,92 @@ app.delete("/exercises/:id", async (req, res) => {
     }
 });
 
+app.post("/workouts/full", async (req, res) => {
+    try {
+        const { userId, name, exercises } = req.body;
+
+        const workout = await pool.query(
+            `INSERT INTO workouts(user_id, name, created_at)
+             VALUES($1,$2,NOW())
+             RETURNING workoutid`,
+            [userId, name]
+        );
+
+        const workoutId = workout.rows[0].workoutid;
+
+        for (const ex of exercises) {
+            const exRes = await pool.query(
+                `INSERT INTO exercises(name, muscle_group, difficulty)
+                 VALUES($1,'-','-')
+                 RETURNING exerciseid`,
+                [ex.name]
+            );
+
+            await pool.query(
+                `INSERT INTO workoutexercises
+                (workout_id, exercise_id, sets, reps, weight, rest)
+                VALUES ($1,$2,$3,$4,$5,$6)`,
+                [
+                    workoutId,
+                    exRes.rows[0].exerciseid,
+                    ex.sets,
+                    ex.reps,
+                    ex.weight,
+                    ex.rest
+                ]
+            );
+        }
+
+        res.json({ success: true, workoutId });
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.get("/workouts/full/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        const workouts = await pool.query(
+            "SELECT * FROM workouts WHERE user_id=$1",
+            [userId]
+        );
+
+        const result = [];
+
+        for (const w of workouts.rows) {
+            const exercises = await pool.query(`
+                SELECT
+                    e.exerciseid,
+                    e.name,
+                    we.sets,
+                    we.reps,
+                    we.weight,
+                    we.rest
+                FROM workoutexercises we
+                JOIN exercises e ON e.exerciseid = we.exercise_id
+                WHERE we.workout_id = $1
+            `, [w.workoutid]);
+
+            result.push({
+                id: w.workoutid,
+                userId: w.user_id,
+                name: w.name,
+                createdAt: w.created_at,
+                exercises: exercises.rows
+            });
+        }
+
+        res.json(result);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json([]);
+    }
+});
+
 // -------------------- WORKOUT EXERCISES --------------------
 
 app.get("/workout-exercises/:workoutId", async (req, res) => {
