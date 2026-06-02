@@ -410,10 +410,9 @@ app.put("/exercises/:id", async (req, res) => {
 
 console.log("✅ EXERCISES POST ROUTE LOADED");
 app.post("/exercises", async (req, res) => {
-
     try {
 
-        console.log("📥 EXERCISE BODY:", req.body);
+        console.log("🔥 BODY:", req.body);
 
         const {
             workoutId,
@@ -424,6 +423,14 @@ app.post("/exercises", async (req, res) => {
             rest
         } = req.body;
 
+        if (!workoutId || !name) {
+            return res.status(400).json({
+                success: false,
+                error: "workoutId or name missing"
+            });
+        }
+
+        // 1. создаём exercise
         const exerciseResult = await pool.query(
             `
             INSERT INTO exercises(
@@ -439,6 +446,9 @@ app.post("/exercises", async (req, res) => {
 
         const exerciseId = exerciseResult.rows[0].exerciseid;
 
+        console.log("✅ exerciseId:", exerciseId);
+
+        // 2. связываем с workout
         await pool.query(
             `
             INSERT INTO workoutexercises(
@@ -454,21 +464,17 @@ app.post("/exercises", async (req, res) => {
             [
                 workoutId,
                 exerciseId,
-                sets,
-                reps,
-                weight,
-                rest
+                sets || 0,
+                reps || 0,
+                weight || 0,
+                rest || 0
             ]
         );
 
-        res.json({
-            success: true
-        });
+        res.json({ success: true });
 
     } catch (err) {
-
-        console.error("❌ EXERCISE SAVE ERROR:", err);
-
+        console.error("❌ EXERCISE ERROR:", err);
         res.status(500).json({
             success: false,
             error: err.message
@@ -478,10 +484,11 @@ app.post("/exercises", async (req, res) => {
 
 app.delete("/exercises/:id", async (req, res) => {
     try {
-        await pool.query("DELETE FROM workout_exercises WHERE exercise_id=$1", [req.params.id]);
+        await pool.query("DELETE FROM workoutexercises WHERE exercise_id=$1", [req.params.id]);
         await pool.query("DELETE FROM exercises WHERE exerciseid=$1", [req.params.id]);
         res.json({ success: true });
     } catch (err) {
+        console.error("DELETE ERROR:", err);
         res.status(500).send("Error");
     }
 });
