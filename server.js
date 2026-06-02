@@ -300,7 +300,58 @@ app.put("/users/:id", async (req, res) => {
         res.status(500).send(err.message);
     }
 });
+console.log("🔥 MEAL RECEIVED:", req.body);
+app.post("/meals", async (req, res) => {
+    try {
+        const {
+            userId,
+            productId,
+            quantity,
+            calories,
+            protein,
+            fat,
+            carbs,
+            mealType,
+            date
+        } = req.body;
 
+        const result = await pool.query(
+            `INSERT INTO nutritionlog(
+                user_id,
+                product_id,
+                quantity,
+                calories,
+                protein,
+                fat,
+                carbs,
+                meal_type,
+                date
+            )
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+            RETURNING logid`,
+            [
+                userId,
+                productId,
+                quantity,
+                calories,
+                protein,
+                fat,
+                carbs,
+                mealType,
+                date
+            ]
+        );
+
+        res.json({
+            success: true,
+            id: result.rows[0].logid
+        });
+
+    } catch (err) {
+        console.error("MEAL ERROR:", err);
+        res.status(500).json({ success: false });
+    }
+});
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
