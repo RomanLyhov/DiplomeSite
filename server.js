@@ -304,6 +304,8 @@ app.put("/users/:id", async (req, res) => {
 // -------------------- WORKOUTS --------------------
 app.get("/workouts/:userId", async (req, res) => {
     try {
+         console.log("🔥 HIT WORKOUTS API");
+    console.log(req.params.userId);
         console.log("🔥 REQUEST RECEIVED");
         console.log("PARAM:", req.params.userId);
 
