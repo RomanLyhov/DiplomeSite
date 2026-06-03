@@ -366,7 +366,7 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        // приведение типов
+        // фикс типов
         const parsedUserId = parseInt(userId);
         const parsedQuantity = parseFloat(quantity) || 0;
         const parsedCalories = parseFloat(calories) || 0;
@@ -421,7 +421,7 @@ app.post("/meals", async (req, res) => {
             productId = existingProduct.rows[0].productid;
         }
 
-        // сохраняем meal
+        // добавляем meal
         const result = await pool.query(
             `
             INSERT INTO nutritionlog(
