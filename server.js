@@ -358,13 +358,15 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        // -------- SAFE NUMBER --------
-        const toNum = (v) => {
+        // ❗ СТРОГИЙ PARSE (НЕ ГЛОТАЕМ ОШИБКИ)
+        const toNumStrict = (v, fieldName) => {
             const n = Number(v);
-            return Number.isFinite(n) ? n : 0;
+            if (!Number.isFinite(n)) {
+                throw new Error(`Invalid number in field ${fieldName}: ${v}`);
+            }
+            return n;
         };
 
-        // -------- VALIDATION --------
         if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
@@ -372,31 +374,23 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        const parsedUserId = toNum(userId);
-
-        if (!parsedUserId) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid userId"
-            });
-        }
-
-        const parsedQuantity = toNum(quantity);
-        const parsedCalories = toNum(calories);
-        const parsedProtein = toNum(protein);
-        const parsedFat = toNum(fat);
-        const parsedCarbs = toNum(carbs);
+        const parsedUserId = toNumStrict(userId, "userId");
+        const parsedQuantity = toNumStrict(quantity ?? 0, "quantity");
+        const parsedCalories = toNumStrict(calories ?? 0, "calories");
+        const parsedProtein = toNumStrict(protein ?? 0, "protein");
+        const parsedFat = toNumStrict(fat ?? 0, "fat");
+        const parsedCarbs = toNumStrict(carbs ?? 0, "carbs");
 
         const mealDate =
             date && !isNaN(Number(date))
                 ? new Date(Number(date))
                 : new Date();
 
-        // -------- PRODUCT UPSERT --------
+        // PRODUCT
         let productId;
 
         const productResult = await pool.query(
-            `SELECT productid FROM products WHERE LOWER(name) = LOWER($1) LIMIT 1`,
+            `SELECT productid FROM products WHERE LOWER(name)=LOWER($1) LIMIT 1`,
             [productName.trim()]
         );
 
@@ -419,7 +413,7 @@ app.post("/meals", async (req, res) => {
             productId = insertProduct.rows[0].productid;
         }
 
-        // -------- INSERT MEAL --------
+        // INSERT
         const result = await pool.query(
             `INSERT INTO nutritionlog(
                 user_id,
@@ -447,15 +441,13 @@ app.post("/meals", async (req, res) => {
             ]
         );
 
-        console.log("✅ MEAL SAVED:", result.rows[0]);
-
         return res.json({
             success: true,
             id: result.rows[0].logid
         });
 
     } catch (err) {
-        console.error("❌ MEAL ERROR FULL:", err);
+        console.error("❌ MEAL ERROR:", err.message, err);
         return res.status(500).json({
             success: false,
             error: err.message
