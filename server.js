@@ -358,7 +358,13 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        // ---------------- VALIDATION ----------------
+        // -------- SAFE NUMBER --------
+        const toNum = (v) => {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : 0;
+        };
+
+        // -------- VALIDATION --------
         if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
@@ -366,23 +372,27 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        const parsedUserId = Number(userId);
-        if (!Number.isFinite(parsedUserId)) {
+        const parsedUserId = toNum(userId);
+
+        if (!parsedUserId) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid userId"
             });
         }
 
-        const parsedQuantity = Number(quantity ?? 0);
-        const parsedCalories = Number(calories ?? 0);
-        const parsedProtein = Number(protein ?? 0);
-        const parsedFat = Number(fat ?? 0);
-        const parsedCarbs = Number(carbs ?? 0);
+        const parsedQuantity = toNum(quantity);
+        const parsedCalories = toNum(calories);
+        const parsedProtein = toNum(protein);
+        const parsedFat = toNum(fat);
+        const parsedCarbs = toNum(carbs);
 
-        const mealDate = date ? new Date(Number(date)) : new Date();
+        const mealDate =
+            date && !isNaN(Number(date))
+                ? new Date(Number(date))
+                : new Date();
 
-        // ---------------- PRODUCT UPSERT ----------------
+        // -------- PRODUCT UPSERT --------
         let productId;
 
         const productResult = await pool.query(
@@ -409,7 +419,7 @@ app.post("/meals", async (req, res) => {
             productId = insertProduct.rows[0].productid;
         }
 
-        // ---------------- INSERT MEAL ----------------
+        // -------- INSERT MEAL --------
         const result = await pool.query(
             `INSERT INTO nutritionlog(
                 user_id,
@@ -448,8 +458,7 @@ app.post("/meals", async (req, res) => {
         console.error("❌ MEAL ERROR FULL:", err);
         return res.status(500).json({
             success: false,
-            error: err.message,
-            detail: err
+            error: err.message
         });
     }
 });
