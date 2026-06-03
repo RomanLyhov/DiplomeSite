@@ -303,11 +303,12 @@ app.put("/users/:id", async (req, res) => {
 
 app.post("/meals", async (req, res) => {
     try {
+
         console.log("🔥 MEAL RECEIVED:", req.body);
 
         const {
             userId,
-            productId,
+            productName,
             quantity,
             calories,
             protein,
@@ -317,37 +318,96 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        if (!userId || !productId) {
+        if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required fields"
+                message: "Missing fields"
             });
         }
 
+        // ---------------------------
+        // Ищем продукт
+        // ---------------------------
+
+        let productId;
+
+        const existingProduct = await pool.query(
+            `
+            SELECT productid
+            FROM products
+            WHERE LOWER(name)=LOWER($1)
+            `,
+            [productName]
+        );
+
+        // если продукта нет — создаём
+        if (existingProduct.rows.length === 0) {
+
+            const inserted = await pool.query(
+                `
+                INSERT INTO products(
+                    name,
+                    calories,
+                    protein,
+                    fat,
+                    carbs
+                )
+                VALUES($1,$2,$3,$4,$5)
+                RETURNING productid
+                `,
+                [
+                    productName,
+                    calories,
+                    protein,
+                    fat,
+                    carbs
+                ]
+            );
+
+            productId = inserted.rows[0].productid;
+
+            console.log("✅ PRODUCT CREATED:", productId);
+
+        } else {
+
+            productId =
+                existingProduct.rows[0].productid;
+
+            console.log("✅ PRODUCT EXISTS:", productId);
+        }
+
+        // ---------------------------
+        // Добавляем meal
+        // ---------------------------
+
         const result = await pool.query(
-            `INSERT INTO nutritionlog(
+            `
+            INSERT INTO nutritionlog(
                 user_id,
                 product_id,
+                meal_type,
                 quantity,
                 calories,
                 protein,
                 fat,
                 carbs,
-                meal_type,
                 date
             )
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-            RETURNING logid`,
+            VALUES(
+                $1,$2,$3,$4,$5,$6,$7,$8,$9
+            )
+            RETURNING logid
+            `,
             [
                 userId,
                 productId,
-                quantity || 0,
-                calories || 0,
-                protein || 0,
-                fat || 0,
-                carbs || 0,
-                mealType || null,
-                date || Date.now()
+                mealType,
+                quantity,
+                calories,
+                protein,
+                fat,
+                carbs,
+                new Date(date)
             ]
         );
 
@@ -357,8 +417,13 @@ app.post("/meals", async (req, res) => {
         });
 
     } catch (err) {
+
         console.error("MEAL ERROR:", err);
-        res.status(500).json({ success: false, error: err.message });
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
     }
 });
 // -------------------- WORKOUTS --------------------
