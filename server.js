@@ -366,7 +366,7 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        // приведение типов
+        // числа
         const parsedUserId = parseInt(userId);
         const parsedQuantity = parseFloat(quantity) || 0;
         const parsedCalories = parseFloat(calories) || 0;
@@ -374,7 +374,7 @@ app.post("/meals", async (req, res) => {
         const parsedFat = parseFloat(fat) || 0;
         const parsedCarbs = parseFloat(carbs) || 0;
 
-        // дата
+        // timestamp -> PostgreSQL date
         const mealDate = date
             ? new Date(Number(date))
             : new Date();
@@ -421,7 +421,7 @@ app.post("/meals", async (req, res) => {
             productId = existingProduct.rows[0].productid;
         }
 
-        // сохраняем meal
+        // СОХРАНЯЕМ ПРИЁМ ПИЩИ
         const result = await pool.query(
             `
             INSERT INTO nutritionlog(
