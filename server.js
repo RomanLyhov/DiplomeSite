@@ -375,11 +375,17 @@ app.post("/meals", async (req, res) => {
         const parsedCarbs = parseFloat(carbs) || 0;
 
         // timestamp -> PostgreSQL date
-        const mealDate = date
-            ? new Date(Number(date))
-            : new Date();
+        let mealDate;
 
-        // ищем продукт
+if (!date) {
+    mealDate = Date.now();
+} else if (typeof date === "string") {
+    // ISO строка
+    mealDate = Date.parse(date);
+} else {
+    // уже число
+    mealDate = Number(date);
+}
         let productId;
 
         const existingProduct = await pool.query(
