@@ -379,11 +379,14 @@ app.post("/meals", async (req, res) => {
         const parsedFat = Number(fat) || 0;
         const parsedCarbs = Number(carbs) || 0;
 
-        const mealDate = date ? new Date(Number(date)) : new Date();
+        // 🔥 FIX: НЕ ЛОМАЕТ БД
+        const mealDate = date
+            ? new Date(Number(date))
+            : new Date();
 
-        // -------------------- PRODUCT FIND --------------------
+        // ---------------- PRODUCT ----------------
         const productResult = await pool.query(
-            `SELECT productid FROM products WHERE LOWER(name) = LOWER($1) LIMIT 1`,
+            `SELECT productid FROM products WHERE LOWER(name)=LOWER($1) LIMIT 1`,
             [productName]
         );
 
@@ -394,7 +397,7 @@ app.post("/meals", async (req, res) => {
         } else {
             const insertProduct = await pool.query(
                 `INSERT INTO products(name, calories, protein, fat, carbs)
-                 VALUES($1, $2, $3, $4, $5)
+                 VALUES($1,$2,$3,$4,$5)
                  RETURNING productid`,
                 [productName, parsedCalories, parsedProtein, parsedFat, parsedCarbs]
             );
@@ -402,7 +405,7 @@ app.post("/meals", async (req, res) => {
             productId = insertProduct.rows[0].productid;
         }
 
-        // -------------------- INSERT MEAL --------------------
+        // ---------------- INSERT MEAL ----------------
         const result = await pool.query(
             `INSERT INTO nutritionlog(
                 user_id,
@@ -438,7 +441,7 @@ app.post("/meals", async (req, res) => {
         });
 
     } catch (err) {
-        console.error("❌ MEAL ERROR:", err);
+        console.error("❌ MEAL ERROR FULL:", err);
         return res.status(500).json({
             success: false,
             error: err.message
