@@ -356,26 +356,47 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
+        // 🔴 обязательные поля
         if (!userId || !productName) {
-            return res.status(400).json({ success: false, message: "Missing fields" });
+            return res.status(400).json({
+                success: false,
+                message: "Missing fields"
+            });
         }
 
+        // ✅ нормализация входных данных
         const parsedUserId = Number(userId);
 
-        const parsedQuantity = parseFloat(quantity) || 0;
-        const parsedCalories = parseFloat(calories) || 0;
-        const parsedProtein = parseFloat(protein) || 0;
-        const parsedFat = parseFloat(fat) || 0;
-        const parsedCarbs = parseFloat(carbs) || 0;
+        const parsedQuantity = parseFloat(quantity);
+        const parsedCalories = parseFloat(calories);
+        const parsedProtein = parseFloat(protein);
+        const parsedFat = parseFloat(fat);
+        const parsedCarbs = parseFloat(carbs);
 
-        // ✅ FIX: нормальная дата для Postgres
-        const mealDate = date ? new Date(Number(date)) : new Date();
+        // если NaN → 0
+        const finalQuantity = isNaN(parsedQuantity) ? 0 : parsedQuantity;
+        const finalCalories = isNaN(parsedCalories) ? 0 : parsedCalories;
+        const finalProtein = isNaN(parsedProtein) ? 0 : parsedProtein;
+        const finalFat = isNaN(parsedFat) ? 0 : parsedFat;
+        const finalCarbs = isNaN(parsedCarbs) ? 0 : parsedCarbs;
+
+        // ✅ FIX: нормальное имя продукта
+        const cleanProductName = productName.trim();
+
+        // ✅ FIX: безопасная дата (Postgres не ломается)
+        let mealDate = new Date();
+
+        if (date && !isNaN(Number(date))) {
+            mealDate = new Date(Number(date));
+        }
+
+        // -------------------- PRODUCT LOGIC (НЕ ТРОГАЮ) --------------------
 
         let productId;
 
         const existingProduct = await pool.query(
             `SELECT productid FROM products WHERE LOWER(name)=LOWER($1)`,
-            [productName]
+            [cleanProductName]
         );
 
         if (existingProduct.rows.length === 0) {
@@ -383,13 +404,21 @@ app.post("/meals", async (req, res) => {
                 `INSERT INTO products(name, calories, protein, fat, carbs)
                  VALUES($1,$2,$3,$4,$5)
                  RETURNING productid`,
-                [productName, parsedCalories, parsedProtein, parsedFat, parsedCarbs]
+                [
+                    cleanProductName,
+                    finalCalories,
+                    finalProtein,
+                    finalFat,
+                    finalCarbs
+                ]
             );
 
             productId = inserted.rows[0].productid;
         } else {
             productId = existingProduct.rows[0].productid;
         }
+
+        // -------------------- NUTRITION LOG --------------------
 
         const result = await pool.query(
             `INSERT INTO nutritionlog(
@@ -409,20 +438,27 @@ app.post("/meals", async (req, res) => {
                 parsedUserId,
                 productId,
                 mealType || "Другое",
-                parsedQuantity,
-                parsedCalories,
-                parsedProtein,
-                parsedFat,
-                parsedCarbs,
+                finalQuantity,
+                finalCalories,
+                finalProtein,
+                finalFat,
+                finalCarbs,
                 mealDate
             ]
         );
 
-        res.json({ success: true, id: result.rows[0].logid });
+        return res.json({
+            success: true,
+            id: result.rows[0].logid
+        });
 
     } catch (err) {
         console.error("❌ MEAL ERROR:", err);
-        res.status(500).json({ success: false, error: err.message });
+
+        return res.status(500).json({
+            success: false,
+            error: err.message
+        });
     }
 });
 // -------------------- WORKOUTS --------------------
