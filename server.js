@@ -344,6 +344,9 @@ app.get("/meals", async (req, res) => {
 
 app.post("/meals", async (req, res) => {
     try {
+
+        console.log("🔥 MEAL RECEIVED:", req.body);
+
         const {
             userId,
             productName,
@@ -356,7 +359,6 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        // 🔴 обязательные поля
         if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
@@ -364,64 +366,65 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        // ✅ нормализация входных данных
-        const parsedUserId = Number(userId);
+        // приведение типов
+        const parsedUserId = parseInt(userId);
+        const parsedQuantity = parseFloat(quantity) || 0;
+        const parsedCalories = parseFloat(calories) || 0;
+        const parsedProtein = parseFloat(protein) || 0;
+        const parsedFat = parseFloat(fat) || 0;
+        const parsedCarbs = parseFloat(carbs) || 0;
 
-        const parsedQuantity = parseFloat(quantity);
-        const parsedCalories = parseFloat(calories);
-        const parsedProtein = parseFloat(protein);
-        const parsedFat = parseFloat(fat);
-        const parsedCarbs = parseFloat(carbs);
+        // дата
+        const mealDate = date
+            ? new Date(Number(date))
+            : new Date();
 
-        // если NaN → 0
-        const finalQuantity = isNaN(parsedQuantity) ? 0 : parsedQuantity;
-        const finalCalories = isNaN(parsedCalories) ? 0 : parsedCalories;
-        const finalProtein = isNaN(parsedProtein) ? 0 : parsedProtein;
-        const finalFat = isNaN(parsedFat) ? 0 : parsedFat;
-        const finalCarbs = isNaN(parsedCarbs) ? 0 : parsedCarbs;
-
-        // ✅ FIX: нормальное имя продукта
-        const cleanProductName = productName.trim();
-
-        // ✅ FIX: безопасная дата (Postgres не ломается)
-        let mealDate = new Date();
-
-        if (date && !isNaN(Number(date))) {
-            mealDate = new Date(Number(date));
-        }
-
-        // -------------------- PRODUCT LOGIC (НЕ ТРОГАЮ) --------------------
-
+        // ищем продукт
         let productId;
 
         const existingProduct = await pool.query(
-            `SELECT productid FROM products WHERE LOWER(name)=LOWER($1)`,
-            [cleanProductName]
+            `
+            SELECT productid
+            FROM products
+            WHERE LOWER(name)=LOWER($1)
+            `,
+            [productName]
         );
 
+        // если продукта нет — создаём
         if (existingProduct.rows.length === 0) {
+
             const inserted = await pool.query(
-                `INSERT INTO products(name, calories, protein, fat, carbs)
-                 VALUES($1,$2,$3,$4,$5)
-                 RETURNING productid`,
+                `
+                INSERT INTO products(
+                    name,
+                    calories,
+                    protein,
+                    fat,
+                    carbs
+                )
+                VALUES($1,$2,$3,$4,$5)
+                RETURNING productid
+                `,
                 [
-                    cleanProductName,
-                    finalCalories,
-                    finalProtein,
-                    finalFat,
-                    finalCarbs
+                    productName,
+                    parsedCalories,
+                    parsedProtein,
+                    parsedFat,
+                    parsedCarbs
                 ]
             );
 
             productId = inserted.rows[0].productid;
+
         } else {
             productId = existingProduct.rows[0].productid;
         }
 
-        // -------------------- NUTRITION LOG --------------------
-
+        // сохраняем meal
         const result = await pool.query(
-            `INSERT INTO nutritionlog(
+            `
+            INSERT INTO nutritionlog(
                 user_id,
                 product_id,
                 meal_type,
@@ -432,30 +435,36 @@ app.post("/meals", async (req, res) => {
                 carbs,
                 date
             )
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-            RETURNING logid`,
+            VALUES(
+                $1,$2,$3,$4,$5,$6,$7,$8,$9
+            )
+            RETURNING logid
+            `,
             [
                 parsedUserId,
                 productId,
                 mealType || "Другое",
-                finalQuantity,
-                finalCalories,
-                finalProtein,
-                finalFat,
-                finalCarbs,
+                parsedQuantity,
+                parsedCalories,
+                parsedProtein,
+                parsedFat,
+                parsedCarbs,
                 mealDate
             ]
         );
 
-        return res.json({
+        console.log("✅ MEAL SAVED:", result.rows[0]);
+
+        res.json({
             success: true,
             id: result.rows[0].logid
         });
 
     } catch (err) {
+
         console.error("❌ MEAL ERROR:", err);
 
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
             error: err.message
         });
