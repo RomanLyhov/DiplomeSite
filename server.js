@@ -303,8 +303,7 @@ app.put("/users/:id", async (req, res) => {
 
 app.get("/meals", async (req, res) => {
     try {
-console.log("🔥 /meals HIT");
-console.log(req.body);
+
         const userId = Number(req.query.userId);
 
         if (!userId) {
@@ -367,10 +366,20 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        // ---------------------------
-        // Ищем продукт
-        // ---------------------------
+        // фикс типов
+        const parsedUserId = parseInt(userId);
+        const parsedQuantity = parseFloat(quantity) || 0;
+        const parsedCalories = parseFloat(calories) || 0;
+        const parsedProtein = parseFloat(protein) || 0;
+        const parsedFat = parseFloat(fat) || 0;
+        const parsedCarbs = parseFloat(carbs) || 0;
 
+        // дата
+        const mealDate = date
+            ? new Date(Number(date))
+            : new Date();
+
+        // ищем продукт
         let productId;
 
         const existingProduct = await pool.query(
@@ -399,29 +408,20 @@ app.post("/meals", async (req, res) => {
                 `,
                 [
                     productName,
-                    calories,
-                    protein,
-                    fat,
-                    carbs
+                    parsedCalories,
+                    parsedProtein,
+                    parsedFat,
+                    parsedCarbs
                 ]
             );
 
             productId = inserted.rows[0].productid;
 
-            console.log("✅ PRODUCT CREATED:", productId);
-
         } else {
-
-            productId =
-                existingProduct.rows[0].productid;
-
-            console.log("✅ PRODUCT EXISTS:", productId);
+            productId = existingProduct.rows[0].productid;
         }
 
-        // ---------------------------
-        // Добавляем meal
-        // ---------------------------
-
+        // добавляем meal
         const result = await pool.query(
             `
             INSERT INTO nutritionlog(
@@ -441,17 +441,19 @@ app.post("/meals", async (req, res) => {
             RETURNING logid
             `,
             [
-                userId,
+                parsedUserId,
                 productId,
-                mealType,
-                quantity,
-                calories,
-                protein,
-                fat,
-                carbs,
-                new Date(date)
+                mealType || "Другое",
+                parsedQuantity,
+                parsedCalories,
+                parsedProtein,
+                parsedFat,
+                parsedCarbs,
+                mealDate
             ]
         );
+
+        console.log("✅ MEAL SAVED:", result.rows[0]);
 
         res.json({
             success: true,
@@ -460,7 +462,7 @@ app.post("/meals", async (req, res) => {
 
     } catch (err) {
 
-        console.error("MEAL ERROR:", err);
+        console.error("❌ MEAL ERROR:", err);
 
         res.status(500).json({
             success: false,
