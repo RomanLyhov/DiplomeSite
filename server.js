@@ -358,35 +358,38 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        // ❗ СТРОГИЙ PARSE (НЕ ГЛОТАЕМ ОШИБКИ)
-        const toNumStrict = (v, fieldName) => {
+        // -------- STRICT NUMBER SAFE --------
+        const toNumber = (v, fallback = 0) => {
             const n = Number(v);
-            if (!Number.isFinite(n)) {
-                throw new Error(`Invalid number in field ${fieldName}: ${v}`);
-            }
-            return n;
+            return Number.isFinite(n) ? n : fallback;
         };
 
-        if (!userId || !productName) {
+        const parsedUserId = toNumber(userId, null);
+        if (parsedUserId === null) {
             return res.status(400).json({
                 success: false,
-                message: "userId or productName missing"
+                error: "Invalid userId"
             });
         }
 
-        const parsedUserId = toNumStrict(userId, "userId");
-        const parsedQuantity = toNumStrict(quantity ?? 0, "quantity");
-        const parsedCalories = toNumStrict(calories ?? 0, "calories");
-        const parsedProtein = toNumStrict(protein ?? 0, "protein");
-        const parsedFat = toNumStrict(fat ?? 0, "fat");
-        const parsedCarbs = toNumStrict(carbs ?? 0, "carbs");
+        const parsedQuantity = toNumber(quantity, 100);
+        const parsedCalories = toNumber(calories, 0);
+        const parsedProtein = toNumber(protein, 0);
+        const parsedFat = toNumber(fat, 0);
+        const parsedCarbs = toNumber(carbs, 0);
 
-        const mealDate =
-            date && !isNaN(Number(date))
-                ? new Date(Number(date))
-                : new Date();
+        const mealDate = Number.isFinite(Number(date))
+            ? Number(date)
+            : Date.now();
 
-        // PRODUCT
+        if (!productName) {
+            return res.status(400).json({
+                success: false,
+                error: "productName missing"
+            });
+        }
+
+        // -------- PRODUCT UPSERT --------
         let productId;
 
         const productResult = await pool.query(
@@ -413,7 +416,7 @@ app.post("/meals", async (req, res) => {
             productId = insertProduct.rows[0].productid;
         }
 
-        // INSERT
+        // -------- INSERT MEAL --------
         const result = await pool.query(
             `INSERT INTO nutritionlog(
                 user_id,
@@ -431,7 +434,7 @@ app.post("/meals", async (req, res) => {
             [
                 parsedUserId,
                 productId,
-                mealType ?? "Другое",
+                mealType || "Другое",
                 parsedQuantity,
                 parsedCalories,
                 parsedProtein,
@@ -441,13 +444,15 @@ app.post("/meals", async (req, res) => {
             ]
         );
 
+        console.log("✅ MEAL SAVED ID:", result.rows[0].logid);
+
         return res.json({
             success: true,
             id: result.rows[0].logid
         });
 
     } catch (err) {
-        console.error("❌ MEAL ERROR:", err.message, err);
+        console.error("❌ MEAL ERROR:", err);
         return res.status(500).json({
             success: false,
             error: err.message
