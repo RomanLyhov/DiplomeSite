@@ -305,9 +305,20 @@ app.get("/meals", async (req, res) => {
     try {
 
         const userId = Number(req.query.userId);
+        const start = Number(req.query.start);
+        const end = Number(req.query.end);
 
         if (!userId) {
             return res.json([]);
+        }
+
+        const params = [userId];
+        let dateFilter = "";
+
+        // 👉 добавляем фильтр по дате только если он есть
+        if (start && end) {
+            params.push(start, end);
+            dateFilter = `AND n.date >= $2 AND n.date < $3`;
         }
 
         const result = await pool.query(`
@@ -330,15 +341,16 @@ app.get("/meals", async (req, res) => {
                 ON p.productid = n.product_id
 
             WHERE n.user_id = $1
-            ORDER BY n.logid DESC
-        `, [userId]);
+            ${dateFilter}
 
-        res.json(result.rows);
+            ORDER BY n.logid DESC
+        `, params);
+
+        return res.json(result.rows);
 
     } catch (err) {
         console.error("GET MEALS ERROR:", err);
-
-        res.status(500).json([]);
+        return res.status(500).json([]);
     }
 });
 
