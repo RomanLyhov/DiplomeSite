@@ -344,11 +344,7 @@ app.get("/meals", async (req, res) => {
 
 app.post("/meals", async (req, res) => {
     try {
-
-        console.log("🔥 MEAL RECEIVED:", req.body);
-
         const {
-            userId,
             productName,
             quantity,
             calories,
@@ -359,6 +355,10 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
+        const userId = Number(
+            req.query.userId || req.body.userId || req.params.userId
+        );
+
         if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
@@ -366,7 +366,6 @@ app.post("/meals", async (req, res) => {
             });
         }
 
-        // числа
         const parsedUserId = parseInt(userId);
         const parsedQuantity = parseFloat(quantity) || 0;
         const parsedCalories = parseFloat(calories) || 0;
@@ -374,63 +373,30 @@ app.post("/meals", async (req, res) => {
         const parsedFat = parseFloat(fat) || 0;
         const parsedCarbs = parseFloat(carbs) || 0;
 
-        // timestamp -> PostgreSQL date
-        let mealDate;
+        const mealDate = date ? new Date(Number(date)) : new Date();
 
-if (!date) {
-    mealDate = Date.now();
-} else if (typeof date === "string") {
-    // ISO строка
-    mealDate = Date.parse(date);
-} else {
-    // уже число
-    mealDate = Number(date);
-}
         let productId;
 
         const existingProduct = await pool.query(
-            `
-            SELECT productid
-            FROM products
-            WHERE LOWER(name)=LOWER($1)
-            `,
+            `SELECT productid FROM products WHERE LOWER(name)=LOWER($1)`,
             [productName]
         );
 
-        // если продукта нет — создаём
         if (existingProduct.rows.length === 0) {
-
             const inserted = await pool.query(
-                `
-                INSERT INTO products(
-                    name,
-                    calories,
-                    protein,
-                    fat,
-                    carbs
-                )
-                VALUES($1,$2,$3,$4,$5)
-                RETURNING productid
-                `,
-                [
-                    productName,
-                    parsedCalories,
-                    parsedProtein,
-                    parsedFat,
-                    parsedCarbs
-                ]
+                `INSERT INTO products(name, calories, protein, fat, carbs)
+                 VALUES($1,$2,$3,$4,$5)
+                 RETURNING productid`,
+                [productName, parsedCalories, parsedProtein, parsedFat, parsedCarbs]
             );
 
             productId = inserted.rows[0].productid;
-
         } else {
             productId = existingProduct.rows[0].productid;
         }
 
-        // СОХРАНЯЕМ ПРИЁМ ПИЩИ
         const result = await pool.query(
-            `
-            INSERT INTO nutritionlog(
+            `INSERT INTO nutritionlog(
                 user_id,
                 product_id,
                 meal_type,
@@ -441,11 +407,8 @@ if (!date) {
                 carbs,
                 date
             )
-            VALUES(
-                $1,$2,$3,$4,$5,$6,$7,$8,$9
-            )
-            RETURNING logid
-            `,
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+            RETURNING logid`,
             [
                 parsedUserId,
                 productId,
@@ -459,17 +422,13 @@ if (!date) {
             ]
         );
 
-        console.log("✅ MEAL SAVED:", result.rows[0]);
-
         res.json({
             success: true,
             id: result.rows[0].logid
         });
 
     } catch (err) {
-
         console.error("❌ MEAL ERROR:", err);
-
         res.status(500).json({
             success: false,
             error: err.message
