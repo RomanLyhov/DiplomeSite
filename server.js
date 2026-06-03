@@ -301,6 +301,48 @@ app.put("/users/:id", async (req, res) => {
     }
 });
 
+app.get("/meals", async (req, res) => {
+    try {
+console.log("🔥 /meals HIT");
+console.log(req.body);
+        const userId = Number(req.query.userId);
+
+        if (!userId) {
+            return res.json([]);
+        }
+
+        const result = await pool.query(`
+            SELECT
+                n.logid AS id,
+                n.user_id AS "userId",
+                p.name AS "productName",
+
+                n.quantity,
+                n.calories,
+                n.protein,
+                n.fat,
+                n.carbs,
+
+                n.meal_type AS "mealType",
+                EXTRACT(EPOCH FROM n.date) * 1000 AS date
+
+            FROM nutritionlog n
+            JOIN products p
+                ON p.productid = n.product_id
+
+            WHERE n.user_id = $1
+            ORDER BY n.logid DESC
+        `, [userId]);
+
+        res.json(result.rows);
+
+    } catch (err) {
+        console.error("GET MEALS ERROR:", err);
+
+        res.status(500).json([]);
+    }
+});
+
 app.post("/meals", async (req, res) => {
     try {
 
