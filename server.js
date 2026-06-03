@@ -358,39 +358,37 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
+        // ---------------- VALIDATION ----------------
         if (!userId || !productName) {
             return res.status(400).json({
                 success: false,
-                message: "Missing userId or productName"
+                message: "userId or productName missing"
             });
         }
 
         const parsedUserId = Number(userId);
-        if (Number.isNaN(parsedUserId)) {
+        if (!Number.isFinite(parsedUserId)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid userId"
             });
         }
 
-        const parsedQuantity = Number(quantity) || 0;
-        const parsedCalories = Number(calories) || 0;
-        const parsedProtein = Number(protein) || 0;
-        const parsedFat = Number(fat) || 0;
-        const parsedCarbs = Number(carbs) || 0;
+        const parsedQuantity = Number(quantity ?? 0);
+        const parsedCalories = Number(calories ?? 0);
+        const parsedProtein = Number(protein ?? 0);
+        const parsedFat = Number(fat ?? 0);
+        const parsedCarbs = Number(carbs ?? 0);
 
-        // 🔥 FIX: НЕ ЛОМАЕТ БД
-        const mealDate = date
-            ? new Date(Number(date))
-            : new Date();
+        const mealDate = date ? new Date(Number(date)) : new Date();
 
-        // ---------------- PRODUCT ----------------
-        const productResult = await pool.query(
-            `SELECT productid FROM products WHERE LOWER(name)=LOWER($1) LIMIT 1`,
-            [productName]
-        );
-
+        // ---------------- PRODUCT UPSERT ----------------
         let productId;
+
+        const productResult = await pool.query(
+            `SELECT productid FROM products WHERE LOWER(name) = LOWER($1) LIMIT 1`,
+            [productName.trim()]
+        );
 
         if (productResult.rows.length > 0) {
             productId = productResult.rows[0].productid;
@@ -399,7 +397,13 @@ app.post("/meals", async (req, res) => {
                 `INSERT INTO products(name, calories, protein, fat, carbs)
                  VALUES($1,$2,$3,$4,$5)
                  RETURNING productid`,
-                [productName, parsedCalories, parsedProtein, parsedFat, parsedCarbs]
+                [
+                    productName.trim(),
+                    parsedCalories,
+                    parsedProtein,
+                    parsedFat,
+                    parsedCarbs
+                ]
             );
 
             productId = insertProduct.rows[0].productid;
@@ -423,7 +427,7 @@ app.post("/meals", async (req, res) => {
             [
                 parsedUserId,
                 productId,
-                mealType || "Другое",
+                mealType ?? "Другое",
                 parsedQuantity,
                 parsedCalories,
                 parsedProtein,
@@ -444,7 +448,8 @@ app.post("/meals", async (req, res) => {
         console.error("❌ MEAL ERROR FULL:", err);
         return res.status(500).json({
             success: false,
-            error: err.message
+            error: err.message,
+            detail: err
         });
     }
 });
