@@ -360,7 +360,7 @@ app.post("/meals", async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing fields" });
         }
 
-        const parsedUserId = parseInt(userId);
+        const parsedUserId = Number(userId);
 
         const parsedQuantity = parseFloat(quantity) || 0;
         const parsedCalories = parseFloat(calories) || 0;
@@ -369,7 +369,7 @@ app.post("/meals", async (req, res) => {
         const parsedCarbs = parseFloat(carbs) || 0;
 
         // ✅ FIX: нормальная дата для Postgres
-        const mealDate = date ? Number(date) : Date.now();
+        const mealDate = date ? new Date(Number(date)) : new Date();
 
         let productId;
 
