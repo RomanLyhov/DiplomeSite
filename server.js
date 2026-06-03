@@ -345,6 +345,7 @@ app.get("/meals", async (req, res) => {
 app.post("/meals", async (req, res) => {
     try {
         const {
+            userId,
             productName,
             quantity,
             calories,
@@ -355,25 +356,20 @@ app.post("/meals", async (req, res) => {
             date
         } = req.body;
 
-        const userId = Number(
-            req.query.userId || req.body.userId || req.params.userId
-        );
-
         if (!userId || !productName) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing fields"
-            });
+            return res.status(400).json({ success: false, message: "Missing fields" });
         }
 
         const parsedUserId = parseInt(userId);
+
         const parsedQuantity = parseFloat(quantity) || 0;
         const parsedCalories = parseFloat(calories) || 0;
         const parsedProtein = parseFloat(protein) || 0;
         const parsedFat = parseFloat(fat) || 0;
         const parsedCarbs = parseFloat(carbs) || 0;
 
-        const mealDate = date ? new Date(Number(date)) : new Date();
+        // ✅ FIX: нормальная дата для Postgres
+        const mealDate = date ? Number(date) : Date.now();
 
         let productId;
 
@@ -422,17 +418,11 @@ app.post("/meals", async (req, res) => {
             ]
         );
 
-        res.json({
-            success: true,
-            id: result.rows[0].logid
-        });
+        res.json({ success: true, id: result.rows[0].logid });
 
     } catch (err) {
         console.error("❌ MEAL ERROR:", err);
-        res.status(500).json({
-            success: false,
-            error: err.message
-        });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 // -------------------- WORKOUTS --------------------
