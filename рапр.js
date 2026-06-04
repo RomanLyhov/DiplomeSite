@@ -305,40 +305,54 @@ app.get("/meals", async (req, res) => {
     try {
 
         const userId = Number(req.query.userId);
+        const start = Number(req.query.start);
+        const end = Number(req.query.end);
 
         if (!userId) {
             return res.json([]);
         }
 
+        const params = [userId];
+        let dateFilter = "";
+
+        // 👉 добавляем фильтр по дате только если он есть
+        if (start && end) {
+            params.push(start, end);
+            dateFilter = `AND n.date >= $2 AND n.date < $3`;
+        }
+
         const result = await pool.query(`
-            SELECT
-                n.logid AS id,
-                n.user_id AS "userId",
-                p.name AS "productName",
+    SELECT
+        n.logid AS id,
+        n.user_id AS "userId",
+        n.product_id AS "productId",
 
-                n.quantity,
-                n.calories,
-                n.protein,
-                n.fat,
-                n.carbs,
+        p.name AS "productName",
 
-                n.meal_type AS "mealType",
-                EXTRACT(EPOCH FROM n.date) * 1000 AS date
+        n.quantity,
+        n.calories,
+        n.protein,
+        n.fat,
+        n.carbs,
 
-            FROM nutritionlog n
-            JOIN products p
-                ON p.productid = n.product_id
+        n.meal_type AS "mealType",
+        n.date AS date
 
-            WHERE n.user_id = $1
-            ORDER BY n.logid DESC
-        `, [userId]);
+    FROM nutritionlog n
+    JOIN products p
+        ON p.productid = n.product_id
 
-        res.json(result.rows);
+    WHERE n.user_id = $1
+    ${dateFilter}
+
+    ORDER BY n.logid DESC
+`, params);
+
+        return res.json(result.rows);
 
     } catch (err) {
         console.error("GET MEALS ERROR:", err);
-
-        res.status(500).json([]);
+        return res.status(500).json([]);
     }
 });
 
