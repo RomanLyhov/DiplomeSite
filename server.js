@@ -725,7 +725,7 @@ app.get("/workouts/full/:userId", async (req, res) => {
         for (const w of workouts.rows) {
             const exercises = await pool.query(`
                 SELECT
-    e.exerciseid AS exerciseid,
+    e.exerciseid AS exerciseId,
     e.name AS name,
     we.sets AS sets,
     we.reps AS reps,
