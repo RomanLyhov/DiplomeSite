@@ -725,15 +725,15 @@ app.get("/workouts/full/:userId", async (req, res) => {
         for (const w of workouts.rows) {
             const exercises = await pool.query(`
                 SELECT
-    e.exerciseid AS exerciseId,
-    e.name AS name,
-    we.sets AS sets,
-    we.reps AS reps,
-    we.weight AS weight,
-    we.rest AS rest
-FROM workoutexercises we
-JOIN exercises e ON e.exerciseid = we.exercise_id
-WHERE we.workout_id = $1
+                    e.exerciseid,
+                    e.name,
+                    we.sets,
+                    we.reps,
+                    we.weight,
+                    we.rest
+                FROM workoutexercises we
+                JOIN exercises e ON e.exerciseid = we.exercise_id
+                WHERE we.workout_id = $1
             `, [w.workoutid]);
 
             result.push({
@@ -759,15 +759,16 @@ app.get("/workout-exercises/:workoutId", async (req, res) => {
     try {
         const result = await pool.query(
             `
-            SELECT
-                e.exerciseid AS id,
-                e.name,
-                e.muscle_group AS "muscleGroup",
-                e.difficulty
-            FROM workoutexercises we
-            JOIN exercises e
-                ON e.exerciseid = we.exercise_id
-            WHERE we.workout_id = $1
+           SELECT
+    e.exerciseid AS exerciseId,
+    e.name AS name,
+    we.sets AS sets,
+    we.reps AS reps,
+    we.weight AS weight,
+    we.rest AS rest
+FROM workoutexercises we
+JOIN exercises e ON e.exerciseid = we.exercise_id
+WHERE we.workout_id = $1
             `,
             [req.params.workoutId]
         );
