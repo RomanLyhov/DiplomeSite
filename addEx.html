@@ -12,38 +12,46 @@
 body{
   margin:0;
   font-family:Inter;
-  background:#050816;
-  color:white;
+  background:#F6F8FC;
+  color:#0F172A;
 }
 
+/* контейнер */
 .container{
   max-width:900px;
-  margin:40px auto;
+  margin:60px auto;
   padding:0 20px;
 }
 
+/* карточка */
 .card{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:20px;
-  padding:24px;
-  box-shadow:0 0 30px rgba(0,0,0,0.3);
+  background:#ffffff;
+  border:1px solid #E5E7EB;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 12px 35px rgba(15, 23, 42, 0.08);
 }
 
+/* заголовок */
 h1{
-  margin-bottom:5px;
+  margin:0;
+  font-size:26px;
+  font-weight:700;
 }
 
+/* подзаголовок */
 .hint{
-  color:#94a3b8;
+  margin-top:6px;
   font-size:13px;
-  margin-bottom:20px;
+  color:#64748B;
 }
 
+/* сетка */
 .form-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:16px;
+  margin-top:22px;
 }
 
 .form-group{
@@ -52,44 +60,76 @@ h1{
   gap:6px;
 }
 
-label{
-  font-size:13px;
-  color:#cbd5e1;
-}
-
-input, select, textarea{
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(0,0,0,0.3);
-  color:white;
-  outline:none;
-}
-
-textarea{
-  min-height:90px;
-  resize:vertical;
-}
-
 .full{
   grid-column:1 / -1;
 }
 
-.btn{
-  margin-top:15px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(90deg,#22c55e,#3b82f6);
-  color:white;
+/* label */
+label{
+  font-size:12px;
   font-weight:600;
-  cursor:pointer;
+  color:#475569;
 }
 
+/* input / select / textarea */
+input, select, textarea{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid #E2E8F0;
+  background:#F8FAFC;
+  color:#0F172A;
+  outline:none;
+  transition:0.2s;
+  font-size:14px;
+}
+
+/* focus эффект */
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#4F46E5;
+  background:#ffffff;
+  box-shadow:0 0 0 4px rgba(79,70,229,0.12);
+}
+
+/* textarea */
+textarea{
+  min-height:110px;
+  resize:none;
+}
+
+/* кнопка */
+.btn{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:600;
+  cursor:pointer;
+  color:white;
+  background:linear-gradient(135deg,#4F46E5,#22C55E);
+  transition:0.2s;
+}
+
+/* hover */
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 25px rgba(79,70,229,0.25);
+}
+
+/* сообщение */
 .message{
   margin-top:10px;
   font-size:14px;
+  color:#64748B;
+}
+
+/* адаптив */
+@media(max-width:700px){
+  .form-grid{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
