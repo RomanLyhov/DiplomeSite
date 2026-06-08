@@ -12,8 +12,14 @@
 body{
   margin:0;
   font-family:Inter;
-  background:#F6F8FC;
   color:#0F172A;
+
+  /* 🔥 фон-картинка */
+  background:
+    linear-gradient(rgba(246,248,252,0.85), rgba(246,248,252,0.92)),
+    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438") center/cover no-repeat;
+
+  min-height:100vh;
 }
 
 /* контейнер */
@@ -23,13 +29,18 @@ body{
   padding:0 20px;
 }
 
-/* карточка */
+/* 💎 GLASS CARD */
 .card{
-  background:#ffffff;
-  border:1px solid #E5E7EB;
+  background:rgba(255,255,255,0.65); /* прозрачность */
+  border:1px solid rgba(255,255,255,0.4);
   border-radius:22px;
   padding:28px;
-  box-shadow:0 12px 35px rgba(15, 23, 42, 0.08);
+
+  /* стекло эффект */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:0 20px 50px rgba(0,0,0,0.12);
 }
 
 /* заголовок */
@@ -71,25 +82,29 @@ label{
   color:#475569;
 }
 
-/* input / select / textarea */
+/* inputs */
 input, select, textarea{
   padding:12px 14px;
   border-radius:14px;
-  border:1px solid #E2E8F0;
-  background:#F8FAFC;
+
+  border:1px solid rgba(148,163,184,0.4);
+  background:rgba(255,255,255,0.6);
+
   color:#0F172A;
   outline:none;
   transition:0.2s;
   font-size:14px;
+
+  backdrop-filter: blur(6px);
 }
 
-/* focus эффект */
+/* focus */
 input:focus,
 select:focus,
 textarea:focus{
   border-color:#4F46E5;
-  background:#ffffff;
-  box-shadow:0 0 0 4px rgba(79,70,229,0.12);
+  box-shadow:0 0 0 4px rgba(79,70,229,0.15);
+  background:rgba(255,255,255,0.9);
 }
 
 /* textarea */
@@ -108,14 +123,15 @@ textarea{
   font-weight:600;
   cursor:pointer;
   color:white;
+
   background:linear-gradient(135deg,#4F46E5,#22C55E);
+
   transition:0.2s;
 }
 
-/* hover */
 .btn:hover{
   transform:translateY(-1px);
-  box-shadow:0 10px 25px rgba(79,70,229,0.25);
+  box-shadow:0 15px 30px rgba(79,70,229,0.25);
 }
 
 /* сообщение */
