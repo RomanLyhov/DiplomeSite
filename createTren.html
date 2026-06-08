@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>FitPlan — Создание тренировки</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -30,67 +31,58 @@ body{
 
 /* карточка */
 .card{
-  background:rgba(255,255,255,0.85);
+  background:rgba(255,255,255,0.88);
   border:1px solid rgba(255,255,255,0.35);
   border-radius:22px;
   padding:32px;
-
   backdrop-filter: blur(18px);
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
 }
 
-/* заголовок */
+/* заголовки */
 .title{
   font-size:24px;
   font-weight:700;
-  margin-bottom:6px;
 }
 
 .subtitle{
   font-size:13px;
   color:#64748B;
-  margin-bottom:20px;
+  margin-top:4px;
 }
 
-/* 🔥 FIX: сетка больше воздуха */
+/* форма */
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:24px; /* было 20 → стало 24 */
-  margin-top:10px;
+  gap:24px;
+  margin-top:20px;
 }
 
-/* inputs */
 input, select{
   width:100%;
   padding:12px 14px;
   border-radius:14px;
-
   border:1px solid rgba(148,163,184,0.35);
   background:rgba(255,255,255,0.7);
-
   outline:none;
   font-size:14px;
-
-  transition:0.2s;
 }
 
-/* focus */
 input:focus, select:focus{
   border-color:#4F46E5;
   box-shadow:0 0 0 4px rgba(79,70,229,0.15);
   background:white;
 }
 
-/* 🔥 FIX: блоки списков */
+/* секции */
 .columns{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:24px;
-  margin-top:28px; /* увеличили воздух сверху */
+  margin-top:28px;
 }
 
-/* заголовки секций */
 .section-title{
   font-size:14px;
   font-weight:600;
@@ -100,41 +92,62 @@ input:focus, select:focus{
 
 /* списки */
 .list{
-  background:rgba(255,255,255,0.65);
+  background:rgba(255,255,255,0.6);
   border:1px solid #e5e7eb;
   border-radius:16px;
   padding:12px;
-
   max-height:420px;
   overflow:auto;
 }
 
-/* 🔥 FIX: элементы списка */
+/* item */
 .item{
   display:flex;
-  justify-content:space-between;
-  align-items:center;
+  flex-direction:column;
+  gap:10px;
 
   padding:12px;
-  margin-bottom:10px; /* важный отступ */
-
+  margin-bottom:10px;
   border-radius:12px;
+
   background:white;
   border:1px solid #eee;
 }
 
-/* кнопки */
+/* header item */
+.item-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* inputs row */
+.item-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+/* small inputs */
+.item-grid input{
+  padding:8px;
+  font-size:12px;
+  border-radius:10px;
+}
+
+/* buttons */
 .btn{
-  padding:12px 14px;
+  margin-top:20px;
+  width:100%;
+  padding:14px;
   border:none;
   border-radius:14px;
-  cursor:pointer;
   font-weight:600;
+  cursor:pointer;
   color:white;
   background:linear-gradient(135deg,#4F46E5,#22C55E);
 }
 
-/* маленькие кнопки */
 .small-btn{
   padding:6px 10px;
   font-size:12px;
@@ -145,13 +158,9 @@ input:focus, select:focus{
   color:white;
 }
 
-/* адаптив */
-@media(max-width:800px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .columns{
+/* responsive */
+@media(max-width:900px){
+  .grid, .columns{
     grid-template-columns:1fr;
   }
 }
@@ -165,10 +174,10 @@ input:focus, select:focus{
   <div class="card">
 
     <div class="title">Создание тренировки</div>
-    <div class="subtitle">Выбери упражнения и собери свою программу</div>
+    <div class="subtitle">Собери программу из упражнений и настрой параметры</div>
 
+    <!-- FORM -->
     <div class="grid">
-
       <div>
         <label>Название тренировки</label>
         <input id="workoutName" placeholder="например: День груди">
@@ -183,18 +192,16 @@ input:focus, select:focus{
           <option value="hard">Сложная</option>
         </select>
       </div>
-
     </div>
 
+    <!-- LISTS -->
     <div class="columns">
 
-      <!-- ВСЕ УПРАЖНЕНИЯ -->
       <div>
-        <div class="section-title">Упражнения</div>
+        <div class="section-title">Все упражнения</div>
         <div class="list" id="allExercises"></div>
       </div>
 
-      <!-- ВЫБРАННЫЕ -->
       <div>
         <div class="section-title">В тренировке</div>
         <div class="list" id="selectedExercises"></div>
@@ -202,7 +209,7 @@ input:focus, select:focus{
 
     </div>
 
-    <button class="btn" style="margin-top:20px;" onclick="createWorkout()">
+    <button class="btn" onclick="createWorkout()">
       Создать тренировку
     </button>
 
@@ -211,12 +218,9 @@ input:focus, select:focus{
 </div>
 
 <script>
-const API = "";
-
-// выбранные упражнения
 let selected = [];
 
-// загрузка упражнений
+/* load exercises */
 async function loadExercises(){
   const res = await fetch("/exercises");
   const data = await res.json();
@@ -243,22 +247,41 @@ async function loadExercises(){
   });
 }
 
-// добавить упражнение
+/* add exercise */
 function addExercise(ex){
+
   if(selected.find(e => e.exerciseid === ex.exerciseid)) return;
 
-  selected.push(ex);
+  selected.push({
+    exerciseid: ex.exerciseid,
+    name: ex.name,
+    muscle_group: ex.muscle_group,
+
+    sets: 3,
+    reps: 10,
+    weight: 0,
+    rest: 60,
+    order: selected.length + 1
+  });
+
   renderSelected();
 }
 
-// удалить
+/* remove */
 function removeExercise(id){
   selected = selected.filter(e => e.exerciseid !== id);
   renderSelected();
 }
 
-// отрисовка выбранных
+/* update */
+function updateField(id, field, value){
+  const ex = selected.find(e => e.exerciseid === id);
+  if(ex) ex[field] = value;
+}
+
+/* render selected */
 function renderSelected(){
+
   const container = document.getElementById("selectedExercises");
   container.innerHTML = "";
 
@@ -268,32 +291,50 @@ function renderSelected(){
     div.className = "item";
 
     div.innerHTML = `
-      <div>
-        <b>${ex.name}</b><br>
-        <small>${ex.muscle_group}</small>
+      <div class="item-header">
+        <div>
+          <b>${ex.name}</b><br>
+          <small>${ex.muscle_group}</small>
+        </div>
+
+        <button class="small-btn" style="background:#ef4444">x</button>
       </div>
-      <button class="small-btn" style="background:#ef4444">x</button>
+
+      <div class="item-grid">
+        <input type="number" value="${ex.sets}" placeholder="sets">
+        <input type="number" value="${ex.reps}" placeholder="reps">
+        <input type="number" value="${ex.weight}" placeholder="kg">
+        <input type="number" value="${ex.rest}" placeholder="rest">
+        <input type="number" value="${ex.order}" placeholder="order">
+      </div>
     `;
 
     div.querySelector("button").onclick = () => removeExercise(ex.exerciseid);
+
+    const inputs = div.querySelectorAll("input");
+
+    inputs[0].oninput = e => updateField(ex.exerciseid, "sets", +e.target.value);
+    inputs[1].oninput = e => updateField(ex.exerciseid, "reps", +e.target.value);
+    inputs[2].oninput = e => updateField(ex.exerciseid, "weight", +e.target.value);
+    inputs[3].oninput = e => updateField(ex.exerciseid, "rest", +e.target.value);
+    inputs[4].oninput = e => updateField(ex.exerciseid, "order", +e.target.value);
 
     container.appendChild(div);
   });
 }
 
-// создание тренировки (пока просто лог)
+/* create workout */
 function createWorkout(){
 
-  const name = document.getElementById("workoutName").value;
-  const difficulty = document.getElementById("difficulty").value;
-
-  console.log({
-    name,
-    difficulty,
+  const payload = {
+    name: document.getElementById("workoutName").value,
+    difficulty: document.getElementById("difficulty").value,
     exercises: selected
-  });
+  };
 
-  alert("Тренировка собрана (пока без API)");
+  console.log("WORKOUT PAYLOAD:", payload);
+
+  alert("Тренировка собрана и готова к отправке в БД");
 }
 
 loadExercises();
