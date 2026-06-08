@@ -51,7 +51,7 @@ body{
   margin-top:4px;
 }
 
-/* form grid */
+/* form */
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -91,7 +91,7 @@ input:focus, select:focus{
   color:#334155;
 }
 
-/* lists */
+/* list */
 .list{
   background:rgba(255,255,255,0.6);
   border:1px solid #e5e7eb;
@@ -101,46 +101,46 @@ input:focus, select:focus{
   overflow:auto;
 }
 
-/* ================= EXERCISE CARD ================= */
+/* ================= CARD ================= */
 .item{
-  background:rgba(255,255,255,0.95);
+  background:rgba(255,255,255,0.97);
   border:1px solid #E2E8F0;
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:12px;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
   transition:0.2s;
 }
 
 .item:hover{
   transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(15,23,42,0.08);
+  box-shadow:0 14px 35px rgba(15,23,42,0.10);
 }
 
 /* header */
 .item-header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
+  align-items:flex-start;
+  margin-bottom:12px;
 }
 
-/* name */
 .item-header b{
-  font-size:14px;
+  font-size:15px;
+  font-weight:700;
 }
 
-/* muscle badge */
+/* badge */
 .badge{
   display:inline-block;
+  margin-top:4px;
   padding:4px 10px;
   font-size:11px;
   border-radius:999px;
   background:#EEF2FF;
   color:#4F46E5;
-  margin-top:4px;
 }
 
-/* remove btn */
+/* delete */
 .small-btn{
   padding:6px 10px;
   font-size:12px;
@@ -149,40 +149,46 @@ input:focus, select:focus{
   border:none;
   background:#EF4444;
   color:white;
-  transition:0.2s;
 }
 
-.small-btn:hover{
-  opacity:0.85;
-}
-
-/* inputs grid */
+/* grid inside card */
 .item-grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:8px;
+  gap:10px;
 }
 
-/* input inside card */
-.item-grid input{
-  padding:8px 10px;
-  font-size:12px;
-  border-radius:10px;
+/* field */
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
 
+.field label{
+  font-size:10px;
+  font-weight:600;
+  color:#64748B;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.field input{
+  padding:8px 10px;
+  font-size:13px;
+  border-radius:10px;
   border:1px solid #E2E8F0;
   background:#F8FAFC;
-
-  outline:none;
-  transition:0.2s;
+  text-align:center;
 }
 
-.item-grid input:focus{
+.field input:focus{
   border-color:#4F46E5;
   background:white;
   box-shadow:0 0 0 3px rgba(79,70,229,0.12);
 }
 
-/* main button */
+/* button */
 .btn{
   margin-top:20px;
   width:100%;
@@ -199,6 +205,10 @@ input:focus, select:focus{
 @media(max-width:900px){
   .grid, .columns{
     grid-template-columns:1fr;
+  }
+
+  .item-grid{
+    grid-template-columns:1fr 1fr;
   }
 }
 </style>
@@ -257,7 +267,7 @@ input:focus, select:focus{
 <script>
 let selected = [];
 
-/* load */
+/* load exercises */
 async function loadExercises(){
   const res = await fetch("/exercises");
   const data = await res.json();
@@ -284,7 +294,7 @@ async function loadExercises(){
   });
 }
 
-/* add */
+/* add exercise */
 function addExercise(ex){
 
   if(selected.find(e => e.exerciseid === ex.exerciseid)) return;
@@ -293,7 +303,6 @@ function addExercise(ex){
     exerciseid: ex.exerciseid,
     name: ex.name,
     muscle_group: ex.muscle_group,
-
     sets: 3,
     reps: 10,
     weight: 0,
@@ -338,11 +347,32 @@ function renderSelected(){
       </div>
 
       <div class="item-grid">
-        <input type="number" value="${ex.sets}" placeholder="sets">
-        <input type="number" value="${ex.reps}" placeholder="reps">
-        <input type="number" value="${ex.weight}" placeholder="kg">
-        <input type="number" value="${ex.rest}" placeholder="rest">
-        <input type="number" value="${ex.order}" placeholder="order">
+
+        <div class="field">
+          <label>Подходы</label>
+          <input type="number" value="${ex.sets}">
+        </div>
+
+        <div class="field">
+          <label>Повторения</label>
+          <input type="number" value="${ex.reps}">
+        </div>
+
+        <div class="field">
+          <label>Вес (кг)</label>
+          <input type="number" value="${ex.weight}">
+        </div>
+
+        <div class="field">
+          <label>Отдых (сек)</label>
+          <input type="number" value="${ex.rest}">
+        </div>
+
+        <div class="field">
+          <label>Порядок</label>
+          <input type="number" value="${ex.order}">
+        </div>
+
       </div>
     `;
 
@@ -360,7 +390,7 @@ function renderSelected(){
   });
 }
 
-/* create */
+/* create workout */
 function createWorkout(){
 
   const payload = {
@@ -371,7 +401,7 @@ function createWorkout(){
 
   console.log(payload);
 
-  alert("Тренировка готова");
+  alert("Тренировка готова к сохранению в БД");
 }
 
 loadExercises();
