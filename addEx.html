@@ -5,65 +5,155 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitPlan — Упражнение</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+
+<style>
+body{
+  margin:0;
+  font-family:Inter;
+  background:#050816;
+  color:white;
+}
+
+.container{
+  max-width:900px;
+  margin:40px auto;
+  padding:0 20px;
+}
+
+.card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 0 30px rgba(0,0,0,0.3);
+}
+
+h1{
+  margin-bottom:5px;
+}
+
+.hint{
+  color:#94a3b8;
+  font-size:13px;
+  margin-bottom:20px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+label{
+  font-size:13px;
+  color:#cbd5e1;
+}
+
+input, select, textarea{
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(0,0,0,0.3);
+  color:white;
+  outline:none;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.full{
+  grid-column:1 / -1;
+}
+
+.btn{
+  margin-top:15px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(90deg,#22c55e,#3b82f6);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.message{
+  margin-top:10px;
+  font-size:14px;
+}
+</style>
 </head>
 
 <body>
-  <script>
-const role = (localStorage.getItem("role") || "").toLowerCase();
 
-if (role !== "admin") {
+<script>
+const role = (localStorage.getItem("role") || "").toLowerCase();
+if(role !== "admin"){
   location.href = "/exercises.html";
 }
 </script>
-
-<div class="navbar">
-  <div class="logo">FitPlan</div>
-
-  <div style="display:flex; gap:10px;">
-    <a href="exercises.html">← Назад</a>
-  </div>
-</div>
 
 <div class="container">
 
   <div class="card">
 
-    <h1> Упражнение</h1>
-    <div class="hint">Создание или редактирование упражнения</div>
+    <h1>Упражнение</h1>
+    <div class="hint">Создание / редактирование упражнения</div>
 
     <form id="addExerciseForm">
 
-      <div class="form-group">
-        <label>Название</label>
-        <input type="text" id="exerciseName" required>
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Название</label>
+          <input type="text" id="exerciseName" required>
+        </div>
+
+        <div class="form-group">
+          <label>Группа мышц</label>
+          <select id="muscleGroup">
+            <option value="Грудные">Грудные</option>
+            <option value="Спина">Спина</option>
+            <option value="Ноги">Ноги</option>
+            <option value="Плечи">Плечи</option>
+            <option value="Руки">Руки</option>
+            <option value="Пресс">Пресс</option>
+            <option value="Кардио">Кардио</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Сложность</label>
+          <select id="difficulty">
+            <option value="easy">Лёгкая</option>
+            <option value="med">Средняя</option>
+            <option value="hard">Сложная</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label>Инструкция</label>
+          <textarea id="instruction"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label>Видео (URL)</label>
+          <input type="text" id="videoUrl" placeholder="https://...">
+        </div>
+
       </div>
 
-      <div class="form-group">
-        <label>Группа мышц</label>
-        <select id="muscleGroup">
-          <option>Грудные</option>
-          <option>Спина</option>
-          <option>Ноги</option>
-          <option>Плечи</option>
-          <option>Руки</option>
-          <option>Пресс</option>
-          <option>Кардио</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Сложность</label>
-        <select id="difficulty">
-          <option value="easy">Лёгкая</option>
-          <option value="med" selected>Средняя</option>
-          <option value="hard">Сложная</option>
-        </select>
-      </div>
-
-      <button class="btn"> Сохранить</button>
-
+      <button class="btn">Сохранить</button>
       <div id="formMessage" class="message"></div>
 
     </form>
@@ -75,79 +165,60 @@ if (role !== "admin") {
 <script>
 const API = "";
 
-async function loadEdit() {
+async function loadEdit(){
   const id = new URLSearchParams(window.location.search).get("id");
-  if (!id) return;
+  if(!id) return;
 
   const res = await fetch(`${API}/exercises/${id}`);
   const ex = await res.json();
 
-  document.getElementById("exerciseName").value = ex.name;
-  document.getElementById("muscleGroup").value = ex.muscle_group;
-  document.getElementById("difficulty").value = ex.difficulty;
+  document.getElementById("exerciseName").value = ex.name || "";
+  document.getElementById("muscleGroup").value = ex.muscle_group || "Спина";
+  document.getElementById("difficulty").value = ex.difficulty || "med";
+  document.getElementById("instruction").value = ex.instruction || "";
+  document.getElementById("videoUrl").value = ex.video_url || "";
 
   document.getElementById("addExerciseForm").dataset.editId = id;
 }
 
-document.getElementById("addExerciseForm").addEventListener("submit", async (e) => {
+document.getElementById("addExerciseForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
 
-    e.preventDefault();
+  const form = e.target;
+  const editId = form.dataset.editId;
 
-    const form = e.target;
-    const editId = form.dataset.editId;
+  const payload = {
+    name: document.getElementById("exerciseName").value,
+    muscle_group: document.getElementById("muscleGroup").value,
+    difficulty: document.getElementById("difficulty").value,
+    instruction: document.getElementById("instruction").value,
+    video_url: document.getElementById("videoUrl").value
+  };
 
-    const name = document.getElementById("exerciseName").value;
-    const muscleGroup = document.getElementById("muscleGroup").value;
-    const difficulty = document.getElementById("difficulty").value;
+  const msg = document.getElementById("formMessage");
 
-    const msg = document.getElementById("formMessage");
+  try{
 
-    try {
+    const url = editId ? `/exercises/${editId}` : `/exercises`;
+    const method = editId ? "PUT" : "POST";
 
-        const url = editId
-            ? `/exercises/${editId}`
-            : `/exercises`;
+    const response = await fetch(url,{
+      method,
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
 
-        const method = editId
-            ? "PUT"
-            : "POST";
+    const data = await response.json();
 
-        console.log("URL:", url);
-        console.log("METHOD:", method);
+    if(!response.ok) throw new Error(data.error || "Ошибка сервера");
 
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name,
-                muscleGroup,
-                difficulty
-            })
-        });
+    msg.innerText = "✅ Сохранено";
 
-        const data = await response.json();
+    setTimeout(()=> location.href="/exercises.html", 700);
 
-        console.log("SERVER RESPONSE:", data);
-
-        if (!response.ok) {
-            throw new Error(data.error || "SERVER ERROR");
-        }
-
-        msg.innerText = "✅ Успешно сохранено";
-
-        setTimeout(() => {
-            window.location.href = "exercises.html";
-        }, 700);
-
-    } catch (err) {
-
-        console.error("❌ CLIENT ERROR:", err);
-
-        msg.innerText = "❌ " + err.message;
-    }
-
+  }catch(err){
+    msg.innerText = "❌ " + err.message;
+  }
 });
 
 loadEdit();
