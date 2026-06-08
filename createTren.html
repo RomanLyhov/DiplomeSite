@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitPlan — Создание тренировки</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Inter;
+  color:#0F172A;
+
+  background:
+    linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.55)),
+    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
+    center/cover no-repeat;
+
+  min-height:100vh;
+}
+
+.container{
+  max-width:1100px;
+  margin:50px auto;
+  padding:0 20px;
+}
+
+.card{
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:22px;
+  padding:28px;
+  backdrop-filter: blur(18px);
+  box-shadow:0 25px 60px rgba(0,0,0,0.25);
+}
+
+/* layout */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:20px;
+}
+
+/* inputs */
+input, select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,0.35);
+  background:rgba(255,255,255,0.6);
+  outline:none;
+}
+
+input:focus, select:focus{
+  border-color:#4F46E5;
+  box-shadow:0 0 0 4px rgba(79,70,229,0.15);
+}
+
+/* lists */
+.list{
+  background:rgba(255,255,255,0.6);
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:10px;
+  max-height:420px;
+  overflow:auto;
+}
+
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  border-radius:12px;
+  margin-bottom:8px;
+  background:white;
+  border:1px solid #eee;
+}
+
+.btn{
+  padding:10px 14px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+  color:white;
+  background:linear-gradient(135deg,#4F46E5,#22C55E);
+}
+
+.small-btn{
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:10px;
+  cursor:pointer;
+  border:none;
+  background:#4F46E5;
+  color:white;
+}
+
+.title{
+  font-size:22px;
+  font-weight:700;
+}
+
+.subtitle{
+  font-size:13px;
+  color:#64748B;
+}
+
+.columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:20px;
+}
+
+.section-title{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:10px;
+  color:#334155;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <div class="title">Создание тренировки</div>
+    <div class="subtitle">Выбери упражнения и собери свою программу</div>
+
+    <div class="grid">
+
+      <div>
+        <label>Название тренировки</label>
+        <input id="workoutName" placeholder="например: День груди">
+      </div>
+
+      <div>
+        <label>Сложность</label>
+        <select id="difficulty">
+          <option value="">Без уровня</option>
+          <option value="easy">Лёгкая</option>
+          <option value="med">Средняя</option>
+          <option value="hard">Сложная</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="columns">
+
+      <!-- ВСЕ УПРАЖНЕНИЯ -->
+      <div>
+        <div class="section-title">Упражнения</div>
+        <div class="list" id="allExercises"></div>
+      </div>
+
+      <!-- ВЫБРАННЫЕ -->
+      <div>
+        <div class="section-title">В тренировке</div>
+        <div class="list" id="selectedExercises"></div>
+      </div>
+
+    </div>
+
+    <button class="btn" style="margin-top:20px;" onclick="createWorkout()">
+      Создать тренировку
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+const API = "";
+
+// выбранные упражнения
+let selected = [];
+
+// загрузка упражнений
+async function loadExercises(){
+  const res = await fetch("/exercises");
+  const data = await res.json();
+
+  const container = document.getElementById("allExercises");
+  container.innerHTML = "";
+
+  data.forEach(ex => {
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <div>
+        <b>${ex.name}</b><br>
+        <small>${ex.muscle_group}</small>
+      </div>
+      <button class="small-btn">+</button>
+    `;
+
+    div.querySelector("button").onclick = () => addExercise(ex);
+
+    container.appendChild(div);
+  });
+}
+
+// добавить упражнение
+function addExercise(ex){
+  if(selected.find(e => e.exerciseid === ex.exerciseid)) return;
+
+  selected.push(ex);
+  renderSelected();
+}
+
+// удалить
+function removeExercise(id){
+  selected = selected.filter(e => e.exerciseid !== id);
+  renderSelected();
+}
+
+// отрисовка выбранных
+function renderSelected(){
+  const container = document.getElementById("selectedExercises");
+  container.innerHTML = "";
+
+  selected.forEach(ex => {
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <div>
+        <b>${ex.name}</b><br>
+        <small>${ex.muscle_group}</small>
+      </div>
+      <button class="small-btn" style="background:#ef4444">x</button>
+    `;
+
+    div.querySelector("button").onclick = () => removeExercise(ex.exerciseid);
+
+    container.appendChild(div);
+  });
+}
+
+// создание тренировки (пока просто лог)
+function createWorkout(){
+
+  const name = document.getElementById("workoutName").value;
+  const difficulty = document.getElementById("difficulty").value;
+
+  console.log({
+    name,
+    difficulty,
+    exercises: selected
+  });
+
+  alert("Тренировка собрана (пока без API)");
+}
+
+loadExercises();
+</script>
+
+</body>
+</html>
