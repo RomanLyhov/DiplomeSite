@@ -22,16 +22,16 @@ body{
   min-height:100vh;
 }
 
-/* контейнер */
+/* container */
 .container{
   max-width:1100px;
   margin:60px auto;
   padding:0 20px;
 }
 
-/* карточка */
+/* card */
 .card{
-  background:rgba(255,255,255,0.88);
+  background:rgba(255,255,255,0.90);
   border:1px solid rgba(255,255,255,0.35);
   border-radius:22px;
   padding:32px;
@@ -39,7 +39,7 @@ body{
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
 }
 
-/* заголовки */
+/* title */
 .title{
   font-size:24px;
   font-weight:700;
@@ -51,7 +51,7 @@ body{
   margin-top:4px;
 }
 
-/* форма */
+/* form grid */
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -67,6 +67,7 @@ input, select{
   background:rgba(255,255,255,0.7);
   outline:none;
   font-size:14px;
+  transition:0.2s;
 }
 
 input:focus, select:focus{
@@ -75,7 +76,7 @@ input:focus, select:focus{
   background:white;
 }
 
-/* секции */
+/* columns */
 .columns{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -90,7 +91,7 @@ input:focus, select:focus{
   color:#334155;
 }
 
-/* списки */
+/* lists */
 .list{
   background:rgba(255,255,255,0.6);
   border:1px solid #e5e7eb;
@@ -100,42 +101,88 @@ input:focus, select:focus{
   overflow:auto;
 }
 
-/* item */
+/* ================= EXERCISE CARD ================= */
 .item{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:12px;
-
-  background:white;
-  border:1px solid #eee;
+  background:rgba(255,255,255,0.95);
+  border:1px solid #E2E8F0;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+  transition:0.2s;
 }
 
-/* header item */
+.item:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(15,23,42,0.08);
+}
+
+/* header */
 .item-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:10px;
 }
 
-/* inputs row */
+/* name */
+.item-header b{
+  font-size:14px;
+}
+
+/* muscle badge */
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  font-size:11px;
+  border-radius:999px;
+  background:#EEF2FF;
+  color:#4F46E5;
+  margin-top:4px;
+}
+
+/* remove btn */
+.small-btn{
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:10px;
+  cursor:pointer;
+  border:none;
+  background:#EF4444;
+  color:white;
+  transition:0.2s;
+}
+
+.small-btn:hover{
+  opacity:0.85;
+}
+
+/* inputs grid */
 .item-grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:8px;
 }
 
-/* small inputs */
+/* input inside card */
 .item-grid input{
-  padding:8px;
+  padding:8px 10px;
   font-size:12px;
   border-radius:10px;
+
+  border:1px solid #E2E8F0;
+  background:#F8FAFC;
+
+  outline:none;
+  transition:0.2s;
 }
 
-/* buttons */
+.item-grid input:focus{
+  border-color:#4F46E5;
+  background:white;
+  box-shadow:0 0 0 3px rgba(79,70,229,0.12);
+}
+
+/* main button */
 .btn{
   margin-top:20px;
   width:100%;
@@ -146,16 +193,6 @@ input:focus, select:focus{
   cursor:pointer;
   color:white;
   background:linear-gradient(135deg,#4F46E5,#22C55E);
-}
-
-.small-btn{
-  padding:6px 10px;
-  font-size:12px;
-  border-radius:10px;
-  cursor:pointer;
-  border:none;
-  background:#4F46E5;
-  color:white;
 }
 
 /* responsive */
@@ -174,7 +211,7 @@ input:focus, select:focus{
   <div class="card">
 
     <div class="title">Создание тренировки</div>
-    <div class="subtitle">Собери программу из упражнений и настрой параметры</div>
+    <div class="subtitle">Собери свою программу тренировок</div>
 
     <!-- FORM -->
     <div class="grid">
@@ -220,7 +257,7 @@ input:focus, select:focus{
 <script>
 let selected = [];
 
-/* load exercises */
+/* load */
 async function loadExercises(){
   const res = await fetch("/exercises");
   const data = await res.json();
@@ -236,7 +273,7 @@ async function loadExercises(){
     div.innerHTML = `
       <div>
         <b>${ex.name}</b><br>
-        <small>${ex.muscle_group}</small>
+        <span class="badge">${ex.muscle_group}</span>
       </div>
       <button class="small-btn">+</button>
     `;
@@ -247,7 +284,7 @@ async function loadExercises(){
   });
 }
 
-/* add exercise */
+/* add */
 function addExercise(ex){
 
   if(selected.find(e => e.exerciseid === ex.exerciseid)) return;
@@ -279,7 +316,7 @@ function updateField(id, field, value){
   if(ex) ex[field] = value;
 }
 
-/* render selected */
+/* render */
 function renderSelected(){
 
   const container = document.getElementById("selectedExercises");
@@ -294,10 +331,10 @@ function renderSelected(){
       <div class="item-header">
         <div>
           <b>${ex.name}</b><br>
-          <small>${ex.muscle_group}</small>
+          <span class="badge">${ex.muscle_group}</span>
         </div>
 
-        <button class="small-btn" style="background:#ef4444">x</button>
+        <button class="small-btn">x</button>
       </div>
 
       <div class="item-grid">
@@ -323,7 +360,7 @@ function renderSelected(){
   });
 }
 
-/* create workout */
+/* create */
 function createWorkout(){
 
   const payload = {
@@ -332,9 +369,9 @@ function createWorkout(){
     exercises: selected
   };
 
-  console.log("WORKOUT PAYLOAD:", payload);
+  console.log(payload);
 
-  alert("Тренировка собрана и готова к отправке в БД");
+  alert("Тренировка готова");
 }
 
 loadExercises();
