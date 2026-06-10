@@ -105,6 +105,25 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.get("/exercises/search", async (req, res) => {
+    try {
+        const query = req.query.q || "";
+        if (query.length < 2) return res.json([]);
+
+        const result = await pool.query(
+            `SELECT exerciseid AS id, name 
+             FROM exercises 
+             WHERE LOWER(name) LIKE LOWER($1) 
+             ORDER BY name 
+             LIMIT 10`,
+            [`%${query}%`]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json([]);
+    }
+});
+
 // -------------------- USERS --------------------
 app.get("/users", async (req, res) => {
     try {
@@ -606,18 +625,18 @@ app.post("/exercises", async (req, res) => {
 
         // 1. создаём exercise
         const exerciseResult = await pool.query(
-            `
-            INSERT INTO exercises(
-                name,
-                muscle_group,
-                difficulty
-            )
-            VALUES($1,'-', '-')
-            RETURNING exerciseid
-            `,
-            [name]
-        );
-
+    `WITH existing AS (
+        SELECT exerciseid FROM exercises WHERE LOWER(name) = LOWER($1)
+    ), inserted AS (
+        INSERT INTO exercises(name, muscle_group, difficulty)
+        SELECT $1, '-', '-' WHERE NOT EXISTS (SELECT 1 FROM existing)
+        RETURNING exerciseid
+    )
+    SELECT exerciseid FROM existing
+    UNION ALL
+    SELECT exerciseid FROM inserted`,
+    [name]
+);
         const exerciseId = exerciseResult.rows[0].exerciseid;
 
         console.log("✅ exerciseId:", exerciseId);
