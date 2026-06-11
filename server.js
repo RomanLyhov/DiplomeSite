@@ -783,18 +783,48 @@ app.get("/workouts/full/:userId", async (req, res) => {
 
 app.delete("/workouts/:id", async (req, res) => {
     try {
+
+        const id = req.params.id;
+
+        console.log("🔥 DELETE WORKOUT:", id);
+
+        // удаляем календарь
+        await pool.query(
+            "DELETE FROM calendarworkouts WHERE workout_id=$1",
+            [id]
+        );
+
+        console.log("✅ calendarworkouts deleted");
+
+        // удаляем упражнения тренировки
         await pool.query(
             "DELETE FROM workoutexercises WHERE workout_id=$1",
-            [req.params.id]
+            [id]
         );
-        await pool.query(
-            "DELETE FROM workouts WHERE workoutid=$1",
-            [req.params.id]
+
+        console.log("✅ workoutexercises deleted");
+
+        // удаляем тренировку
+        const deleted = await pool.query(
+            "DELETE FROM workouts WHERE workoutid=$1 RETURNING *",
+            [id]
         );
+
+        console.log("✅ workout deleted:", deleted.rows);
+
         res.json({ success: true });
+
     } catch (err) {
-        console.error("DELETE WORKOUT ERROR:", err);
-        res.status(500).json({ success: false });
+
+        console.error("❌ DELETE WORKOUT ERROR:");
+        console.error(err);
+        console.error(err.message);
+        console.error(err.stack);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
     }
 });
 
