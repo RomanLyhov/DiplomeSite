@@ -632,6 +632,18 @@ app.put("/exercises/:id", async (req, res) => {
         });
     }
 });
+app.delete("/workouts/:id/exercises", async (req, res) => {
+    try {
+        await pool.query(
+            "DELETE FROM workoutexercises WHERE workout_id=$1",
+            [req.params.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("❌ DELETE WORKOUT EXERCISES ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 console.log("✅ EXERCISES POST ROUTE LOADED");
 
