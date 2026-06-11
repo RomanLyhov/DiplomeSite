@@ -798,6 +798,20 @@ app.delete("/workouts/:id", async (req, res) => {
     }
 });
 
+app.post("/calendar", async (req, res) => {
+    try {
+        const { userId, workoutId, scheduledDate } = req.body;
+        await pool.query(
+            `INSERT INTO calendarworkouts(user_id, workout_id, scheduled_date)
+             VALUES($1, $2, $3)`,
+            [userId, workoutId, scheduledDate]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
 // -------------------- WORKOUT EXERCISES --------------------
 
 app.get("/workout-exercises/:workoutId", async (req, res) => {
