@@ -665,7 +665,6 @@ app.post("/workout-history", async (req, res) => {
     }
 });
 
-// GET /workout-history/:userId — получить историю
 // GET /workout-history/:userId - получить историю с фильтрацией по дате
 app.get("/workout-history/:userId", async (req, res) => {
     try {
@@ -673,7 +672,17 @@ app.get("/workout-history/:userId", async (req, res) => {
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
         
-        let query = `SELECT * FROM workout_history WHERE user_id = $1`;
+        let query = `SELECT 
+                        id,
+                        user_id as "userId",
+                        workout_id as "workoutId", 
+                        workout_name as "workoutName",
+                        completed_at as "completedAt",
+                        total_exercises as "totalExercises", 
+                        completed_exercises as "completedExercises", 
+                        is_fully_done as "isFullyDone"
+                     FROM workout_history 
+                     WHERE user_id = $1`;
         let params = [userId];
         
         // Добавляем фильтрацию по дате если параметры переданы
@@ -685,6 +694,10 @@ app.get("/workout-history/:userId", async (req, res) => {
         query += ` ORDER BY completed_at DESC`;
         
         const result = await pool.query(query, params);
+        
+        console.log("📊 Returning history records:", result.rows.length);
+        console.log("First record:", result.rows[0]);
+        
         res.json(result.rows);
     } catch (err) {
         console.error("GET workout-history ERROR:", err);
