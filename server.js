@@ -645,6 +645,41 @@ app.delete("/workouts/:id/exercises", async (req, res) => {
     }
 });
 
+// POST /workout-history — сохранить результат
+app.post("/workout-history", async (req, res) => {
+    try {
+        const { userId, workoutId, workoutName, completedAt,
+                totalExercises, completedExercises, isFullyDone } = req.body;
+
+        const result = await pool.query(
+            `INSERT INTO workout_history
+             (user_id, workout_id, workout_name, completed_at,
+              total_exercises, completed_exercises, is_fully_done)
+             VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+            [userId, workoutId, workoutName, completedAt,
+             totalExercises, completedExercises, isFullyDone]
+        );
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// GET /workout-history/:userId — получить историю
+app.get("/workout-history/:userId", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT * FROM workout_history
+             WHERE user_id = $1
+             ORDER BY completed_at DESC`,
+            [req.params.userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json([]);
+    }
+});
+
 console.log("✅ EXERCISES POST ROUTE LOADED");
 
 app.post("/exercises", async (req, res) => {
