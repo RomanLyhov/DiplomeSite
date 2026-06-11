@@ -590,84 +590,101 @@ app.get("/exercises/:id", async (req, res) => {
 
 app.put("/exercises/:id", async (req, res) => {
     try {
-        const { name, muscleGroup, difficulty } = req.body;
-        await pool.query(
-            `UPDATE exercises SET name=$1, muscle_group=$2, difficulty=$3 WHERE exerciseid=$4`,
-            [name, muscleGroup, difficulty, req.params.id]
-        );
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).send("Error");
-    }
-});
-
-console.log("✅ EXERCISES POST ROUTE LOADED");
-app.post("/exercises", async (req, res) => {
-    try {
-
-        console.log("🔥 BODY:", req.body);
 
         const {
-            workoutId,
             name,
-            sets,
-            reps,
-            weight,
-            rest
+            muscle_group,
+            difficulty,
+            instruction,
+            video_url
         } = req.body;
 
-        if (!workoutId || !name) {
-            return res.status(400).json({
-                success: false,
-                error: "workoutId or name missing"
-            });
-        }
-
-        // 1. создаём exercise
-        const exerciseResult = await pool.query(
-    `WITH existing AS (
-        SELECT exerciseid FROM exercises WHERE LOWER(name) = LOWER($1)
-    ), inserted AS (
-        INSERT INTO exercises(name, muscle_group, difficulty)
-        SELECT $1, '-', '-' WHERE NOT EXISTS (SELECT 1 FROM existing)
-        RETURNING exerciseid
-    )
-    SELECT exerciseid FROM existing
-    UNION ALL
-    SELECT exerciseid FROM inserted`,
-    [name]
-);
-        const exerciseId = exerciseResult.rows[0].exerciseid;
-
-        console.log("✅ exerciseId:", exerciseId);
-
-        // 2. связываем с workout
         await pool.query(
             `
-            INSERT INTO workoutexercises(
-                workout_id,
-                exercise_id,
-                sets,
-                reps,
-                weight,
-                rest
-            )
-            VALUES($1,$2,$3,$4,$5,$6)
+            UPDATE exercises
+            SET
+                name = $1,
+                muscle_group = $2,
+                difficulty = $3,
+                instruction = $4,
+                video_url = $5
+            WHERE exerciseid = $6
             `,
             [
-                workoutId,
-                exerciseId,
-                sets || 0,
-                reps || 0,
-                weight || 0,
-                rest || 0
+                name,
+                muscle_group,
+                difficulty,
+                instruction,
+                video_url,
+                req.params.id
             ]
         );
 
         res.json({ success: true });
 
     } catch (err) {
-        console.error("❌ EXERCISE ERROR:", err);
+
+        console.error("❌ UPDATE EXERCISE ERROR:", err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+    }
+});
+
+console.log("✅ EXERCISES POST ROUTE LOADED");
+
+app.post("/exercises", async (req, res) => {
+    try {
+
+        console.log("🔥 BODY:", req.body);
+
+        const {
+            name,
+            muscle_group,
+            difficulty,
+            instruction,
+            video_url
+        } = req.body;
+
+        if (!name) {
+            return res.status(400).json({
+                success: false,
+                error: "Название обязательно"
+            });
+        }
+
+        const result = await pool.query(
+            `
+            INSERT INTO exercises(
+                name,
+                muscle_group,
+                difficulty,
+                instruction,
+                video_url
+            )
+            VALUES ($1,$2,$3,$4,$5)
+            RETURNING exerciseid
+            `,
+            [
+                name,
+                muscle_group || "",
+                difficulty || "med",
+                instruction || "",
+                video_url || ""
+            ]
+        );
+
+        res.json({
+            success: true,
+            id: result.rows[0].exerciseid
+        });
+
+    } catch (err) {
+
+        console.error("❌ EXERCISE CREATE ERROR:", err);
+
         res.status(500).json({
             success: false,
             error: err.message
