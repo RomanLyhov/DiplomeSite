@@ -110,8 +110,9 @@ app.get("/exercises/search", async (req, res) => {
         const query = req.query.q || "";
         if (query.length < 2) return res.json([]);
 
+        // 🔥 ИСПРАВЛЕНО: добавляем instruction в SELECT
         const result = await pool.query(
-            `SELECT exerciseid AS id, name 
+            `SELECT exerciseid AS id, name, instruction 
              FROM exercises 
              WHERE LOWER(name) LIKE LOWER($1) 
              ORDER BY name 
@@ -120,6 +121,7 @@ app.get("/exercises/search", async (req, res) => {
         );
         res.json(result.rows);
     } catch (err) {
+        console.error("Search error:", err);
         res.status(500).json([]);
     }
 });
@@ -581,9 +583,14 @@ app.get("/exercises", async (req, res) => {
 
 app.get("/exercises/:id", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM exercises WHERE exerciseid=$1", [req.params.id]);
+        // 🔥 ИСПРАВЛЕНО: добавляем instruction
+        const result = await pool.query(
+            "SELECT exerciseid AS id, name, instruction, muscle_group, difficulty FROM exercises WHERE exerciseid=$1", 
+            [req.params.id]
+        );
         res.json(result.rows[0]);
     } catch (err) {
+        console.error("Get exercise by ID error:", err);
         res.status(500).send("Error");
     }
 });
