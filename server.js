@@ -896,23 +896,32 @@ app.post("/calendar", async (req, res) => {
 
 app.get("/workout-exercises/:workoutId", async (req, res) => {
     try {
+
+        console.log("🔥 GET EXERCISES FOR WORKOUT:");
+        console.log(req.params.workoutId);
+
         const result = await pool.query(
             `
-           SELECT
-    e.exerciseid AS exerciseId,
-    e.name AS name,
-    we.sets AS sets,
-    we.reps AS reps,
-    we.weight AS weight,
-    we.rest AS rest
-FROM workoutexercises we
-JOIN exercises e ON e.exerciseid = we.exercise_id
-WHERE we.workout_id = $1
+            SELECT
+                e.exerciseid AS "exerciseId",
+                e.name AS "name",
+                we.sets AS "sets",
+                we.reps AS "reps",
+                we.weight AS "weight",
+                we.rest AS "rest"
+            FROM workoutexercises we
+            JOIN exercises e
+                ON e.exerciseid = we.exercise_id
+            WHERE we.workout_id = $1
             `,
             [req.params.workoutId]
         );
 
+        console.log("🔥 RESULT:");
+        console.log(result.rows);
+
         res.json(result.rows);
+
     } catch (err) {
         console.error("GET workout-exercises ERROR:", err);
         res.status(500).send("Error");
