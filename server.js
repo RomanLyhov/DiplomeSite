@@ -781,6 +781,23 @@ app.get("/workouts/full/:userId", async (req, res) => {
     }
 });
 
+app.delete("/workouts/:id", async (req, res) => {
+    try {
+        await pool.query(
+            "DELETE FROM workoutexercises WHERE workout_id=$1",
+            [req.params.id]
+        );
+        await pool.query(
+            "DELETE FROM workouts WHERE workoutid=$1",
+            [req.params.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("DELETE WORKOUT ERROR:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
 // -------------------- WORKOUT EXERCISES --------------------
 
 app.get("/workout-exercises/:workoutId", async (req, res) => {
