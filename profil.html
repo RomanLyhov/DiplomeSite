@@ -235,15 +235,15 @@ body {
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#eff6ff;color:#3b82f6;">⚖️</div>Вес</div>
+      <div class="s-label"><div class="s-icon" style="background:#eff6ff;color:#3b82f6;"></div>Вес</div>
       <div class="s-val"><span id="weight">—</span> <span class="s-unit">кг</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#f0fdf4;color:#22c55e;">📏</div>Рост</div>
+      <div class="s-label"><div class="s-icon" style="background:#f0fdf4;color:#22c55e;"></div>Рост</div>
       <div class="s-val"><span id="height">—</span> <span class="s-unit">см</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#fef3c7;color:#f59e0b;">🎯</div>Цель</div>
+      <div class="s-label"><div class="s-icon" style="background:#fef3c7;color:#f59e0b;"></div>Цель</div>
       <div class="s-val" id="goal" style="font-size:16px;padding-top:4px;">—</div>
     </div>
   </div>
@@ -252,7 +252,7 @@ body {
   <div class="two-col">
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#fef9c3;color:#ca8a04;">🥗</div>
+        <div class="ct-icon" style="background:#fef9c3;color:#ca8a04;"></div>
         Дневное КБЖУ
       </div>
       <div class="kbju-grid">
@@ -269,7 +269,7 @@ body {
 
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#eff6ff;color:#3b82f6;">⚖️</div>
+        <div class="ct-icon" style="background:#eff6ff;color:#3b82f6;"></div>
         Вес — текущий
       </div>
       <div id="weightInfo" style="font-size:13px;color:#475569;line-height:1.8;">
@@ -283,7 +283,7 @@ body {
   <div class="two-col">
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#f0fdf4;color:#16a34a;">✅</div>
+        <div class="ct-icon" style="background:#f0fdf4;color:#16a34a;"></div>
         Последние тренировки
       </div>
       <div class="activity-list" id="activityList">
@@ -295,7 +295,7 @@ body {
 
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#fef3c7;color:#d97706;">🏋️</div>
+        <div class="ct-icon" style="background:#fef3c7;color:#d97706;"></div>
         Мои тренировки — упражнения
       </div>
       <div id="strengthTable">
@@ -444,7 +444,7 @@ async function loadWorkoutHistory() {
         </div>`;
     }).join("");
   } catch(e) {
-    list.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div>Не удалось загрузить</div>`;
+    list.innerHTML = `<div class="empty-state"><div class="e-icon"></div>Не удалось загрузить</div>`;
   }
 }
 
@@ -510,7 +510,7 @@ async function loadWorkoutsWithExercises() {
         <tbody>${rows}</tbody>
       </table>`;
   } catch(e) {
-    el.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div>Не удалось загрузить</div>`;
+    el.innerHTML = `<div class="empty-state"><div class="e-icon"></div>Не удалось загрузить</div>`;
   }
 }
 
