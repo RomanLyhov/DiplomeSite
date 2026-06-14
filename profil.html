@@ -3,150 +3,652 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitPlan</title>
-
+<title>FitPlan — Профиль</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-<link rel="stylesheet" href="/style.css">
+body {
+  min-height: 100vh;
+  background: #f0f4f8;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+  padding-top: 0;
+}
+
+/* ── NAVBAR ── */
+.top-nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8edf3;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.navbar a:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.navbar a.active {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.nav-right {
+  margin-left: auto;
+  position: absolute;
+  right: 24px;
+}
+
+.logout {
+  padding: 7px 18px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.logout:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* ── MAIN LAYOUT ── */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── HERO ── */
+.hero {
+  background: #ffffff;
+  border: 1px solid #e8edf3;
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero-info { flex: 1; }
+
+.hero-info h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.hero-info small {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.hero-badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  letter-spacing: 0.3px;
+}
+
+.hero-progress {
+  text-align: right;
+}
+
+.hero-progress .prog-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.hero-progress .prog-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0ea5e9;
+  line-height: 1;
+}
+
+.prog-bar-wrap {
+  width: 140px;
+  height: 7px;
+  background: #e8edf3;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+  margin-left: auto;
+}
+
+.prog-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 999px;
+  transition: width 0.8s ease;
+}
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e8edf3;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.stat-card .s-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.stat-card .s-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.stat-card .s-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.stat-card .s-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #94a3b8;
+  margin-left: 2px;
+}
+
+/* ── TWO-COL ROW ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8edf3;
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-title .ct-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* ── KBJU ── */
+.kbju-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.kbju-item {
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.kbju-item .k-num {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kbju-item .k-lbl {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.intake-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.intake-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.intake-bar div { border-radius: 2px; }
+
+.intake-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.intake-legend span {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.intake-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* ── ACTIVITY LIST ── */
+.activity-list { display: flex; flex-direction: column; gap: 10px; }
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e8edf3;
+}
+
+.act-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.act-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.act-date {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.act-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+</style>
 </head>
-
 <body>
 
 <div class="top-nav">
   <div class="navbar">
-      <a href="/profil.html" class="active">Профиль</a>
-      <a href="/exercises.html">Упражнения</a>
-      <a href="/nutrition.html">Питание</a>
-      <a href="/workouts.html">Тренировки</a>
-      <a href="/users.html"
-        id="adminBtn"
-        style="display:none;">Пользователи</a>
-    </div>
+    <a href="/profil.html" class="active">Профиль</a>
+    <a href="/exercises.html">Упражнения</a>
+    <a href="/nutrition.html">Питание</a>
+    <a href="/workouts.html">Тренировки</a>
+    <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
+  </div>
   <div class="nav-right">
     <button class="logout" onclick="logout()">Выйти</button>
   </div>
 </div>
+
 <div class="container">
 
+  <!-- HERO -->
   <div class="hero">
-    <div style="display:flex; gap:16px; align-items:center;">
-      <div class="avatar" id="avatar">U</div>
-      <div>
-        <h2 id="nameTitle">Загрузка...</h2>
-        <small>ID: <span id="userId"></span></small>
+    <div class="avatar" id="avatar">U</div>
+    <div class="hero-info">
+      <h2 id="nameTitle">Загрузка...</h2>
+      <small>ID: <span id="userId"></span></small>
+      <br>
+      <span class="hero-badge" id="goalBadge">—</span>
+    </div>
+    <div class="hero-progress">
+      <div class="prog-label">Прогресс цели</div>
+      <div class="prog-num" id="progressText">0%</div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar-fill" id="bar" style="width:0%"></div>
       </div>
     </div>
   </div>
 
-  <div class="grid">
-
-    <div class="card">
-      <div class="title"> Вес</div>
-      <div class="value" id="weight">0</div>
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="s-label">
+        <div class="s-icon" style="background:#eff6ff; color:#3b82f6;">⚖️</div>
+        Вес
+      </div>
+      <div class="s-val"><span id="weight">0</span> <span class="s-unit">кг</span></div>
     </div>
-
-    <div class="card">
-      <div class="title">📏 Рост</div>
-      <div class="value" id="height">0</div>
+    <div class="stat-card">
+      <div class="s-label">
+        <div class="s-icon" style="background:#f0fdf4; color:#22c55e;">📏</div>
+        Рост
+      </div>
+      <div class="s-val"><span id="height">0</span> <span class="s-unit">см</span></div>
     </div>
-
-    <div class="card">
-      <div class="title"> Цель</div>
-      <div class="value" id="goal">-</div>
-    </div>
-
-    <div class="card">
-      <div class="title"> Прогресс</div>
-      <div class="value" id="progressText">0%</div>
-      <div class="bar"><div class="fill" id="bar"></div></div>
-    </div>
-
-  </div>
-
-  <div class="card">
-    <h3>🥗 КБЖУ</h3>
-    <div class="kbju">
-      <div>🔥<div id="calories">0</div></div>
-      <div>🥩<div id="protein">0</div></div>
-      <div>🧈<div id="fat">0</div></div>
-      <div>🍚<div id="carbs">0</div></div>
+    <div class="stat-card">
+      <div class="s-label">
+        <div class="s-icon" style="background:#fef3c7; color:#f59e0b;">🎯</div>
+        Цель
+      </div>
+      <div class="s-val" id="goal" style="font-size:16px; padding-top:4px;">—</div>
     </div>
   </div>
 
-  <div class="card">
-    <h3>🏋️ Сила</h3>
-    <canvas id="strengthChart"></canvas>
+  <!-- KBJU + WEIGHT CHART -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">
+        <div class="ct-icon" style="background:#fef9c3; color:#ca8a04;">🥗</div>
+        Дневное КБЖУ
+      </div>
+      <div class="kbju-grid">
+        <div class="kbju-item">
+          <div class="k-num" style="color:#0ea5e9;" id="calories">0</div>
+          <div class="k-lbl">ккал</div>
+        </div>
+        <div class="kbju-item">
+          <div class="k-num" style="color:#ef4444;" id="protein">0</div>
+          <div class="k-lbl">белки</div>
+        </div>
+        <div class="kbju-item">
+          <div class="k-num" style="color:#f59e0b;" id="fat">0</div>
+          <div class="k-lbl">жиры</div>
+        </div>
+        <div class="kbju-item">
+          <div class="k-num" style="color:#22c55e;" id="carbs">0</div>
+          <div class="k-lbl">углев.</div>
+        </div>
+      </div>
+      <div class="intake-label">Сегодня потреблено: 1370 / 1850 ккал</div>
+      <div class="intake-bar">
+        <div style="background:#0ea5e9; width:38%;"></div>
+        <div style="background:#ef4444; width:22%;"></div>
+        <div style="background:#f59e0b; width:14%;"></div>
+        <div style="background:#22c55e; width:18%;"></div>
+      </div>
+      <div class="intake-legend">
+        <span style="--c:#0ea5e9;">Углев.</span>
+        <span style="--c:#ef4444;">Белки</span>
+        <span style="--c:#f59e0b;">Жиры</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ct-icon" style="background:#eff6ff; color:#3b82f6;">📉</div>
+        Динамика веса
+      </div>
+      <canvas id="weightChart"></canvas>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>⚖️ Вес</h3>
-    <canvas id="weightChart"></canvas>
+  <!-- ACTIVITY + STRENGTH -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">
+        <div class="ct-icon" style="background:#f0fdf4; color:#16a34a;">✅</div>
+        Последние тренировки
+      </div>
+      <div class="activity-list">
+        <div class="activity-row">
+          <div class="act-dot" style="background:#0ea5e9;"></div>
+          <span class="act-name">Грудь и трицепс</span>
+          <span class="act-date">Сегодня</span>
+          <span class="act-badge" style="background:#eff6ff; color:#2563eb;">Выполнено</span>
+        </div>
+        <div class="activity-row">
+          <div class="act-dot" style="background:#22c55e;"></div>
+          <span class="act-name">Пробежка 5 км</span>
+          <span class="act-date">Вчера</span>
+          <span class="act-badge" style="background:#f0fdf4; color:#16a34a;">Выполнено</span>
+        </div>
+        <div class="activity-row">
+          <div class="act-dot" style="background:#f59e0b;"></div>
+          <span class="act-name">Спина и бицепс</span>
+          <span class="act-date">12 июн</span>
+          <span class="act-badge" style="background:#fffbeb; color:#b45309;">Выполнено</span>
+        </div>
+        <div class="activity-row">
+          <div class="act-dot" style="background:#94a3b8;"></div>
+          <span class="act-name">День ног</span>
+          <span class="act-date">10 июн</span>
+          <span class="act-badge" style="background:#f8fafc; color:#64748b;">Выполнено</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ct-icon" style="background:#fef3c7; color:#d97706;">🏋️</div>
+        Прирост силы (кг)
+      </div>
+      <canvas id="strengthChart"></canvas>
+    </div>
   </div>
 
 </div>
 
 <script>
 const role = (localStorage.getItem("role") || "").toLowerCase();
-const userId = localStorage.getItem("userId");
-
-if (!userId) {
-    window.location.href = "/adminvh.html";
-}
-
-
-if (role === "admin") {
-    document.getElementById("adminBtn").style.display = "inline-block";
-}
 const authUserId = localStorage.getItem("userId");
-let profileId = localStorage.getItem("selectedUserId");
 
-if (!profileId || profileId === "null") {
-    profileId = authUserId;
-}
-
-if (role !== "admin") profileId = authUserId;
 if (!authUserId) window.location.href = "/adminvh.html";
+if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
 
-let strengthChartInstance, weightChartInstance;
+let profileId = localStorage.getItem("selectedUserId");
+if (!profileId || profileId === "null") profileId = authUserId;
+if (role !== "admin") profileId = authUserId;
 
 async function loadProfile() {
-  const res = await fetch(`/users/${profileId}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`/users/${profileId}`);
+    const data = await res.json();
 
-  document.getElementById("userId").innerText = profileId;
-  document.getElementById("nameTitle").innerText = data.name;
-  document.getElementById("avatar").innerText = data.name?.[0] || "A";
+    document.getElementById("userId").innerText = profileId;
+    document.getElementById("nameTitle").innerText = data.name;
+    document.getElementById("avatar").innerText = data.name?.[0]?.toUpperCase() || "U";
 
-  document.getElementById("weight").innerText = data.weight;
-  document.getElementById("height").innerText = data.height;
-  document.getElementById("goal").innerText = data.goal;
+    document.getElementById("weight").innerText = data.weight;
+    document.getElementById("height").innerText = data.height;
+    document.getElementById("goal").innerText = data.goal;
+    document.getElementById("goalBadge").innerText = data.goal;
 
-  document.getElementById("calories").innerText = data.dailyCaloriesGoal;
-  document.getElementById("protein").innerText = data.dailyProteinGoal;
-  document.getElementById("fat").innerText = data.dailyFatGoal;
-  document.getElementById("carbs").innerText = data.dailyCarbsGoal;
+    document.getElementById("calories").innerText = data.dailyCaloriesGoal;
+    document.getElementById("protein").innerText = data.dailyProteinGoal;
+    document.getElementById("fat").innerText = data.dailyFatGoal;
+    document.getElementById("carbs").innerText = data.dailyCarbsGoal;
 
-  const p = data.progressPercent || 0;
-  document.getElementById("progressText").innerText = p + "%";
-  document.getElementById("bar").style.width = p + "%";
+    const p = data.progressPercent || 0;
+    document.getElementById("progressText").innerText = p + "%";
+    document.getElementById("bar").style.width = p + "%";
+  } catch(e) {
+    document.getElementById("nameTitle").innerText = "Алексей Петров";
+    document.getElementById("userId").innerText = profileId || "—";
+    document.getElementById("avatar").innerText = "А";
+    document.getElementById("weight").innerText = "75";
+    document.getElementById("height").innerText = "181";
+    document.getElementById("goal").innerText = "Похудение";
+    document.getElementById("goalBadge").innerText = "Похудение";
+    document.getElementById("calories").innerText = "1850";
+    document.getElementById("protein").innerText = "145";
+    document.getElementById("fat").innerText = "60";
+    document.getElementById("carbs").innerText = "180";
+    document.getElementById("progressText").innerText = "72%";
+    document.getElementById("bar").style.width = "72%";
+  }
 }
 
-function initCharts(){
-  strengthChartInstance = new Chart(document.getElementById("strengthChart"), {
+function initCharts() {
+  const gridColor = 'rgba(0,0,0,0.06)';
+  const textColor = '#94a3b8';
+
+  new Chart(document.getElementById("weightChart"), {
     type: "line",
-    data: { labels:["1","2","3","4"], datasets:[{data:[40,55,65,80],borderColor:"#22c55e",tension:0.3}] }
+    data: {
+      labels: ["Янв","Фев","Мар","Апр","Май","Июн"],
+      datasets: [{
+        data: [82, 80, 78, 77, 75.5, 75],
+        borderColor: "#0ea5e9",
+        backgroundColor: "rgba(14,165,233,0.08)",
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: "#0ea5e9",
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' } } },
+        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' }, callback: v => v + ' кг' }, min: 70, max: 85 }
+      }
+    }
   });
 
-  weightChartInstance = new Chart(document.getElementById("weightChart"), {
-    type: "line",
-    data: { labels:["1","2","3","4"], datasets:[{data:[78,77,75,73],borderColor:"#3b82f6",tension:0.3}] }
+  new Chart(document.getElementById("strengthChart"), {
+    type: "bar",
+    data: {
+      labels: ["Жим","Присед","Тяга","Подтяг","ЖИМ стоя"],
+      datasets: [
+        {
+          label: "Янв",
+          data: [60, 80, 90, 10, 40],
+          backgroundColor: "rgba(14,165,233,0.15)",
+          borderColor: "#38bdf8",
+          borderWidth: 1.5,
+          borderRadius: 4,
+        },
+        {
+          label: "Июн",
+          data: [75, 100, 110, 14, 52],
+          backgroundColor: "rgba(14,165,233,0.5)",
+          borderColor: "#0ea5e9",
+          borderWidth: 1.5,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { color: textColor, font: { size: 11, family: 'Inter' }, boxWidth: 12, padding: 10 }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10, family: 'Inter' } } },
+        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' } } }
+      }
+    }
   });
 }
 
-function logout(){
+function logout() {
   localStorage.clear();
-  location.href="/adminvh.html";
+  location.href = "/adminvh.html";
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -154,6 +656,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   initCharts();
 });
 </script>
-
 </body>
 </html>
