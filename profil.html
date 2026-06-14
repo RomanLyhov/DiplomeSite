@@ -14,7 +14,6 @@ body {
   background: #f0f4f8;
   font-family: 'Inter', sans-serif;
   color: #1e293b;
-  padding-top: 0;
 }
 
 /* ── NAVBAR ── */
@@ -31,13 +30,7 @@ body {
   z-index: 100;
   gap: 16px;
 }
-
-.navbar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
+.navbar { display: flex; align-items: center; gap: 6px; }
 .navbar a {
   text-decoration: none;
   color: #64748b;
@@ -48,23 +41,9 @@ body {
   transition: all 0.2s;
   letter-spacing: 0.3px;
 }
-
-.navbar a:hover {
-  background: #f1f5f9;
-  color: #1e293b;
-}
-
-.navbar a.active {
-  background: #0ea5e9;
-  color: #fff;
-}
-
-.nav-right {
-  margin-left: auto;
-  position: absolute;
-  right: 24px;
-}
-
+.navbar a:hover { background: #f1f5f9; color: #1e293b; }
+.navbar a.active { background: #0ea5e9; color: #fff; }
+.nav-right { margin-left: auto; position: absolute; right: 24px; }
 .logout {
   padding: 7px 18px;
   border-radius: 20px;
@@ -77,14 +56,9 @@ body {
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
 }
+.logout:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
 
-.logout:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #dc2626;
-}
-
-/* ── MAIN LAYOUT ── */
+/* ── LAYOUT ── */
 .container {
   max-width: 960px;
   margin: 0 auto;
@@ -104,275 +78,124 @@ body {
   align-items: center;
   gap: 20px;
 }
-
 .avatar {
-  width: 72px;
-  height: 72px;
-  min-width: 72px;
+  width: 72px; height: 72px; min-width: 72px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  font-weight: 700;
-  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 700; color: #fff;
 }
-
 .hero-info { flex: 1; }
-
-.hero-info h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 4px;
-}
-
-.hero-info small {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
+.hero-info h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+.hero-info small { font-size: 13px; color: #94a3b8; }
 .hero-badge {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 12px;
-  border-radius: 999px;
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-  letter-spacing: 0.3px;
+  display: inline-block; margin-top: 8px;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 12px; border-radius: 999px;
+  background: #f0fdf4; color: #16a34a;
+  border: 1px solid #bbf7d0; letter-spacing: 0.3px;
 }
-
-.hero-progress {
-  text-align: right;
-}
-
-.hero-progress .prog-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-bottom: 6px;
-}
-
-.hero-progress .prog-num {
-  font-size: 28px;
-  font-weight: 700;
-  color: #0ea5e9;
-  line-height: 1;
-}
-
+.hero-progress { text-align: right; }
+.hero-progress .prog-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+.hero-progress .prog-num { font-size: 28px; font-weight: 700; color: #0ea5e9; line-height: 1; }
 .prog-bar-wrap {
-  width: 140px;
-  height: 7px;
-  background: #e8edf3;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-top: 8px;
-  margin-left: auto;
+  width: 140px; height: 7px;
+  background: #e8edf3; border-radius: 999px; overflow: hidden;
+  margin-top: 8px; margin-left: auto;
 }
-
 .prog-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-  border-radius: 999px;
-  transition: width 0.8s ease;
+  border-radius: 999px; transition: width 0.8s ease;
 }
 
-/* ── STATS GRID ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-
-.stat-card {
-  background: #ffffff;
-  border: 1px solid #e8edf3;
-  border-radius: 16px;
-  padding: 18px 20px;
-}
-
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.stat-card { background: #ffffff; border: 1px solid #e8edf3; border-radius: 16px; padding: 18px 20px; }
 .stat-card .s-label {
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  font-size: 12px; color: #94a3b8; font-weight: 500;
+  display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
 }
-
 .stat-card .s-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
 }
+.stat-card .s-val { font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1; }
+.stat-card .s-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
 
-.stat-card .s-val {
-  font-size: 26px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1;
-}
-
-.stat-card .s-unit {
-  font-size: 14px;
-  font-weight: 400;
-  color: #94a3b8;
-  margin-left: 2px;
-}
-
-/* ── TWO-COL ROW ── */
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
+/* ── TWO COL ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 /* ── CARDS ── */
-.card {
-  background: #ffffff;
-  border: 1px solid #e8edf3;
-  border-radius: 16px;
-  padding: 20px 22px;
-}
-
+.card { background: #ffffff; border: 1px solid #e8edf3; border-radius: 16px; padding: 20px 22px; }
 .card-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 13px; font-weight: 600; color: #475569;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 7px;
+  text-transform: uppercase; letter-spacing: 0.5px;
 }
-
 .card-title .ct-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+  width: 22px; height: 22px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
 }
 
 /* ── KBJU ── */
-.kbju-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
+.kbju-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
 .kbju-item {
-  background: #f8fafc;
-  border: 1px solid #e8edf3;
-  border-radius: 12px;
-  padding: 10px 6px;
-  text-align: center;
+  background: #f8fafc; border: 1px solid #e8edf3;
+  border-radius: 12px; padding: 10px 6px; text-align: center;
 }
-
-.kbju-item .k-num {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.kbju-item .k-lbl {
-  font-size: 10px;
-  font-weight: 500;
-  color: #94a3b8;
-  margin-top: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.intake-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-bottom: 6px;
-}
-
-.intake-bar {
-  display: flex;
-  height: 8px;
-  border-radius: 999px;
-  overflow: hidden;
-  gap: 2px;
-}
-
+.kbju-item .k-num { font-size: 18px; font-weight: 700; line-height: 1; }
+.kbju-item .k-lbl { font-size: 10px; font-weight: 500; color: #94a3b8; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+.intake-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+.intake-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; gap: 2px; }
 .intake-bar div { border-radius: 2px; }
 
-.intake-legend {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-.intake-legend span {
-  font-size: 11px;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.intake-legend span::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-}
-
-/* ── ACTIVITY LIST ── */
-.activity-list { display: flex; flex-direction: column; gap: 10px; }
-
+/* ── ACTIVITY ── */
+.activity-list { display: flex; flex-direction: column; gap: 8px; }
 .activity-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   padding: 10px 12px;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e8edf3;
+  background: #f8fafc; border-radius: 10px; border: 1px solid #e8edf3;
+}
+.act-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.act-name { flex: 1; font-size: 13px; font-weight: 500; color: #0f172a; }
+.act-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.act-date { font-size: 11px; color: #94a3b8; }
+.act-sub { font-size: 10px; color: #cbd5e1; }
+.act-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+
+/* ── STRENGTH TABLE ── */
+.strength-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.strength-table th {
+  text-align: left; padding: 6px 8px;
+  font-size: 11px; font-weight: 600; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  border-bottom: 1px solid #e8edf3;
+}
+.strength-table td { padding: 8px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+.strength-table tr:last-child td { border-bottom: none; }
+.strength-table tr:hover td { background: #f8fafc; }
+.s-pill {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  background: #eff6ff; color: #2563eb;
 }
 
-.act-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 32px 16px;
+  color: #94a3b8; font-size: 13px;
 }
+.empty-state .e-icon { font-size: 32px; margin-bottom: 8px; }
 
-.act-name {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-  color: #0f172a;
+/* ── SKELETON ── */
+.skel {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e8edf3 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 6px; height: 14px; margin: 4px 0;
 }
-
-.act-date {
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.act-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 999px;
-}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
@@ -397,8 +220,7 @@ body {
     <div class="avatar" id="avatar">U</div>
     <div class="hero-info">
       <h2 id="nameTitle">Загрузка...</h2>
-      <small>ID: <span id="userId"></span></small>
-      <br>
+      <small>ID: <span id="userId"></span></small><br>
       <span class="hero-badge" id="goalBadge">—</span>
     </div>
     <div class="hero-progress">
@@ -413,73 +235,47 @@ body {
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="s-label">
-        <div class="s-icon" style="background:#eff6ff; color:#3b82f6;">⚖️</div>
-        Вес
-      </div>
-      <div class="s-val"><span id="weight">0</span> <span class="s-unit">кг</span></div>
+      <div class="s-label"><div class="s-icon" style="background:#eff6ff;color:#3b82f6;">⚖️</div>Вес</div>
+      <div class="s-val"><span id="weight">—</span> <span class="s-unit">кг</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label">
-        <div class="s-icon" style="background:#f0fdf4; color:#22c55e;">📏</div>
-        Рост
-      </div>
-      <div class="s-val"><span id="height">0</span> <span class="s-unit">см</span></div>
+      <div class="s-label"><div class="s-icon" style="background:#f0fdf4;color:#22c55e;">📏</div>Рост</div>
+      <div class="s-val"><span id="height">—</span> <span class="s-unit">см</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label">
-        <div class="s-icon" style="background:#fef3c7; color:#f59e0b;">🎯</div>
-        Цель
-      </div>
-      <div class="s-val" id="goal" style="font-size:16px; padding-top:4px;">—</div>
+      <div class="s-label"><div class="s-icon" style="background:#fef3c7;color:#f59e0b;">🎯</div>Цель</div>
+      <div class="s-val" id="goal" style="font-size:16px;padding-top:4px;">—</div>
     </div>
   </div>
 
-  <!-- KBJU + WEIGHT CHART -->
+  <!-- KBJU + WEIGHT -->
   <div class="two-col">
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#fef9c3; color:#ca8a04;">🥗</div>
+        <div class="ct-icon" style="background:#fef9c3;color:#ca8a04;">🥗</div>
         Дневное КБЖУ
       </div>
       <div class="kbju-grid">
-        <div class="kbju-item">
-          <div class="k-num" style="color:#0ea5e9;" id="calories">0</div>
-          <div class="k-lbl">ккал</div>
-        </div>
-        <div class="kbju-item">
-          <div class="k-num" style="color:#ef4444;" id="protein">0</div>
-          <div class="k-lbl">белки</div>
-        </div>
-        <div class="kbju-item">
-          <div class="k-num" style="color:#f59e0b;" id="fat">0</div>
-          <div class="k-lbl">жиры</div>
-        </div>
-        <div class="kbju-item">
-          <div class="k-num" style="color:#22c55e;" id="carbs">0</div>
-          <div class="k-lbl">углев.</div>
-        </div>
+        <div class="kbju-item"><div class="k-num" style="color:#0ea5e9;" id="calories">—</div><div class="k-lbl">ккал</div></div>
+        <div class="kbju-item"><div class="k-num" style="color:#ef4444;" id="protein">—</div><div class="k-lbl">белки</div></div>
+        <div class="kbju-item"><div class="k-num" style="color:#f59e0b;" id="fat">—</div><div class="k-lbl">жиры</div></div>
+        <div class="kbju-item"><div class="k-num" style="color:#22c55e;" id="carbs">—</div><div class="k-lbl">углев.</div></div>
       </div>
-      <div class="intake-label">Сегодня потреблено: 1370 / 1850 ккал</div>
-      <div class="intake-bar">
-        <div style="background:#0ea5e9; width:38%;"></div>
-        <div style="background:#ef4444; width:22%;"></div>
-        <div style="background:#f59e0b; width:14%;"></div>
-        <div style="background:#22c55e; width:18%;"></div>
-      </div>
-      <div class="intake-legend">
-        <span style="--c:#0ea5e9;">Углев.</span>
-        <span style="--c:#ef4444;">Белки</span>
-        <span style="--c:#f59e0b;">Жиры</span>
+      <div class="intake-label" id="intakeLabel">Загрузка...</div>
+      <div class="intake-bar" id="intakeBar">
+        <div style="background:#e8edf3;width:100%;"></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#eff6ff; color:#3b82f6;">📉</div>
-        Динамика веса
+        <div class="ct-icon" style="background:#eff6ff;color:#3b82f6;">⚖️</div>
+        Вес — текущий
       </div>
-      <canvas id="weightChart"></canvas>
+      <div id="weightInfo" style="font-size:13px;color:#475569;line-height:1.8;">
+        <div class="skel" style="width:60%;"></div>
+        <div class="skel" style="width:80%;margin-top:8px;"></div>
+      </div>
     </div>
   </div>
 
@@ -487,43 +283,26 @@ body {
   <div class="two-col">
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#f0fdf4; color:#16a34a;">✅</div>
+        <div class="ct-icon" style="background:#f0fdf4;color:#16a34a;">✅</div>
         Последние тренировки
       </div>
-      <div class="activity-list">
-        <div class="activity-row">
-          <div class="act-dot" style="background:#0ea5e9;"></div>
-          <span class="act-name">Грудь и трицепс</span>
-          <span class="act-date">Сегодня</span>
-          <span class="act-badge" style="background:#eff6ff; color:#2563eb;">Выполнено</span>
-        </div>
-        <div class="activity-row">
-          <div class="act-dot" style="background:#22c55e;"></div>
-          <span class="act-name">Пробежка 5 км</span>
-          <span class="act-date">Вчера</span>
-          <span class="act-badge" style="background:#f0fdf4; color:#16a34a;">Выполнено</span>
-        </div>
-        <div class="activity-row">
-          <div class="act-dot" style="background:#f59e0b;"></div>
-          <span class="act-name">Спина и бицепс</span>
-          <span class="act-date">12 июн</span>
-          <span class="act-badge" style="background:#fffbeb; color:#b45309;">Выполнено</span>
-        </div>
-        <div class="activity-row">
-          <div class="act-dot" style="background:#94a3b8;"></div>
-          <span class="act-name">День ног</span>
-          <span class="act-date">10 июн</span>
-          <span class="act-badge" style="background:#f8fafc; color:#64748b;">Выполнено</span>
-        </div>
+      <div class="activity-list" id="activityList">
+        <div class="skel"></div>
+        <div class="skel" style="margin-top:8px;"></div>
+        <div class="skel" style="margin-top:8px;"></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        <div class="ct-icon" style="background:#fef3c7; color:#d97706;">🏋️</div>
-        Прирост силы (кг)
+        <div class="ct-icon" style="background:#fef3c7;color:#d97706;">🏋️</div>
+        Мои тренировки — упражнения
       </div>
-      <canvas id="strengthChart"></canvas>
+      <div id="strengthTable">
+        <div class="skel"></div>
+        <div class="skel" style="margin-top:8px;"></div>
+        <div class="skel" style="margin-top:8px;"></div>
+      </div>
     </div>
   </div>
 
@@ -540,110 +319,199 @@ let profileId = localStorage.getItem("selectedUserId");
 if (!profileId || profileId === "null") profileId = authUserId;
 if (role !== "admin") profileId = authUserId;
 
+// ── форматирование даты ──
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return "—";
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 86400000 && d.getDate() === now.getDate()) return "Сегодня";
+  if (diff < 172800000) return "Вчера";
+  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+}
+
+// ── цвета для тренировок по индексу ──
+const DOT_COLORS = ["#0ea5e9","#22c55e","#f59e0b","#a78bfa","#f87171","#34d399"];
+const BADGE_STYLES = [
+  "background:#eff6ff;color:#2563eb;",
+  "background:#f0fdf4;color:#16a34a;",
+  "background:#fffbeb;color:#b45309;",
+  "background:#f5f3ff;color:#7c3aed;",
+  "background:#fef2f2;color:#b91c1c;",
+  "background:#ecfdf5;color:#065f46;",
+];
+
+// ── загрузка профиля ──
 async function loadProfile() {
+  const res = await fetch(`/users/${profileId}`);
+  const data = await res.json();
+
+  document.getElementById("userId").innerText = profileId;
+  document.getElementById("nameTitle").innerText = data.name || "—";
+  document.getElementById("avatar").innerText = (data.name?.[0] || "U").toUpperCase();
+
+  document.getElementById("weight").innerText = data.weight ?? "—";
+  document.getElementById("height").innerText = data.height ?? "—";
+  document.getElementById("goal").innerText = data.goal || "—";
+  document.getElementById("goalBadge").innerText = data.goal || "—";
+
+  document.getElementById("calories").innerText = data.dailyCaloriesGoal ?? "—";
+  document.getElementById("protein").innerText = data.dailyProteinGoal ?? "—";
+  document.getElementById("fat").innerText = data.dailyFatGoal ?? "—";
+  document.getElementById("carbs").innerText = data.dailyCarbsGoal ?? "—";
+
+  // прогресс: считаем по весу если есть targetWeight
+  let p = data.progressPercent || 0;
+  if (!p && data.weight && data.targetWeight) {
+    // пример: если цель похудеть — процент от пройденного пути (условно, от 100кг)
+    const start = 100;
+    p = Math.min(100, Math.round(((start - data.weight) / (start - data.targetWeight)) * 100));
+    if (p < 0) p = 0;
+  }
+  document.getElementById("progressText").innerText = p + "%";
+  document.getElementById("bar").style.width = p + "%";
+
+  // блок "вес — текущий"
+  const wi = document.getElementById("weightInfo");
+  const tw = data.targetWeight ? `Целевой вес: <b>${data.targetWeight} кг</b>` : "";
+  const diff = data.weight && data.targetWeight
+    ? (data.weight - data.targetWeight)
+    : null;
+  const diffStr = diff !== null
+    ? `Осталось сбросить: <b style="color:${diff>0?"#ef4444":"#22c55e"}">${Math.abs(diff)} кг</b>`
+    : "";
+
+  wi.innerHTML = `
+    <div style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;">${data.weight ?? "—"} <span style="font-size:14px;font-weight:400;color:#94a3b8;">кг сейчас</span></div>
+    ${tw ? `<div style="margin-top:10px;font-size:13px;color:#475569;">${tw}</div>` : ""}
+    ${diffStr ? `<div style="margin-top:4px;font-size:13px;color:#475569;">${diffStr}</div>` : ""}
+    ${data.activity ? `<div style="margin-top:8px;font-size:12px;color:#94a3b8;">Активность: ${data.activity}</div>` : ""}
+  `;
+
+  // КБЖУ — полоса потребления (используем localStorage если есть)
+  updateIntakeBar(data);
+
+  return data;
+}
+
+function updateIntakeBar(data) {
+  const cal = data.dailyCaloriesGoal || 0;
+  // пробуем взять из localStorage дневной калораж (если страница питания его сохраняет)
+  const eaten = parseInt(localStorage.getItem("todayCalories") || "0");
+  const pct = cal > 0 ? Math.min(100, Math.round((eaten / cal) * 100)) : 0;
+  document.getElementById("intakeLabel").innerText =
+    eaten > 0
+      ? `Сегодня потреблено: ${eaten} / ${cal} ккал`
+      : `Дневная цель: ${cal} ккал`;
+  document.getElementById("intakeBar").innerHTML =
+    `<div style="background:#0ea5e9;width:${pct}%;border-radius:999px;transition:width 0.6s;"></div>
+     <div style="background:#e8edf3;width:${100-pct}%;border-radius:999px;"></div>`;
+}
+
+// ── история тренировок ──
+async function loadWorkoutHistory() {
+  const list = document.getElementById("activityList");
   try {
-    const res = await fetch(`/users/${profileId}`);
-    const data = await res.json();
+    const res = await fetch(`/workout-history/${profileId}`);
+    const rows = await res.json();
 
-    document.getElementById("userId").innerText = profileId;
-    document.getElementById("nameTitle").innerText = data.name;
-    document.getElementById("avatar").innerText = data.name?.[0]?.toUpperCase() || "U";
+    if (!rows || rows.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="e-icon">🏃</div>Тренировок пока нет</div>`;
+      return;
+    }
 
-    document.getElementById("weight").innerText = data.weight;
-    document.getElementById("height").innerText = data.height;
-    document.getElementById("goal").innerText = data.goal;
-    document.getElementById("goalBadge").innerText = data.goal;
-
-    document.getElementById("calories").innerText = data.dailyCaloriesGoal;
-    document.getElementById("protein").innerText = data.dailyProteinGoal;
-    document.getElementById("fat").innerText = data.dailyFatGoal;
-    document.getElementById("carbs").innerText = data.dailyCarbsGoal;
-
-    const p = data.progressPercent || 0;
-    document.getElementById("progressText").innerText = p + "%";
-    document.getElementById("bar").style.width = p + "%";
+    // берём последние 5
+    const recent = rows.slice(0, 5);
+    list.innerHTML = recent.map((r, i) => {
+      const color = DOT_COLORS[i % DOT_COLORS.length];
+      const badge = BADGE_STYLES[i % BADGE_STYLES.length];
+      const done = r.isFullyDone
+        ? `<span class="act-badge" style="${badge}">Выполнено</span>`
+        : `<span class="act-badge" style="background:#fef2f2;color:#b91c1c;">Частично</span>`;
+      const sub = r.completedExercises != null
+        ? `${r.completedExercises}/${r.totalExercises} упр.`
+        : "";
+      return `
+        <div class="activity-row">
+          <div class="act-dot" style="background:${color};"></div>
+          <span class="act-name">${r.workoutName || "Тренировка"}</span>
+          <div class="act-meta">
+            <span class="act-date">${fmtDate(r.completedAt)}</span>
+            ${sub ? `<span class="act-sub">${sub}</span>` : ""}
+          </div>
+          ${done}
+        </div>`;
+    }).join("");
   } catch(e) {
-    document.getElementById("nameTitle").innerText = "Алексей Петров";
-    document.getElementById("userId").innerText = profileId || "—";
-    document.getElementById("avatar").innerText = "А";
-    document.getElementById("weight").innerText = "75";
-    document.getElementById("height").innerText = "181";
-    document.getElementById("goal").innerText = "Похудение";
-    document.getElementById("goalBadge").innerText = "Похудение";
-    document.getElementById("calories").innerText = "1850";
-    document.getElementById("protein").innerText = "145";
-    document.getElementById("fat").innerText = "60";
-    document.getElementById("carbs").innerText = "180";
-    document.getElementById("progressText").innerText = "72%";
-    document.getElementById("bar").style.width = "72%";
+    list.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div>Не удалось загрузить</div>`;
   }
 }
 
-function initCharts() {
-  const gridColor = 'rgba(0,0,0,0.06)';
-  const textColor = '#94a3b8';
+// ── тренировки с упражнениями (реальные веса) ──
+async function loadWorkoutsWithExercises() {
+  const el = document.getElementById("strengthTable");
+  try {
+    const res = await fetch(`/workouts/full/${profileId}`);
+    const workouts = await res.json();
 
-  new Chart(document.getElementById("weightChart"), {
-    type: "line",
-    data: {
-      labels: ["Янв","Фев","Мар","Апр","Май","Июн"],
-      datasets: [{
-        data: [82, 80, 78, 77, 75.5, 75],
-        borderColor: "#0ea5e9",
-        backgroundColor: "rgba(14,165,233,0.08)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#0ea5e9",
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        borderWidth: 2,
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' } } },
-        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' }, callback: v => v + ' кг' }, min: 70, max: 85 }
-      }
+    if (!workouts || workouts.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="e-icon">🏋️</div>Тренировки не созданы</div>`;
+      return;
     }
-  });
 
-  new Chart(document.getElementById("strengthChart"), {
-    type: "bar",
-    data: {
-      labels: ["Жим","Присед","Тяга","Подтяг","ЖИМ стоя"],
-      datasets: [
-        {
-          label: "Янв",
-          data: [60, 80, 90, 10, 40],
-          backgroundColor: "rgba(14,165,233,0.15)",
-          borderColor: "#38bdf8",
-          borderWidth: 1.5,
-          borderRadius: 4,
-        },
-        {
-          label: "Июн",
-          data: [75, 100, 110, 14, 52],
-          backgroundColor: "rgba(14,165,233,0.5)",
-          borderColor: "#0ea5e9",
-          borderWidth: 1.5,
-          borderRadius: 4,
+    // собираем все упражнения с весами из всех тренировок
+    const allEx = [];
+    workouts.forEach(w => {
+      (w.exercises || []).forEach(ex => {
+        if (ex.weight > 0 || ex.sets > 0) {
+          allEx.push({ workout: w.name, ...ex });
         }
-      ]
-    },
-    options: {
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { color: textColor, font: { size: 11, family: 'Inter' }, boxWidth: 12, padding: 10 }
-        }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10, family: 'Inter' } } },
-        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11, family: 'Inter' } } }
-      }
+      });
+    });
+
+    if (allEx.length === 0) {
+      // показываем список тренировок без весов
+      el.innerHTML = workouts.slice(0,5).map((w,i) => {
+        const color = DOT_COLORS[i % DOT_COLORS.length];
+        const cnt = (w.exercises||[]).length;
+        return `<div class="activity-row" style="margin-bottom:6px;">
+          <div class="act-dot" style="background:${color};"></div>
+          <span class="act-name">${w.name}</span>
+          <span class="act-date">${cnt} упр.</span>
+        </div>`;
+      }).join("");
+      return;
     }
-  });
+
+    // таблица с весами
+    const rows = allEx.slice(0, 8).map(ex => {
+      const weightStr = ex.weight > 0
+        ? `<span class="s-pill">${ex.weight} кг</span>`
+        : `<span style="color:#cbd5e1;">—</span>`;
+      return `<tr>
+        <td>${ex.name}</td>
+        <td style="color:#64748b;font-size:12px;">${ex.workout}</td>
+        <td style="text-align:center;">${ex.sets}×${ex.reps}</td>
+        <td style="text-align:center;">${weightStr}</td>
+      </tr>`;
+    }).join("");
+
+    el.innerHTML = `
+      <table class="strength-table">
+        <thead>
+          <tr>
+            <th>Упражнение</th>
+            <th>Тренировка</th>
+            <th style="text-align:center;">Подх×Повт</th>
+            <th style="text-align:center;">Вес</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch(e) {
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div>Не удалось загрузить</div>`;
+  }
 }
 
 function logout() {
@@ -653,7 +521,10 @@ function logout() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadProfile();
-  initCharts();
+  await Promise.all([
+    loadWorkoutHistory(),
+    loadWorkoutsWithExercises(),
+  ]);
 });
 </script>
 </body>
