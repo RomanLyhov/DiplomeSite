@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitPlan — Профиль</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
@@ -16,7 +15,6 @@ body {
   color: #1e293b;
 }
 
-/* ── NAVBAR ── */
 .top-nav {
   width: 100%;
   display: flex;
@@ -28,7 +26,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  gap: 16px;
 }
 .navbar { display: flex; align-items: center; gap: 6px; }
 .navbar a {
@@ -43,7 +40,7 @@ body {
 }
 .navbar a:hover { background: #f1f5f9; color: #1e293b; }
 .navbar a.active { background: #0ea5e9; color: #fff; }
-.nav-right { margin-left: auto; position: absolute; right: 24px; }
+.nav-right { position: absolute; right: 24px; }
 .logout {
   padding: 7px 18px;
   border-radius: 20px;
@@ -58,7 +55,6 @@ body {
 }
 .logout:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
 
-/* ── LAYOUT ── */
 .container {
   max-width: 960px;
   margin: 0 auto;
@@ -68,7 +64,7 @@ body {
   gap: 20px;
 }
 
-/* ── HERO ── */
+/* HERO */
 .hero {
   background: #ffffff;
   border: 1px solid #e8edf3;
@@ -93,11 +89,11 @@ body {
   font-size: 11px; font-weight: 600;
   padding: 3px 12px; border-radius: 999px;
   background: #f0fdf4; color: #16a34a;
-  border: 1px solid #bbf7d0; letter-spacing: 0.3px;
+  border: 1px solid #bbf7d0;
 }
 .hero-progress { text-align: right; }
-.hero-progress .prog-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
-.hero-progress .prog-num { font-size: 28px; font-weight: 700; color: #0ea5e9; line-height: 1; }
+.prog-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+.prog-num { font-size: 28px; font-weight: 700; color: #0ea5e9; line-height: 1; }
 .prog-bar-wrap {
   width: 140px; height: 7px;
   background: #e8edf3; border-radius: 999px; overflow: hidden;
@@ -109,48 +105,54 @@ body {
   border-radius: 999px; transition: width 0.8s ease;
 }
 
-/* ── STATS ── */
+/* STATS */
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .stat-card { background: #ffffff; border: 1px solid #e8edf3; border-radius: 16px; padding: 18px 20px; }
-.stat-card .s-label {
-  font-size: 12px; color: #94a3b8; font-weight: 500;
-  display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
-}
-.stat-card .s-icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
-}
-.stat-card .s-val { font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1; }
-.stat-card .s-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
+.s-label { font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 8px; }
+.s-val { font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1; }
+.s-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
 
-/* ── TWO COL ── */
+/* TWO COL */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-/* ── CARDS ── */
+/* CARD */
 .card { background: #ffffff; border: 1px solid #e8edf3; border-radius: 16px; padding: 20px 22px; }
 .card-title {
-  font-size: 13px; font-weight: 600; color: #475569;
-  margin-bottom: 14px; display: flex; align-items: center; gap: 7px;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.card-title .ct-icon {
-  width: 22px; height: 22px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  font-size: 11px; font-weight: 600; color: #94a3b8;
+  margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.6px;
 }
 
-/* ── KBJU ── */
-.kbju-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+/* KBJU */
+.kbju-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
 .kbju-item {
   background: #f8fafc; border: 1px solid #e8edf3;
-  border-radius: 12px; padding: 10px 6px; text-align: center;
+  border-radius: 12px; padding: 12px 6px; text-align: center;
 }
-.kbju-item .k-num { font-size: 18px; font-weight: 700; line-height: 1; }
-.kbju-item .k-lbl { font-size: 10px; font-weight: 500; color: #94a3b8; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
-.intake-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
-.intake-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; gap: 2px; }
-.intake-bar div { border-radius: 2px; }
+.k-num { font-size: 20px; font-weight: 700; line-height: 1; }
+.k-lbl { font-size: 10px; font-weight: 500; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
 
-/* ── ACTIVITY ── */
+.intake-wrap { margin-top: 2px; }
+.intake-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.intake-eaten { font-size: 20px; font-weight: 700; color: #0f172a; }
+.intake-goal { font-size: 13px; color: #94a3b8; }
+.intake-bar-track {
+  height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden;
+}
+.intake-bar-fill {
+  height: 100%; border-radius: 999px;
+  background: #0ea5e9;
+  transition: width 0.7s ease;
+}
+.intake-sub { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+
+/* WEIGHT CARD */
+.weight-big { font-size: 36px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 4px; }
+.weight-unit { font-size: 15px; font-weight: 400; color: #94a3b8; }
+.weight-row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f1f5f9; }
+.weight-meta-label { font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+.weight-meta-val { font-size: 15px; font-weight: 600; color: #0f172a; }
+
+/* ACTIVITY */
 .activity-list { display: flex; flex-direction: column; gap: 8px; }
 .activity-row {
   display: flex; align-items: center; gap: 10px;
@@ -162,9 +164,9 @@ body {
 .act-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .act-date { font-size: 11px; color: #94a3b8; }
 .act-sub { font-size: 10px; color: #cbd5e1; }
-.act-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.act-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; margin-left: 6px; }
 
-/* ── STRENGTH TABLE ── */
+/* STRENGTH TABLE */
 .strength-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .strength-table th {
   text-align: left; padding: 6px 8px;
@@ -172,30 +174,24 @@ body {
   text-transform: uppercase; letter-spacing: 0.4px;
   border-bottom: 1px solid #e8edf3;
 }
-.strength-table td { padding: 8px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+.strength-table td { padding: 9px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
 .strength-table tr:last-child td { border-bottom: none; }
 .strength-table tr:hover td { background: #f8fafc; }
 .s-pill {
-  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  display: inline-block; padding: 2px 9px; border-radius: 6px;
   font-size: 11px; font-weight: 600;
   background: #eff6ff; color: #2563eb;
 }
 
-/* ── EMPTY STATE ── */
-.empty-state {
-  text-align: center; padding: 32px 16px;
-  color: #94a3b8; font-size: 13px;
-}
-.empty-state .e-icon { font-size: 32px; margin-bottom: 8px; }
-
-/* ── SKELETON ── */
+/* EMPTY / SKELETON */
+.empty-state { text-align: center; padding: 32px 16px; color: #cbd5e1; font-size: 13px; }
 .skel {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e8edf3 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg,#f1f5f9 25%,#e8edf3 50%,#f1f5f9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite;
   border-radius: 6px; height: 14px; margin: 4px 0;
 }
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
@@ -235,57 +231,52 @@ body {
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#eff6ff;color:#3b82f6;"></div>Вес</div>
-      <div class="s-val"><span id="weight">—</span> <span class="s-unit">кг</span></div>
+      <div class="s-label">Вес</div>
+      <div class="s-val"><span id="weight">—</span><span class="s-unit">кг</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#f0fdf4;color:#22c55e;"></div>Рост</div>
-      <div class="s-val"><span id="height">—</span> <span class="s-unit">см</span></div>
+      <div class="s-label">Рост</div>
+      <div class="s-val"><span id="height">—</span><span class="s-unit">см</span></div>
     </div>
     <div class="stat-card">
-      <div class="s-label"><div class="s-icon" style="background:#fef3c7;color:#f59e0b;"></div>Цель</div>
-      <div class="s-val" id="goal" style="font-size:16px;padding-top:4px;">—</div>
+      <div class="s-label">Цель</div>
+      <div class="s-val" id="goal" style="font-size:17px;padding-top:2px;">—</div>
     </div>
   </div>
 
   <!-- KBJU + WEIGHT -->
   <div class="two-col">
     <div class="card">
-      <div class="card-title">
-        <div class="ct-icon" style="background:#fef9c3;color:#ca8a04;"></div>
-        Дневное КБЖУ
-      </div>
+      <div class="card-title">Дневное КБЖУ</div>
       <div class="kbju-grid">
         <div class="kbju-item"><div class="k-num" style="color:#0ea5e9;" id="calories">—</div><div class="k-lbl">ккал</div></div>
         <div class="kbju-item"><div class="k-num" style="color:#ef4444;" id="protein">—</div><div class="k-lbl">белки</div></div>
         <div class="kbju-item"><div class="k-num" style="color:#f59e0b;" id="fat">—</div><div class="k-lbl">жиры</div></div>
         <div class="kbju-item"><div class="k-num" style="color:#22c55e;" id="carbs">—</div><div class="k-lbl">углев.</div></div>
       </div>
-      <div class="intake-label" id="intakeLabel">Загрузка...</div>
-      <div class="intake-bar" id="intakeBar">
-        <div style="background:#e8edf3;width:100%;"></div>
+      <div class="intake-wrap">
+        <div class="intake-top">
+          <span class="intake-eaten" id="eatenCal">—</span>
+          <span class="intake-goal" id="goalCal">из — ккал</span>
+        </div>
+        <div class="intake-bar-track">
+          <div class="intake-bar-fill" id="intakeFill" style="width:0%;"></div>
+        </div>
+        <div class="intake-sub" id="intakeSub">Загрузка данных о питании...</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">
-        <div class="ct-icon" style="background:#eff6ff;color:#3b82f6;"></div>
-        Вес — текущий
-      </div>
-      <div id="weightInfo" style="font-size:13px;color:#475569;line-height:1.8;">
-        <div class="skel" style="width:60%;"></div>
-        <div class="skel" style="width:80%;margin-top:8px;"></div>
-      </div>
+      <div class="card-title">Вес</div>
+      <div class="weight-big" id="weightBig">— <span class="weight-unit">кг</span></div>
+      <div id="weightRows"></div>
     </div>
   </div>
 
   <!-- ACTIVITY + STRENGTH -->
   <div class="two-col">
     <div class="card">
-      <div class="card-title">
-        <div class="ct-icon" style="background:#f0fdf4;color:#16a34a;"></div>
-        Последние тренировки
-      </div>
+      <div class="card-title">Последние тренировки</div>
       <div class="activity-list" id="activityList">
         <div class="skel"></div>
         <div class="skel" style="margin-top:8px;"></div>
@@ -294,10 +285,7 @@ body {
     </div>
 
     <div class="card">
-      <div class="card-title">
-        <div class="ct-icon" style="background:#fef3c7;color:#d97706;"></div>
-        Мои тренировки — упражнения
-      </div>
+      <div class="card-title">Упражнения и веса</div>
       <div id="strengthTable">
         <div class="skel"></div>
         <div class="skel" style="margin-top:8px;"></div>
@@ -309,9 +297,40 @@ body {
 </div>
 
 <script>
+// ── переводы ──
+const GOAL_MAP = {
+  WEIGHT_LOSS:    "Снижение веса",
+  LOSE_WEIGHT:    "Снижение веса",
+  WEIGHT_GAIN:    "Набор массы",
+  GAIN_WEIGHT:    "Набор массы",
+  MUSCLE_GAIN:    "Набор массы",
+  MAINTAIN:       "Поддержание веса",
+  MAINTENANCE:    "Поддержание веса",
+  KEEP_WEIGHT:    "Поддержание веса",
+  RECOMPOSITION:  "Рекомпозиция тела",
+};
+
+const ACTIVITY_MAP = {
+  SEDENTARY:      "Малоподвижный",
+  LIGHTLY_ACTIVE: "Слабая активность",
+  LIGHT:          "Слабая активность",
+  MODERATELY_ACTIVE: "Умеренная активность",
+  MODERATE:       "Умеренная активность",
+  VERY_ACTIVE:    "Высокая активность",
+  ACTIVE:         "Высокая активность",
+  EXTRA_ACTIVE:   "Очень высокая активность",
+  SUPER_ACTIVE:   "Очень высокая активность",
+};
+
+function tr(map, val) {
+  if (!val) return "—";
+  const key = val.toString().toUpperCase().trim().replace(/\s+/g,"_");
+  return map[key] || val;
+}
+
+// ── auth ──
 const role = (localStorage.getItem("role") || "").toLowerCase();
 const authUserId = localStorage.getItem("userId");
-
 if (!authUserId) window.location.href = "/adminvh.html";
 if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
 
@@ -319,20 +338,19 @@ let profileId = localStorage.getItem("selectedUserId");
 if (!profileId || profileId === "null") profileId = authUserId;
 if (role !== "admin") profileId = authUserId;
 
-// ── форматирование даты ──
+// ── дата ──
 function fmtDate(ts) {
   if (!ts) return "—";
   const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
   if (isNaN(d)) return "—";
   const now = new Date();
-  const diff = now - d;
-  if (diff < 86400000 && d.getDate() === now.getDate()) return "Сегодня";
-  if (diff < 172800000) return "Вчера";
-  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  if (d.toDateString() === now.toDateString()) return "Сегодня";
+  const yest = new Date(now); yest.setDate(now.getDate()-1);
+  if (d.toDateString() === yest.toDateString()) return "Вчера";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
 
-// ── цвета для тренировок по индексу ──
-const DOT_COLORS = ["#0ea5e9","#22c55e","#f59e0b","#a78bfa","#f87171","#34d399"];
+const DOT_COLORS   = ["#0ea5e9","#22c55e","#f59e0b","#a78bfa","#f87171","#34d399"];
 const BADGE_STYLES = [
   "background:#eff6ff;color:#2563eb;",
   "background:#f0fdf4;color:#16a34a;",
@@ -342,96 +360,116 @@ const BADGE_STYLES = [
   "background:#ecfdf5;color:#065f46;",
 ];
 
-// ── загрузка профиля ──
+// ── профиль ──
 async function loadProfile() {
-  const res = await fetch(`/users/${profileId}`);
+  const res  = await fetch(`/users/${profileId}`);
   const data = await res.json();
 
-  document.getElementById("userId").innerText = profileId;
+  document.getElementById("userId").innerText    = profileId;
   document.getElementById("nameTitle").innerText = data.name || "—";
-  document.getElementById("avatar").innerText = (data.name?.[0] || "U").toUpperCase();
+  document.getElementById("avatar").innerText    = (data.name?.[0] || "U").toUpperCase();
+  document.getElementById("weight").innerText    = data.weight ?? "—";
+  document.getElementById("height").innerText    = data.height ?? "—";
 
-  document.getElementById("weight").innerText = data.weight ?? "—";
-  document.getElementById("height").innerText = data.height ?? "—";
-  document.getElementById("goal").innerText = data.goal || "—";
-  document.getElementById("goalBadge").innerText = data.goal || "—";
+  const goalRu = tr(GOAL_MAP, data.goal);
+  document.getElementById("goal").innerText      = goalRu;
+  document.getElementById("goalBadge").innerText = goalRu;
 
   document.getElementById("calories").innerText = data.dailyCaloriesGoal ?? "—";
-  document.getElementById("protein").innerText = data.dailyProteinGoal ?? "—";
-  document.getElementById("fat").innerText = data.dailyFatGoal ?? "—";
-  document.getElementById("carbs").innerText = data.dailyCarbsGoal ?? "—";
+  document.getElementById("protein").innerText  = data.dailyProteinGoal  ?? "—";
+  document.getElementById("fat").innerText      = data.dailyFatGoal      ?? "—";
+  document.getElementById("carbs").innerText    = data.dailyCarbsGoal    ?? "—";
+  document.getElementById("goalCal").innerText  = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
 
-  // прогресс: считаем по весу если есть targetWeight
-  let p = data.progressPercent || 0;
-  if (!p && data.weight && data.targetWeight) {
-    // пример: если цель похудеть — процент от пройденного пути (условно, от 100кг)
-    const start = 100;
-    p = Math.min(100, Math.round(((start - data.weight) / (start - data.targetWeight)) * 100));
-    if (p < 0) p = 0;
+  // прогресс по весу
+  let p = 0;
+  if (data.weight && data.targetWeight && data.weight !== data.targetWeight) {
+    const w = parseFloat(data.weight);
+    const t = parseFloat(data.targetWeight);
+    // предполагаем стартовый вес +/- 15 кг от цели как 0%
+    const startDelta = 15;
+    const start = t < w ? t + startDelta : t - startDelta;
+    p = Math.round(Math.abs(start - w) / Math.abs(start - t) * 100);
+    p = Math.min(100, Math.max(0, p));
   }
   document.getElementById("progressText").innerText = p + "%";
   document.getElementById("bar").style.width = p + "%";
 
-  // блок "вес — текущий"
-  const wi = document.getElementById("weightInfo");
-  const tw = data.targetWeight ? `Целевой вес: <b>${data.targetWeight} кг</b>` : "";
-  const diff = data.weight && data.targetWeight
-    ? (data.weight - data.targetWeight)
-    : null;
-  const diffStr = diff !== null
-    ? `Осталось сбросить: <b style="color:${diff>0?"#ef4444":"#22c55e"}">${Math.abs(diff)} кг</b>`
-    : "";
+  // блок веса
+  document.getElementById("weightBig").innerHTML =
+    `${data.weight ?? "—"} <span class="weight-unit">кг</span>`;
 
-  wi.innerHTML = `
-    <div style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;">${data.weight ?? "—"} <span style="font-size:14px;font-weight:400;color:#94a3b8;">кг сейчас</span></div>
-    ${tw ? `<div style="margin-top:10px;font-size:13px;color:#475569;">${tw}</div>` : ""}
-    ${diffStr ? `<div style="margin-top:4px;font-size:13px;color:#475569;">${diffStr}</div>` : ""}
-    ${data.activity ? `<div style="margin-top:8px;font-size:12px;color:#94a3b8;">Активность: ${data.activity}</div>` : ""}
-  `;
-
-  // КБЖУ — полоса потребления (используем localStorage если есть)
-  updateIntakeBar(data);
+  const rows = [];
+  if (data.targetWeight) {
+    const diff = parseFloat(data.weight) - parseFloat(data.targetWeight);
+    const diffColor = diff > 0 ? "#ef4444" : "#22c55e";
+    const diffLabel = diff > 0 ? "осталось сбросить" : "осталось набрать";
+    rows.push(`
+      <div class="weight-row">
+        <div><div class="weight-meta-label">Целевой вес</div><div class="weight-meta-val">${data.targetWeight} кг</div></div>
+        <div style="text-align:right;"><div class="weight-meta-label">${diffLabel}</div><div class="weight-meta-val" style="color:${diffColor};">${Math.abs(diff).toFixed(1)} кг</div></div>
+      </div>`);
+  }
+  if (data.activity) {
+    rows.push(`<div style="margin-top:12px;font-size:12px;color:#94a3b8;">Активность: ${tr(ACTIVITY_MAP, data.activity)}</div>`);
+  }
+  document.getElementById("weightRows").innerHTML = rows.join("");
 
   return data;
 }
 
-function updateIntakeBar(data) {
-  const cal = data.dailyCaloriesGoal || 0;
-  // пробуем взять из localStorage дневной калораж (если страница питания его сохраняет)
-  const eaten = parseInt(localStorage.getItem("todayCalories") || "0");
-  const pct = cal > 0 ? Math.min(100, Math.round((eaten / cal) * 100)) : 0;
-  document.getElementById("intakeLabel").innerText =
-    eaten > 0
-      ? `Сегодня потреблено: ${eaten} / ${cal} ккал`
-      : `Дневная цель: ${cal} ккал`;
-  document.getElementById("intakeBar").innerHTML =
-    `<div style="background:#0ea5e9;width:${pct}%;border-radius:999px;transition:width 0.6s;"></div>
-     <div style="background:#e8edf3;width:${100-pct}%;border-radius:999px;"></div>`;
+// ── калории сегодня с /meals ──
+async function loadTodayCalories(goalCal) {
+  try {
+    const now   = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const end   = start + 86400000;
+
+    const res  = await fetch(`/meals?userId=${profileId}&start=${start}&end=${end}`);
+    const meals = await res.json();
+
+    const eaten = meals.reduce((s, m) => s + (parseFloat(m.calories) || 0), 0);
+    const goal  = parseFloat(goalCal) || 0;
+    const pct   = goal > 0 ? Math.min(100, Math.round((eaten / goal) * 100)) : 0;
+    const left  = Math.max(0, goal - eaten);
+
+    document.getElementById("eatenCal").innerText  = Math.round(eaten);
+    document.getElementById("intakeFill").style.width = pct + "%";
+
+    // цвет полосы: зелёный если в норме, оранжевый если перебор
+    document.getElementById("intakeFill").style.background =
+      pct >= 100 ? "#f59e0b" : "#0ea5e9";
+
+    document.getElementById("intakeSub").innerText =
+      goal > 0
+        ? (left > 0 ? `Ещё ${Math.round(left)} ккал до цели` : "Дневная цель достигнута")
+        : "Цель по калориям не задана";
+  } catch(e) {
+    document.getElementById("eatenCal").innerText = "—";
+    document.getElementById("intakeSub").innerText = "Не удалось загрузить данные питания";
+  }
 }
 
 // ── история тренировок ──
 async function loadWorkoutHistory() {
   const list = document.getElementById("activityList");
   try {
-    const res = await fetch(`/workout-history/${profileId}`);
+    const res  = await fetch(`/workout-history/${profileId}`);
     const rows = await res.json();
 
     if (!rows || rows.length === 0) {
-      list.innerHTML = `<div class="empty-state"><div class="e-icon">🏃</div>Тренировок пока нет</div>`;
+      list.innerHTML = `<div class="empty-state">Тренировок пока нет</div>`;
       return;
     }
 
-    // берём последние 5
-    const recent = rows.slice(0, 5);
-    list.innerHTML = recent.map((r, i) => {
+    list.innerHTML = rows.slice(0,5).map((r,i) => {
       const color = DOT_COLORS[i % DOT_COLORS.length];
       const badge = BADGE_STYLES[i % BADGE_STYLES.length];
-      const done = r.isFullyDone
+      const done  = r.isFullyDone
         ? `<span class="act-badge" style="${badge}">Выполнено</span>`
         : `<span class="act-badge" style="background:#fef2f2;color:#b91c1c;">Частично</span>`;
       const sub = r.completedExercises != null
-        ? `${r.completedExercises}/${r.totalExercises} упр.`
-        : "";
+        ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
       return `
         <div class="activity-row">
           <div class="act-dot" style="background:${color};"></div>
@@ -444,39 +482,37 @@ async function loadWorkoutHistory() {
         </div>`;
     }).join("");
   } catch(e) {
-    list.innerHTML = `<div class="empty-state"><div class="e-icon"></div>Не удалось загрузить</div>`;
+    list.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
 
-// ── тренировки с упражнениями (реальные веса) ──
+// ── упражнения с весами ──
 async function loadWorkoutsWithExercises() {
   const el = document.getElementById("strengthTable");
   try {
-    const res = await fetch(`/workouts/full/${profileId}`);
+    const res      = await fetch(`/workouts/full/${profileId}`);
     const workouts = await res.json();
 
     if (!workouts || workouts.length === 0) {
-      el.innerHTML = `<div class="empty-state"><div class="e-icon">🏋️</div>Тренировки не созданы</div>`;
+      el.innerHTML = `<div class="empty-state">Тренировки не созданы</div>`;
       return;
     }
 
-    // собираем все упражнения с весами из всех тренировок
     const allEx = [];
     workouts.forEach(w => {
       (w.exercises || []).forEach(ex => {
-        if (ex.weight > 0 || ex.sets > 0) {
-          allEx.push({ workout: w.name, ...ex });
-        }
+        allEx.push({ workout: w.name, ...ex });
       });
     });
 
-    if (allEx.length === 0) {
-      // показываем список тренировок без весов
-      el.innerHTML = workouts.slice(0,5).map((w,i) => {
-        const color = DOT_COLORS[i % DOT_COLORS.length];
+    const withWeight = allEx.filter(e => e.weight > 0);
+
+    if (withWeight.length === 0) {
+      // просто список тренировок
+      el.innerHTML = workouts.slice(0,6).map((w,i) => {
         const cnt = (w.exercises||[]).length;
         return `<div class="activity-row" style="margin-bottom:6px;">
-          <div class="act-dot" style="background:${color};"></div>
+          <div class="act-dot" style="background:${DOT_COLORS[i%DOT_COLORS.length]};"></div>
           <span class="act-name">${w.name}</span>
           <span class="act-date">${cnt} упр.</span>
         </div>`;
@@ -484,44 +520,34 @@ async function loadWorkoutsWithExercises() {
       return;
     }
 
-    // таблица с весами
-    const rows = allEx.slice(0, 8).map(ex => {
-      const weightStr = ex.weight > 0
-        ? `<span class="s-pill">${ex.weight} кг</span>`
-        : `<span style="color:#cbd5e1;">—</span>`;
-      return `<tr>
+    const trs = withWeight.slice(0,8).map(ex => `
+      <tr>
         <td>${ex.name}</td>
         <td style="color:#64748b;font-size:12px;">${ex.workout}</td>
-        <td style="text-align:center;">${ex.sets}×${ex.reps}</td>
-        <td style="text-align:center;">${weightStr}</td>
-      </tr>`;
-    }).join("");
+        <td style="text-align:center;color:#475569;">${ex.sets}×${ex.reps}</td>
+        <td style="text-align:center;"><span class="s-pill">${ex.weight} кг</span></td>
+      </tr>`).join("");
 
     el.innerHTML = `
       <table class="strength-table">
-        <thead>
-          <tr>
-            <th>Упражнение</th>
-            <th>Тренировка</th>
-            <th style="text-align:center;">Подх×Повт</th>
-            <th style="text-align:center;">Вес</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
+        <thead><tr>
+          <th>Упражнение</th><th>Тренировка</th>
+          <th style="text-align:center;">Подх×Повт</th>
+          <th style="text-align:center;">Вес</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
       </table>`;
   } catch(e) {
-    el.innerHTML = `<div class="empty-state"><div class="e-icon"></div>Не удалось загрузить</div>`;
+    el.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
 
-function logout() {
-  localStorage.clear();
-  location.href = "/adminvh.html";
-}
+function logout() { localStorage.clear(); location.href="/adminvh.html"; }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadProfile();
+  const data = await loadProfile();
   await Promise.all([
+    loadTodayCalories(data?.dailyCaloriesGoal),
     loadWorkoutHistory(),
     loadWorkoutsWithExercises(),
   ]);
