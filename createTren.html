@@ -398,26 +398,79 @@ function renderSelected(){
 
 /* create workout */
 async function createWorkout() {
+    // получаем userId из хранилища
+    const user = JSON.parse(localStorage.getItem("user") || sessionStorage.getItem("user") || "{}");
+    const userId = user.id || user.userId;
+
+    if (!userId) {
+        alert("Ошибка: не найден пользователь. Войдите заново.");
+        return;
+    }
+
+    const name = document.getElementById("workoutName").value.trim();
+    if (!name) {
+        alert("Введите название тренировки");
+        return;
+    }
+
+    if (selected.length === 0) {
+        alert("Добавьте хотя бы одно упражнение");
+        return;
+    }
+
     const payload = {
-        userId: currentUser.id,        // твой способ получения userId
-        name: document.getElementById("workoutName").value,
+        userId: userId,
+        name: name,
         difficulty: document.getElementById("difficulty").value,
         isRecommended: document.getElementById("isRecommended").checked,
         exercises: selected
     };
 
-    const res = await fetch("/workouts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
+    console.log("📤 Отправляем:", payload);
 
-    const data = await res.json();
-    if (data.success) {
-        alert("Тренировка создана!");
+    try {
+        const res = await fetch("/workouts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        console.log("📥 Ответ сервера:", data);
+
+        if (data.success) {
+            const workoutId = data.id;
+
+            // сохраняем упражнения
+            for (const ex of selected) {
+                await fetch("/exercises", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        workoutId: workoutId,
+                        exerciseId: ex.exerciseid,
+                        name: ex.name,
+                        sets: ex.sets,
+                        reps: ex.reps,
+                        weight: ex.weight,
+                        rest: ex.rest
+                    })
+                });
+            }
+
+            alert("✅ Тренировка создана!");
+            document.getElementById("workoutName").value = "";
+            document.getElementById("isRecommended").checked = false;
+            selected = [];
+            renderSelected();
+        } else {
+            alert("Ошибка: " + (data.error || "неизвестная ошибка"));
+        }
+    } catch (err) {
+        console.error("❌ Ошибка:", err);
+        alert("Ошибка соединения с сервером");
     }
 }
-loadExercises();
 </script>
 
 </body>
