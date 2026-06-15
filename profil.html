@@ -144,7 +144,7 @@ body {
   transition: width 0.9s cubic-bezier(.4,0,.2,1);
 }
 
-/* ── STATS ── */
+/* ── STATS (4 колонки) ── */
 .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
 .stat-card {
   background: var(--card);
@@ -213,7 +213,21 @@ body {
 .weight-meta-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
 .weight-meta-val { font-size: 15px; font-weight: 600; color: var(--text); }
 
-/* ── ACTIVITY ── */
+/* ── ACTIVITY INFO CARD ── */
+.info-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  text-align: center;
+}
+.info-card-icon { font-size: 28px; margin-bottom: 8px; }
+.info-card-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.info-card-value { font-size: 20px; font-weight: 700; color: var(--text); }
+.info-card-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── ACTIVITY LIST ── */
 .activity-list { display: flex; flex-direction: column; gap: 7px; }
 .activity-row {
   display: flex; align-items: center; gap: 10px;
@@ -233,45 +247,6 @@ body {
   font-size: 11px; font-weight: 600;
   padding: 2px 10px; border-radius: 999px;
   white-space: nowrap; margin-left: 8px;
-}
-
-/* ── LAST ACTIVITY CARD ── */
-.last-activity-card {
-  background: linear-gradient(135deg, rgba(59,142,240,0.08), rgba(59,142,240,0.02));
-  border: 1px solid rgba(59,142,240,0.2);
-  border-radius: 16px;
-  padding: 16px 20px;
-}
-.last-activity-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent2);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin-bottom: 12px;
-}
-.last-activity-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.last-activity-row:last-child {
-  border-bottom: none;
-}
-.last-activity-label {
-  font-size: 13px;
-  color: var(--soft);
-}
-.last-activity-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-.last-activity-icon {
-  margin-right: 8px;
-  font-size: 14px;
 }
 
 /* ── STRENGTH TABLE ── */
@@ -397,32 +372,19 @@ body {
     </div>
   </div>
 
-  <!-- ПОСЛЕДНЯЯ АКТИВНОСТЬ -->
-  <div class="last-activity-card">
-    <div class="last-activity-title">📊 ПОСЛЕДНЯЯ АКТИВНОСТЬ</div>
-    <div class="last-activity-row">
-      <div class="last-activity-label">
-        <span class="last-activity-icon">🏋️</span> Последняя тренировка
-      </div>
-      <div class="last-activity-value" id="lastWorkoutDate">—</div>
+  <!-- ИНФОРМАЦИЯ О ПОСЛЕДНЕЙ АКТИВНОСТИ (2 карточки) -->
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="info-card-icon">🏋️</div>
+      <div class="info-card-label">Последняя тренировка</div>
+      <div class="info-card-value" id="lastWorkoutName">—</div>
+      <div class="info-card-date" id="lastWorkoutDate">—</div>
     </div>
-    <div class="last-activity-row">
-      <div class="last-activity-label">
-        <span class="last-activity-icon">📅</span> Всего тренировок
-      </div>
-      <div class="last-activity-value" id="totalWorkouts">0</div>
-    </div>
-    <div class="last-activity-row">
-      <div class="last-activity-label">
-        <span class="last-activity-icon">✅</span> Выполнено полностью
-      </div>
-      <div class="last-activity-value" id="fullyCompleted">0</div>
-    </div>
-    <div class="last-activity-row">
-      <div class="last-activity-label">
-        <span class="last-activity-icon">📈</span> Процент выполнения
-      </div>
-      <div class="last-activity-value" id="completionPercent">0%</div>
+    <div class="info-card">
+      <div class="info-card-icon">📊</div>
+      <div class="info-card-label">Всего тренировок</div>
+      <div class="info-card-value" id="totalWorkouts">0</div>
+      <div class="info-card-date" id="completionRate"></div>
     </div>
   </div>
 
@@ -469,7 +431,14 @@ function tr(map,val){
   return map[k]||val;
 }
 
-function formatDate(timestamp){
+function formatDateFull(timestamp){
+  if(!timestamp) return "—";
+  const date = new Date(typeof timestamp === 'number' ? timestamp : Date.parse(timestamp));
+  if(isNaN(date)) return "—";
+  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
+}
+
+function formatDateShort(timestamp){
   if(!timestamp) return "—";
   const date = new Date(typeof timestamp === 'number' ? timestamp : Date.parse(timestamp));
   if(isNaN(date)) return "—";
@@ -481,7 +450,7 @@ function formatDate(timestamp){
   
   if(targetDate.getTime() === today.getTime()) return "Сегодня";
   if(targetDate.getTime() === yesterday.getTime()) return "Вчера";
-  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
+  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"short"});
 }
 
 const role=(localStorage.getItem("role")||"").toLowerCase();
@@ -582,22 +551,22 @@ async function loadWorkoutHistory(){
     const res=await fetch(`/workout-history/${profileId}`);
     const rows=await res.json();
     
-    // Обновляем карточку последней активности
+    // Обновляем карточки информации
     if(rows && rows.length>0){
       const lastWorkout = rows[0];
       const totalWorkouts = rows.length;
       const fullyCompleted = rows.filter(r=>r.isFullyDone).length;
       const completionPercent = Math.round((fullyCompleted/totalWorkouts)*100);
       
-      document.getElementById("lastWorkoutDate").innerHTML = `${lastWorkout.workoutName || "Тренировка"}<span style="font-size:10px;color:var(--muted);display:block;">${formatDate(lastWorkout.completedAt)}</span>`;
+      document.getElementById("lastWorkoutName").innerText = lastWorkout.workoutName || "Тренировка";
+      document.getElementById("lastWorkoutDate").innerText = formatDateFull(lastWorkout.completedAt);
       document.getElementById("totalWorkouts").innerText = totalWorkouts;
-      document.getElementById("fullyCompleted").innerText = fullyCompleted;
-      document.getElementById("completionPercent").innerHTML = `<span style="color:#22c55e;">${completionPercent}%</span>`;
+      document.getElementById("completionRate").innerHTML = `Выполнено: ${completionPercent}%`;
     } else {
-      document.getElementById("lastWorkoutDate").innerText = "Нет тренировок";
+      document.getElementById("lastWorkoutName").innerText = "Нет тренировок";
+      document.getElementById("lastWorkoutDate").innerText = "—";
       document.getElementById("totalWorkouts").innerText = "0";
-      document.getElementById("fullyCompleted").innerText = "0";
-      document.getElementById("completionPercent").innerText = "0%";
+      document.getElementById("completionRate").innerHTML = "—";
     }
     
     if(!rows||rows.length===0){
@@ -614,7 +583,7 @@ async function loadWorkoutHistory(){
         <div class="act-dot" style="background:${color};"></div>
         <span class="act-name">${r.workoutName||"Тренировка"}</span>
         <div class="act-meta">
-          <span class="act-date">${formatDate(r.completedAt)}</span>
+          <span class="act-date">${formatDateShort(r.completedAt)}</span>
           ${sub?`<span class="act-sub">${sub}</span>`:""}
         </div>
         ${badge}
