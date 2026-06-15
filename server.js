@@ -494,6 +494,49 @@ app.post("/meals", async (req, res) => {
         });
     }
 });
+
+app.get("/workouts/recommended", async (req, res) => {
+    try {
+        const workouts = await pool.query(`
+            SELECT
+                w.workoutid AS id,
+                w.name,
+                w.created_at AS "createdAt",
+                w.is_recommended AS "isRecommended",
+                u.name AS "authorName"
+            FROM workouts w
+            JOIN users u ON u.userid = w.user_id
+            WHERE w.is_recommended = TRUE
+            ORDER BY w.workoutid DESC
+        `);
+
+        const result = [];
+
+        for (const w of workouts.rows) {
+            const exercises = await pool.query(`
+                SELECT
+                    e.exerciseid AS "exerciseId",
+                    e.name,
+                    e.muscle_group AS "muscleGroup",
+                    we.sets,
+                    we.reps,
+                    we.weight,
+                    we.rest
+                FROM workoutexercises we
+                JOIN exercises e ON e.exerciseid = we.exercise_id
+                WHERE we.workout_id = $1
+            `, [w.id]);
+
+            result.push({ ...w, exercises: exercises.rows });
+        }
+
+        res.json(result);
+
+    } catch (err) {
+        console.error("❌ RECOMMENDED WORKOUTS ERROR:", err);
+        res.status(500).json([]);
+    }
+});
 // -------------------- WORKOUTS --------------------
 
 app.patch("/workouts/:id/recommend", async (req, res) => {
@@ -554,48 +597,7 @@ app.get("/workouts/:userId", async (req, res) => {
     }
 });
 
-app.get("/workouts/recommended", async (req, res) => {
-    try {
-        const workouts = await pool.query(`
-            SELECT
-                w.workoutid AS id,
-                w.name,
-                w.created_at AS "createdAt",
-                w.is_recommended AS "isRecommended",
-                u.name AS "authorName"
-            FROM workouts w
-            JOIN users u ON u.userid = w.user_id
-            WHERE w.is_recommended = TRUE
-            ORDER BY w.workoutid DESC
-        `);
 
-        const result = [];
-
-        for (const w of workouts.rows) {
-            const exercises = await pool.query(`
-                SELECT
-                    e.exerciseid AS "exerciseId",
-                    e.name,
-                    e.muscle_group AS "muscleGroup",
-                    we.sets,
-                    we.reps,
-                    we.weight,
-                    we.rest
-                FROM workoutexercises we
-                JOIN exercises e ON e.exerciseid = we.exercise_id
-                WHERE we.workout_id = $1
-            `, [w.id]);
-
-            result.push({ ...w, exercises: exercises.rows });
-        }
-
-        res.json(result);
-
-    } catch (err) {
-        console.error("❌ RECOMMENDED WORKOUTS ERROR:", err);
-        res.status(500).json([]);
-    }
-});
 
 app.post("/workouts", async (req, res) => {
     try {
