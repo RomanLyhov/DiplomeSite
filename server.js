@@ -597,7 +597,102 @@ app.get("/workouts/:userId", async (req, res) => {
     }
 });
 
+app.post("/workouts/copy", async (req, res) => {
+    try {
+        const { userId, workoutId } = req.body;
 
+        if (!userId || !workoutId) {
+            return res.status(400).json({ success: false, error: "userId or workoutId missing" });
+        }
+
+        // Проверяем не добавлена ли уже
+        const exists = await pool.query(
+            `SELECT workoutid FROM workouts WHERE user_id=$1 AND copied_from=$2 LIMIT 1`,
+            [userId, workoutId]
+        );
+        if (exists.rows.length > 0) {
+            return res.json({ success: false, alreadyAdded: true });
+        }
+
+        // Получаем оригинальную тренировку
+        const original = await pool.query(
+            "SELECT * FROM workouts WHERE workoutid=$1", [workoutId]
+        );
+        if (!original.rows[0]) {
+            return res.status(404).json({ success: false, error: "Workout not found" });
+        }
+
+        const w = original.rows[0];
+
+        // Создаём копию
+        const newWorkout = await pool.query(
+            `INSERT INTO workouts(user_id, name, created_at, is_recommended, copied_from)
+             VALUES ($1, $2, NOW(), FALSE, $3)
+             RETURNING workoutid`,
+            [userId, w.name, workoutId]
+        );
+        const newId = newWorkout.rows[0].workoutid;
+
+        // Копируем упражнения
+        const exercises = await pool.query(
+            "SELECT * FROM workoutexercises WHERE workout_id=$1", [workoutId]
+        );
+        for (const ex of exercises.rows) {
+            await pool.query(
+                `INSERT INTO workoutexercises(workout_id, exercise_id, sets, reps, weight, rest)
+                 VALUES ($1,$2,$3,$4,$5,$6)`,
+                [newId, ex.exercise_id, ex.sets, ex.reps, ex.weight, ex.rest]
+            );
+        }
+
+        res.json({ success: true, id: newId });
+
+    } catch (err) {
+        console.error("❌ COPY WORKOUT ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+app.get("/workouts/full/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        const workouts = await pool.query(
+            "SELECT * FROM workouts WHERE user_id=$1",
+            [userId]
+        );
+
+        const result = [];
+
+        for (const w of workouts.rows) {
+            const exercises = await pool.query(`
+                SELECT
+                    e.exerciseid,
+                    e.name,
+                    we.sets,
+                    we.reps,
+                    we.weight,
+                    we.rest
+                FROM workoutexercises we
+                JOIN exercises e ON e.exerciseid = we.exercise_id
+                WHERE we.workout_id = $1
+            `, [w.workoutid]);
+
+            result.push({
+                id: w.workoutid,
+                userId: w.user_id,
+                name: w.name,
+                createdAt: w.created_at,
+                exercises: exercises.rows
+            });
+        }
+
+        res.json(result);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json([]);
+    }
+});
 
 app.post("/workouts", async (req, res) => {
     try {
@@ -818,6 +913,8 @@ app.post("/exercises", async (req, res) => {
     }
 });
 
+
+
 app.delete("/exercises/:id", async (req, res) => {
     try {
         await pool.query("DELETE FROM workoutexercises WHERE exercise_id=$1", [req.params.id]);
@@ -873,47 +970,7 @@ app.post("/workouts/full", async (req, res) => {
     }
 });
 
-app.get("/workouts/full/:userId", async (req, res) => {
-    try {
-        const userId = req.params.userId;
 
-        const workouts = await pool.query(
-            "SELECT * FROM workouts WHERE user_id=$1",
-            [userId]
-        );
-
-        const result = [];
-
-        for (const w of workouts.rows) {
-            const exercises = await pool.query(`
-                SELECT
-                    e.exerciseid,
-                    e.name,
-                    we.sets,
-                    we.reps,
-                    we.weight,
-                    we.rest
-                FROM workoutexercises we
-                JOIN exercises e ON e.exerciseid = we.exercise_id
-                WHERE we.workout_id = $1
-            `, [w.workoutid]);
-
-            result.push({
-                id: w.workoutid,
-                userId: w.user_id,
-                name: w.name,
-                createdAt: w.created_at,
-                exercises: exercises.rows
-            });
-        }
-
-        res.json(result);
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json([]);
-    }
-});
 
 app.delete("/workouts/:id", async (req, res) => {
     try {
