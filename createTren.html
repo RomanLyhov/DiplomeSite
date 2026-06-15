@@ -229,6 +229,12 @@ input:focus, select:focus{
         <label>Название тренировки</label>
         <input id="workoutName" placeholder="например: День груди">
       </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+  <input type="checkbox" id="isRecommended" style="width:18px; height:18px; cursor:pointer; accent-color:#4F46E5;">
+  <label for="isRecommended" style="font-size:14px; font-weight:500; color:#334155; cursor:pointer;">
+    ⭐ Рекомендовать пользователям
+  </label>
+</div>
 
       <div>
         <label>Сложность</label>
@@ -391,19 +397,26 @@ function renderSelected(){
 }
 
 /* create workout */
-function createWorkout(){
+async function createWorkout() {
+    const payload = {
+        userId: currentUser.id,        // твой способ получения userId
+        name: document.getElementById("workoutName").value,
+        difficulty: document.getElementById("difficulty").value,
+        isRecommended: document.getElementById("isRecommended").checked,
+        exercises: selected
+    };
 
-  const payload = {
-    name: document.getElementById("workoutName").value,
-    difficulty: document.getElementById("difficulty").value,
-    exercises: selected
-  };
+    const res = await fetch("/workouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
 
-  console.log(payload);
-
-  alert("Тренировка готова к сохранению в БД");
+    const data = await res.json();
+    if (data.success) {
+        alert("Тренировка создана!");
+    }
 }
-
 loadExercises();
 </script>
 

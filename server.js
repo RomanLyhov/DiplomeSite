@@ -495,6 +495,23 @@ app.post("/meals", async (req, res) => {
     }
 });
 // -------------------- WORKOUTS --------------------
+
+app.patch("/workouts/:id/recommend", async (req, res) => {
+    try {
+        const { isRecommended } = req.body;
+
+        await pool.query(
+            "UPDATE workouts SET is_recommended=$1 WHERE workoutid=$2",
+            [isRecommended, req.params.id]
+        );
+
+        res.json({ success: true });
+
+    } catch (err) {
+        console.error("❌ PATCH RECOMMEND ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 app.get("/workouts/:userId", async (req, res) => {
     try {
          console.log("🔥 HIT WORKOUTS API");
@@ -537,38 +554,71 @@ app.get("/workouts/:userId", async (req, res) => {
     }
 });
 
+app.get("/workouts/recommended", async (req, res) => {
+    try {
+        const workouts = await pool.query(`
+            SELECT
+                w.workoutid AS id,
+                w.name,
+                w.created_at AS "createdAt",
+                w.is_recommended AS "isRecommended",
+                u.name AS "authorName"
+            FROM workouts w
+            JOIN users u ON u.userid = w.user_id
+            WHERE w.is_recommended = TRUE
+            ORDER BY w.workoutid DESC
+        `);
+
+        const result = [];
+
+        for (const w of workouts.rows) {
+            const exercises = await pool.query(`
+                SELECT
+                    e.exerciseid AS "exerciseId",
+                    e.name,
+                    e.muscle_group AS "muscleGroup",
+                    we.sets,
+                    we.reps,
+                    we.weight,
+                    we.rest
+                FROM workoutexercises we
+                JOIN exercises e ON e.exerciseid = we.exercise_id
+                WHERE we.workout_id = $1
+            `, [w.id]);
+
+            result.push({ ...w, exercises: exercises.rows });
+        }
+
+        res.json(result);
+
+    } catch (err) {
+        console.error("❌ RECOMMENDED WORKOUTS ERROR:", err);
+        res.status(500).json([]);
+    }
+});
+
 app.post("/workouts", async (req, res) => {
     try {
         const userId = req.body.userId || req.body.user_id;
         const name = req.body.name;
+        const isRecommended = req.body.isRecommended === true || req.body.isRecommended === "true";
 
         if (!userId || !name) {
-            return res.status(400).json({
-                success: false,
-                error: "userId or name missing"
-            });
+            return res.status(400).json({ success: false, error: "userId or name missing" });
         }
 
         const result = await pool.query(
-            `
-            INSERT INTO workouts(user_id, name, created_at)
-            VALUES ($1, $2, NOW())
-            RETURNING workoutid
-            `,
-            [userId, name]
+            `INSERT INTO workouts(user_id, name, created_at, is_recommended)
+             VALUES ($1, $2, NOW(), $3)
+             RETURNING workoutid`,
+            [userId, name, isRecommended]
         );
 
-        res.json({
-            success: true,
-            id: result.rows[0].workoutid
-        });
+        res.json({ success: true, id: result.rows[0].workoutid });
 
     } catch (err) {
         console.error("❌ WORKOUT ERROR:", err);
-        res.status(500).json({
-            success: false,
-            error: err.message
-        });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 // -------------------- EXERCISES --------------------
