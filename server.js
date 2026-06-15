@@ -59,6 +59,14 @@ app.post("/login", async (req, res) => {
                 message: "WRONG_PASSWORD"
             });
         }
+       
+await pool.query(
+    `UPDATE users
+     SET is_online = true,
+         last_seen = $1
+     WHERE userid = $2`,
+    [Date.now(), user.userid]
+);
 
         const token = jwt.sign(
             {
@@ -230,6 +238,10 @@ SELECT
     activity,
     goal,
     gender,
+
+    last_seen AS "lastSeen",
+    is_online AS "isOnline",
+
     dailycaloriesgoal AS "dailyCaloriesGoal",
     dailyproteingoal AS "dailyProteinGoal",
     dailyfatgoal AS "dailyFatGoal",
@@ -547,6 +559,25 @@ app.get("/workouts/recommended", async (req, res) => {
     }
 });
 // -------------------- WORKOUTS --------------------
+
+app.post("/logout", async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        await pool.query(
+            `UPDATE users
+             SET is_online = false,
+                 last_seen = $1
+             WHERE userid = $2`,
+            [Date.now(), userId]
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("LOGOUT ERROR:", err);
+        res.status(500).json({ success: false });
+    }
+});
 
 app.patch("/workouts/:id/recommend", async (req, res) => {
     try {

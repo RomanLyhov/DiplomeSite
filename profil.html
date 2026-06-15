@@ -386,6 +386,12 @@ body {
       <div class="info-card-value" id="totalWorkouts">0</div>
       <div class="info-card-date" id="completionRate"></div>
     </div>
+    <div class="info-card">
+  <div class="info-card-icon">🟢</div>
+  <div class="info-card-label">Статус</div>
+  <div class="info-card-value" id="onlineStatus">—</div>
+  <div class="info-card-date" id="lastSeenDate">—</div>
+</div>
   </div>
 
   <!-- ACTIVITY + STRENGTH -->
@@ -640,6 +646,18 @@ async function loadWorkoutsWithExercises(){
   }
 }
 
+const onlineStatus =
+    data.isOnline
+        ? "🟢 В сети"
+        : "⚫ Не в сети";
+
+document.getElementById("onlineStatus").innerText =
+    onlineStatus;
+
+document.getElementById("lastSeenDate").innerText =
+    data.isOnline
+        ? "Сейчас онлайн"
+        : `Был в сети: ${formatDateFull(data.lastSeen)}`;
 function logout(){ localStorage.clear(); location.href="/adminvh.html"; }
 
 document.addEventListener("DOMContentLoaded",async()=>{
