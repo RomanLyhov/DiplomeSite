@@ -118,7 +118,6 @@ body {
   box-shadow: 0 0 0 3px rgba(59,142,240,0.2);
   position: relative;
 }
-/* онлайн-индикатор на аватаре */
 .avatar-online-dot {
   position: absolute;
   bottom: 3px; right: 3px;
@@ -140,6 +139,7 @@ body {
   color: var(--green);
   border: 1px solid rgba(34,197,94,0.25);
 }
+/* онлайн-статус под прогрессом */
 .hero-progress { text-align: right; }
 .prog-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
 .prog-num { font-size: 30px; font-weight: 800; color: var(--accent2); line-height: 1; }
@@ -155,8 +155,41 @@ body {
   border-radius: 999px;
   transition: width 0.9s cubic-bezier(.4,0,.2,1);
 }
+.hero-online {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--soft);
+}
+.online-badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.online-badge.online .dot  { background: var(--green); box-shadow: 0 0 5px rgba(34,197,94,0.7); animation: pulse-green 2s infinite; }
+.online-badge.offline .dot { background: var(--muted); }
+.online-badge.online  { color: var(--green); }
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 3px rgba(34,197,94,0.5); }
+  50%      { box-shadow: 0 0 8px rgba(34,197,94,0.9); }
+}
+.hero-lastseen {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  text-align: right;
+}
 
-/* ── STATS (4 колонки) ── */
+/* ── STATS ── */
 .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
 .stat-card {
   background: var(--card);
@@ -183,69 +216,6 @@ body {
 .card-title {
   font-size: 11px; font-weight: 600; color: var(--muted);
   margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.6px;
-}
-
-/* ── ACTIVITY INFO CARDS (3 в ряд) ── */
-.info-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.info-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  transition: border-color 0.2s;
-}
-.info-card:hover { border-color: var(--border2); }
-.info-card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.info-card-icon { font-size: 18px; }
-.info-card-label {
-  font-size: 10px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-.info-card-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.2;
-}
-.info-card-sub {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-/* онлайн-статус */
-.online-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-}
-.online-badge .dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.online-badge.online .dot  { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.7); animation: pulse-green 2s infinite; }
-.online-badge.offline .dot { background: var(--muted); }
-@keyframes pulse-green {
-  0%,100% { box-shadow: 0 0 4px rgba(34,197,94,0.6); }
-  50%      { box-shadow: 0 0 10px rgba(34,197,94,0.9); }
 }
 
 /* ── KBJU ── */
@@ -371,6 +341,14 @@ body {
       <div class="prog-bar-wrap">
         <div class="prog-bar-fill" id="bar" style="width:0%"></div>
       </div>
+      <!-- статус онлайн под прогрессом -->
+      <div class="hero-online">
+        <span class="online-badge" id="onlineBadge">
+          <span class="dot"></span>
+          <span id="onlineText">—</span>
+        </span>
+      </div>
+      <div class="hero-lastseen" id="lastSeenSub"></div>
     </div>
   </div>
 
@@ -423,41 +401,6 @@ body {
     </div>
   </div>
 
-  <!-- 3 КАРТОЧКИ АКТИВНОСТИ -->
-  <div class="info-cards">
-
-    <!-- Онлайн-статус -->
-    <div class="info-card">
-      <div class="info-card-header">
-        <span class="info-card-icon">🔵</span>
-        <span class="info-card-label">Статус</span>
-      </div>
-      <div class="info-card-value" id="onlineStatusVal">—</div>
-      <div class="info-card-sub" id="lastSeenSub">—</div>
-    </div>
-
-    <!-- Последняя тренировка -->
-    <div class="info-card">
-      <div class="info-card-header">
-        <span class="info-card-icon">🏋️</span>
-        <span class="info-card-label">Последняя тренировка</span>
-      </div>
-      <div class="info-card-value" id="lastWorkoutName">—</div>
-      <div class="info-card-sub" id="lastWorkoutDate">—</div>
-    </div>
-
-    <!-- Всего тренировок -->
-    <div class="info-card">
-      <div class="info-card-header">
-        <span class="info-card-icon">📊</span>
-        <span class="info-card-label">Всего тренировок</span>
-      </div>
-      <div class="info-card-value" id="totalWorkouts">0</div>
-      <div class="info-card-sub" id="completionRate">—</div>
-    </div>
-
-  </div>
-
   <!-- ИСТОРИЯ + УПРАЖНЕНИЯ -->
   <div class="two-col">
     <div class="card">
@@ -502,7 +445,6 @@ function tr(map, val) {
   return map[k] || val;
 }
 
-// Форматирование даты (полная)
 function formatDateFull(ts) {
   if (!ts) return "—";
   const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
@@ -510,12 +452,11 @@ function formatDateFull(ts) {
   return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 }
 
-// Форматирование даты (короткая, с "Сегодня / Вчера")
 function formatDateShort(ts) {
   if (!ts) return "—";
   const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
   if (isNaN(d)) return "—";
-  const now  = new Date();
+  const now   = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
   const tgt   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -524,18 +465,17 @@ function formatDateShort(ts) {
   return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
 }
 
-// "5 минут назад", "3 часа назад", "2 дня назад"
 function timeAgo(ts) {
   if (!ts) return null;
-  const d    = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
   if (isNaN(d)) return null;
-  const diff = Math.floor((Date.now() - d.getTime()) / 1000); // секунды
-  if (diff < 60)   return "только что";
-  if (diff < 3600) return `${Math.floor(diff / 60)} мин. назад`;
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (diff < 60)    return "только что";
+  if (diff < 3600)  return `${Math.floor(diff / 60)} мин. назад`;
   if (diff < 86400) return `${Math.floor(diff / 3600)} ч. назад`;
   const days = Math.floor(diff / 86400);
-  if (days === 1)  return "вчера";
-  if (days < 30)   return `${days} дн. назад`;
+  if (days === 1)   return "вчера";
+  if (days < 30)    return `${days} дн. назад`;
   return formatDateFull(ts);
 }
 
@@ -549,7 +489,7 @@ let profileId = localStorage.getItem("selectedUserId");
 if (!profileId || profileId === "null") profileId = authUserId;
 if (role !== "admin") profileId = authUserId;
 
-const DOT_COLORS   = ["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
+const DOT_COLORS = ["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
 const BADGE_STYLES = [
   "background:rgba(59,142,240,0.15);color:#60aaf8;border:1px solid rgba(59,142,240,0.25);",
   "background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2);",
@@ -559,69 +499,54 @@ const BADGE_STYLES = [
   "background:rgba(52,211,153,0.12);color:#6ee7b7;border:1px solid rgba(52,211,153,0.2);",
 ];
 
-// ── ЗАПОЛНЕНИЕ ОНЛАЙН-СТАТУСА ──
-// data — объект пользователя из /users/:id
-// data.isOnline  — boolean
-// data.lastSeen  — timestamp (число мс) или ISO-строка
 function renderOnlineStatus(data) {
   const isOnline = data.isOnline === true || data.isOnline === "true";
   const lastSeen = data.lastSeen;
 
-  // зелёная точка на аватаре
   const dot = document.getElementById("avatarOnlineDot");
   if (dot) dot.style.display = isOnline ? "block" : "none";
 
-  const statusEl = document.getElementById("onlineStatusVal");
-  const subEl    = document.getElementById("lastSeenSub");
+  const badge   = document.getElementById("onlineBadge");
+  const textEl  = document.getElementById("onlineText");
+  const subEl   = document.getElementById("lastSeenSub");
 
   if (isOnline) {
-    statusEl.innerHTML = `
-      <span class="online-badge online">
-        <span class="dot"></span>
-        В сети
-      </span>`;
-    subEl.innerText = "Сейчас онлайн";
+    badge.className = "online-badge online";
+    textEl.innerText = "В сети";
+    subEl.innerText  = "";
   } else {
-    statusEl.innerHTML = `
-      <span class="online-badge offline">
-        <span class="dot"></span>
-        Не в сети
-      </span>`;
-
+    badge.className = "online-badge offline";
+    textEl.innerText = "Не в сети";
     if (lastSeen) {
       const ago = timeAgo(lastSeen);
-      subEl.innerText = ago
-        ? `Был(а) в сети: ${ago}`
-        : `Был(а) в сети: ${formatDateFull(lastSeen)}`;
+      subEl.innerText = ago ? `Был(а) ${ago}` : formatDateFull(lastSeen);
     } else {
-      subEl.innerText = "Дата последнего входа неизвестна";
+      subEl.innerText = "";
     }
   }
 }
 
-// ── ЗАГРУЗКА ПРОФИЛЯ ──
 async function loadProfile() {
   const res  = await fetch(`/users/${profileId}`);
   const data = await res.json();
 
-  document.getElementById("userId").innerText   = profileId;
+  document.getElementById("userId").innerText    = profileId;
   document.getElementById("nameTitle").innerText = data.name || "—";
   document.getElementById("avatar").childNodes[0].textContent = (data.name?.[0] || "U").toUpperCase();
-  document.getElementById("weight").innerText   = data.weight  ?? "—";
-  document.getElementById("height").innerText   = data.height  ?? "—";
+  document.getElementById("weight").innerText    = data.weight  ?? "—";
+  document.getElementById("height").innerText    = data.height  ?? "—";
   document.getElementById("activityLevel").innerText = tr(ACTIVITY_MAP, data.activity);
 
   const goalRu = tr(GOAL_MAP, data.goal);
-  document.getElementById("goal").innerText     = goalRu;
+  document.getElementById("goal").innerText      = goalRu;
   document.getElementById("goalBadge").innerText = goalRu;
 
-  document.getElementById("calories").innerText = data.dailyCaloriesGoal ?? "—";
-  document.getElementById("protein").innerText  = data.dailyProteinGoal  ?? "—";
-  document.getElementById("fat").innerText      = data.dailyFatGoal      ?? "—";
-  document.getElementById("carbs").innerText    = data.dailyCarbsGoal    ?? "—";
-  document.getElementById("goalCal").innerText  = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
+  document.getElementById("calories").innerText  = data.dailyCaloriesGoal ?? "—";
+  document.getElementById("protein").innerText   = data.dailyProteinGoal  ?? "—";
+  document.getElementById("fat").innerText       = data.dailyFatGoal      ?? "—";
+  document.getElementById("carbs").innerText     = data.dailyCarbsGoal    ?? "—";
+  document.getElementById("goalCal").innerText   = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
 
-  // прогресс-бар цели
   let p = 0;
   if (data.weight && data.targetWeight && data.weight !== data.targetWeight) {
     const w = parseFloat(data.weight), t = parseFloat(data.targetWeight);
@@ -647,13 +572,10 @@ async function loadProfile() {
   }
   document.getElementById("weightRows").innerHTML = rows.join("");
 
-  // ✅ РЕНДЕРИМ ОНЛАЙН-СТАТУС — здесь data уже есть!
   renderOnlineStatus(data);
-
   return data;
 }
 
-// ── КАЛОРИИ ──
 async function loadTodayCalories(goalCal) {
   try {
     const now   = new Date();
@@ -666,9 +588,9 @@ async function loadTodayCalories(goalCal) {
     const pct   = goal > 0 ? Math.min(100, Math.round((eaten / goal) * 100)) : 0;
     const left  = Math.max(0, goal - eaten);
 
-    document.getElementById("eatenCal").innerText               = Math.round(eaten);
-    document.getElementById("intakeFill").style.width           = pct + "%";
-    document.getElementById("intakeFill").style.background      = pct >= 100 ? "#fbbf24" : "#3b8ef0";
+    document.getElementById("eatenCal").innerText          = Math.round(eaten);
+    document.getElementById("intakeFill").style.width      = pct + "%";
+    document.getElementById("intakeFill").style.background = pct >= 100 ? "#fbbf24" : "#3b8ef0";
     document.getElementById("intakeSub").innerText =
       goal > 0
         ? (left > 0 ? `Ещё ${Math.round(left)} ккал до цели` : "Дневная цель достигнута")
@@ -679,53 +601,32 @@ async function loadTodayCalories(goalCal) {
   }
 }
 
-// ── ИСТОРИЯ ТРЕНИРОВОК ──
 async function loadWorkoutHistory() {
   const list = document.getElementById("activityList");
   try {
     const res  = await fetch(`/workout-history/${profileId}`);
     const rows = await res.json();
 
-    // карточки сводки
-    if (rows && rows.length > 0) {
-      const last             = rows[0];
-      const total            = rows.length;
-      const fullyDone        = rows.filter(r => r.isFullyDone).length;
-      const pct              = Math.round((fullyDone / total) * 100);
-
-      document.getElementById("lastWorkoutName").innerText = last.workoutName || "Тренировка";
-      document.getElementById("lastWorkoutDate").innerText = formatDateShort(last.completedAt)
-        + (last.completedAt ? `, ${new Date(
-            typeof last.completedAt === "number"
-              ? last.completedAt
-              : Date.parse(last.completedAt)
-          ).toLocaleDateString("ru-RU", { day:"numeric", month:"long", year:"numeric" })}` : "");
-
-      document.getElementById("totalWorkouts").innerText  = total;
-      document.getElementById("completionRate").innerText = `Полностью выполнено: ${pct}%`;
-    } else {
-      document.getElementById("lastWorkoutName").innerText = "Нет тренировок";
-      document.getElementById("lastWorkoutDate").innerText = "—";
-      document.getElementById("totalWorkouts").innerText   = "0";
-      document.getElementById("completionRate").innerText  = "—";
-    }
-
-    // список
     if (!rows || rows.length === 0) {
       list.innerHTML = `<div class="empty-state">Тренировок пока нет</div>`;
       return;
     }
+
     list.innerHTML = rows.slice(0, 5).map((r, i) => {
       const color = DOT_COLORS[i % DOT_COLORS.length];
       const badge = r.isFullyDone
         ? `<span class="act-badge" style="${BADGE_STYLES[i % BADGE_STYLES.length]}">Выполнено</span>`
         : `<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">Частично</span>`;
       const sub = r.completedExercises != null ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
+      // дата: "Сегодня" / "Вчера" / "12 июн." + полная дата второй строкой
+      const dateShort = formatDateShort(r.completedAt);
+      const dateFull  = formatDateFull(r.completedAt);
       return `<div class="activity-row">
         <div class="act-dot" style="background:${color};"></div>
         <span class="act-name">${r.workoutName || "Тренировка"}</span>
         <div class="act-meta">
-          <span class="act-date">${formatDateShort(r.completedAt)}</span>
+          <span class="act-date">${dateShort}</span>
+          <span class="act-sub">${dateFull}</span>
           ${sub ? `<span class="act-sub">${sub}</span>` : ""}
         </div>
         ${badge}
@@ -736,7 +637,6 @@ async function loadWorkoutHistory() {
   }
 }
 
-// ── УПРАЖНЕНИЯ И ВЕСА ──
 async function loadWorkoutsWithExercises() {
   const el = document.getElementById("strengthTable");
   try {
@@ -784,7 +684,6 @@ async function loadWorkoutsWithExercises() {
 }
 
 function logout() {
-  // говорим серверу что оффлайн
   const uid = localStorage.getItem("userId");
   if (uid) {
     fetch("/logout", {
