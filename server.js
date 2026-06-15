@@ -521,6 +521,122 @@ app.post("/meals", async (req, res) => {
     }
 });
 
+app.get("/progress/weight/:userId", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT reportid, user_id, report_date, current_weight
+             FROM progressreports
+             WHERE user_id = $1
+             ORDER BY report_date DESC`,
+            [req.params.userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("GET progress/weight ERROR:", err);
+        res.status(500).json([]);
+    }
+});
+
+// POST /progress/weight — добавить замер
+app.post("/progress/weight", async (req, res) => {
+    try {
+        const { userId, weight, date } = req.body;
+        if (!userId || !weight) return res.status(400).json({ success: false, error: "userId or weight missing" });
+
+        const reportDate = date ? Number(date) : Date.now();
+
+        const result = await pool.query(
+            `INSERT INTO progressreports(user_id, report_date, current_weight)
+             VALUES($1, $2, $3)
+             RETURNING reportid`,
+            [userId, reportDate, weight]
+        );
+
+        // также обновляем текущий вес пользователя
+        await pool.query(
+            `UPDATE users SET weight = $1 WHERE userid = $2`,
+            [weight, userId]
+        );
+
+        res.json({ success: true, id: result.rows[0].reportid });
+    } catch (err) {
+        console.error("POST progress/weight ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// DELETE /progress/weight/:id — удалить замер
+app.delete("/progress/weight/:id", async (req, res) => {
+    try {
+        await pool.query("DELETE FROM progressreports WHERE reportid = $1", [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("DELETE progress/weight ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// GET /progress/exercise/:userId — прогресс по упражнению
+// query: exerciseId (id или имя упражнения)
+app.get("/progress/exercise/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { exerciseId } = req.query;
+
+        if (!exerciseId) return res.json([]);
+
+        // ищем сначала по id, потом по имени
+        let exId = Number(exerciseId);
+        if (isNaN(exId)) {
+            const exRes = await pool.query(
+                "SELECT exerciseid FROM exercises WHERE LOWER(name)=LOWER($1) LIMIT 1",
+                [exerciseId]
+            );
+            if (!exRes.rows.length) return res.json([]);
+            exId = exRes.rows[0].exerciseid;
+        }
+
+        // берём из exerciseprogress если есть записи
+        const epRows = await pool.query(
+            `SELECT progressid, user_id, exercise_id, workout_id,
+                    progress_date, weight, reps, sets_count, notes
+             FROM exerciseprogress
+             WHERE user_id = $1 AND exercise_id = $2
+             ORDER BY progress_date ASC`,
+            [userId, exId]
+        );
+
+        if (epRows.rows.length) {
+            return res.json(epRows.rows);
+        }
+
+        // fallback: если exerciseprogress пустой — тянем из workout_history + workoutexercises
+        // (показываем последний известный вес упражнения по датам истории)
+        const fallback = await pool.query(
+            `SELECT
+                wh.completed_at AS progress_date,
+                we.weight,
+                we.reps,
+                we.sets AS sets_count
+             FROM workout_history wh
+             JOIN workoutexercises we ON we.workout_id = wh.workout_id
+             WHERE wh.user_id = $1 AND we.exercise_id = $2
+               AND we.weight > 0
+             ORDER BY wh.completed_at ASC`,
+            [userId, exId]
+        );
+        res.json(fallback.rows);
+    } catch (err) {
+        console.error("GET progress/exercise ERROR:", err);
+        res.status(500).json([]);
+    }
+});
+
+// GET /progress/route для страницы
+app.get("/progress.html", (req, res) =>
+    res.sendFile(path.join(__dirname, "progress.html"))
+);
+
 app.get("/workouts/recommended", async (req, res) => {
     try {
         const userId = req.query.userId ? Number(req.query.userId) : null;

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitPlan — Прогресс</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:      #080c14;
+  --card:    #131c2e;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text:    #e8edf5;
+  --muted:   #4a5568;
+  --soft:    #8896a8;
+  --accent:  #3b8ef0;
+  --accent2: #60aaf8;
+  --green:   #22c55e;
+  --red:     #f87171;
+  --amber:   #fbbf24;
+  --purple:  #a78bfa;
+}
+body { min-height:100vh; background:var(--bg); font-family:'Inter',sans-serif; color:var(--text); }
+
+/* NAV */
+.top-nav {
+  width:100%; display:flex; justify-content:center; align-items:center;
+  padding:14px 24px;
+  background:rgba(8,12,20,0.85); border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px); position:sticky; top:0; z-index:100;
+}
+.navbar { display:flex; align-items:center; gap:4px; }
+.navbar a {
+  text-decoration:none; color:var(--soft); font-size:13px; font-weight:500;
+  padding:7px 16px; border-radius:20px; transition:all 0.2s;
+}
+.navbar a:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+.navbar a.active {
+  background:rgba(59,142,240,0.15); color:var(--accent2);
+  border:1px solid rgba(59,142,240,0.25);
+}
+.nav-right { position:absolute; right:24px; display:flex; align-items:center; gap:8px; }
+.btn-nav {
+  padding:7px 16px; border-radius:20px; border:1px solid var(--border2);
+  background:transparent; color:var(--soft); font-size:13px; font-weight:500;
+  cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif;
+}
+.btn-nav:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+.btn-nav.danger:hover { background:rgba(248,113,113,0.1); border-color:rgba(248,113,113,0.3); color:var(--red); }
+
+/* LAYOUT */
+.container { max-width:960px; margin:0 auto; padding:32px 24px 56px; display:flex; flex-direction:column; gap:16px; }
+
+/* PAGE HEADER */
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.page-title { font-size:22px; font-weight:800; color:#fff; }
+.page-sub { font-size:13px; color:var(--muted); margin-top:3px; }
+.viewing-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2);
+  border-radius:20px; padding:5px 14px; font-size:12px; color:var(--amber);
+}
+
+/* CARDS */
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px 22px; }
+.card-title { font-size:11px; font-weight:600; color:var(--muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:0.6px; }
+
+/* STATS ROW */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; transition:border-color 0.2s; }
+.stat-card:hover { border-color:var(--border2); }
+.s-label { font-size:11px; color:var(--muted); font-weight:500; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
+.s-val { font-size:26px; font-weight:700; color:#fff; line-height:1; }
+.s-unit { font-size:13px; font-weight:400; color:var(--muted); margin-left:2px; }
+.s-diff { font-size:12px; font-weight:600; margin-top:4px; }
+
+/* ADD WEIGHT FORM */
+.add-weight-form { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+.form-field { display:flex; flex-direction:column; gap:5px; }
+.form-label { font-size:11px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.4px; }
+.form-input {
+  background:rgba(255,255,255,0.04); border:1px solid var(--border2);
+  border-radius:10px; padding:8px 12px; color:var(--text); font-size:14px;
+  font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s;
+  width:130px;
+}
+.form-input:focus { border-color:var(--accent); }
+.form-input[type="date"] { width:160px; color-scheme:dark; }
+.btn-add {
+  padding:9px 20px; border-radius:10px; border:none;
+  background:var(--accent); color:#fff; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-add:hover { background:#2d7de0; }
+.btn-add:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* CHART */
+.chart-wrap { position:relative; height:220px; margin-top:4px; }
+canvas { width:100% !important; }
+
+/* TABLE */
+.prog-table { width:100%; border-collapse:collapse; font-size:13px; }
+.prog-table th {
+  text-align:left; padding:6px 10px; font-size:10px; font-weight:600;
+  color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;
+  border-bottom:1px solid var(--border);
+}
+.prog-table td { padding:9px 10px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text); }
+.prog-table tr:last-child td { border-bottom:none; }
+.prog-table tr:hover td { background:rgba(255,255,255,0.03); }
+.diff-pos { color:var(--green); font-weight:600; }
+.diff-neg { color:var(--red); font-weight:600; }
+.diff-zero { color:var(--muted); }
+
+/* EXERCISE PROGRESS */
+.ex-select-row { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:16px; }
+.ex-select {
+  background:rgba(255,255,255,0.04); border:1px solid var(--border2);
+  border-radius:10px; padding:8px 12px; color:var(--text); font-size:13px;
+  font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s;
+  min-width:220px; cursor:pointer;
+}
+.ex-select:focus { border-color:var(--accent); }
+option { background:#131c2e; }
+
+/* TWO COL */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* EMPTY */
+.empty-state { text-align:center; padding:32px 16px; color:var(--muted); font-size:13px; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; right:24px; z-index:999;
+  background:#1a2540; border:1px solid var(--border2);
+  border-radius:12px; padding:12px 18px; font-size:13px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  transform:translateY(80px); opacity:0;
+  transition:all 0.3s cubic-bezier(.4,0,.2,1);
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.ok  { border-color:rgba(34,197,94,0.3); color:var(--green); }
+.toast.err { border-color:rgba(248,113,113,0.3); color:var(--red); }
+
+/* SKEL */
+.skel {
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:200% 100%; animation:shimmer 1.4s infinite;
+  border-radius:6px; height:14px; margin:4px 0;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* DELETE btn */
+.btn-del {
+  background:none; border:none; cursor:pointer; color:var(--muted);
+  font-size:14px; padding:2px 6px; border-radius:6px; transition:all 0.15s;
+}
+.btn-del:hover { background:rgba(248,113,113,0.1); color:var(--red); }
+
+@media(max-width:700px){
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .two-col { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="navbar">
+    <a href="/profil.html">Профиль</a>
+    <a href="/exercises.html">Упражнения</a>
+    <a href="/nutrition.html">Питание</a>
+    <a href="/workouts.html">Тренировки</a>
+    <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-nav" id="backBtn" onclick="goBack()">← Профиль</button>
+    <button class="btn-nav danger" onclick="logout()">Выйти</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">📈 Отчёт о прогрессе</div>
+      <div class="page-sub" id="pageSub">Загрузка...</div>
+    </div>
+    <div id="viewingPill" style="display:none;">
+      <div class="viewing-pill">👁 Просмотр чужого профиля</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="s-label">Стартовый вес</div>
+      <div class="s-val"><span id="startWeight">—</span><span class="s-unit">кг</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">Текущий вес</div>
+      <div class="s-val"><span id="curWeight">—</span><span class="s-unit">кг</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">Целевой вес</div>
+      <div class="s-val"><span id="tgtWeight">—</span><span class="s-unit">кг</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">Изменение</div>
+      <div class="s-val" id="changeVal" style="font-size:22px;">—</div>
+      <div class="s-diff" id="changeSub"></div>
+    </div>
+  </div>
+
+  <!-- WEIGHT LOG + CHART -->
+  <div class="two-col">
+
+    <div class="card">
+      <div class="card-title">График веса</div>
+      <div class="chart-wrap">
+        <canvas id="weightChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Добавить замер</div>
+      <div id="addWeightSection">
+        <div class="add-weight-form">
+          <div class="form-field">
+            <label class="form-label">Вес (кг)</label>
+            <input class="form-input" type="number" id="newWeight" step="0.1" min="20" max="300" placeholder="70.5">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Дата</label>
+            <input class="form-input" type="date" id="newDate">
+          </div>
+          <button class="btn-add" id="addWeightBtn" onclick="addWeightEntry()">Добавить</button>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <div class="card-title">История замеров</div>
+        <div id="weightHistory"><div class="skel"></div><div class="skel" style="margin-top:8px;"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ТРЕНИРОВКИ STATS -->
+  <div class="two-col">
+
+    <div class="card">
+      <div class="card-title">Тренировочная активность</div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="workoutChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Статистика тренировок</div>
+      <div id="workoutStats"><div class="skel"></div><div class="skel" style="margin-top:8px;"></div></div>
+    </div>
+
+  </div>
+
+  <!-- УПРАЖНЕНИЯ -->
+  <div class="card">
+    <div class="card-title">Прогресс по упражнениям</div>
+    <div class="ex-select-row">
+      <div class="form-field">
+        <label class="form-label">Упражнение</label>
+        <select class="ex-select" id="exSelect" onchange="loadExerciseProgress()">
+          <option value="">— Выберите упражнение —</option>
+        </select>
+      </div>
+    </div>
+    <div id="exProgressArea">
+      <div class="empty-state">Выберите упражнение чтобы увидеть прогресс по весу</div>
+    </div>
+  </div>
+
+  <!-- ИСТОРИЯ ТРЕНИРОВОК -->
+  <div class="card">
+    <div class="card-title">Все тренировки</div>
+    <div id="fullHistory"><div class="skel"></div><div class="skel" style="margin-top:8px;"></div><div class="skel" style="margin-top:8px;"></div></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── AUTH ──
+const role = (localStorage.getItem("role") || "").toLowerCase();
+const authUserId = localStorage.getItem("userId");
+if (!authUserId) location.href = "/adminvh.html";
+if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
+
+let profileId = authUserId;
+let isViewingOther = false;
+
+if (role === "admin") {
+  const sel = localStorage.getItem("selectedUserId");
+  if (sel && sel !== "null" && sel !== authUserId) {
+    profileId = sel;
+    isViewingOther = true;
+  }
+}
+
+if (isViewingOther) {
+  document.getElementById("viewingPill").style.display = "block";
+  // скрываем форму добавления замера если смотрим чужой
+  document.getElementById("addWeightSection").style.display = "none";
+}
+
+function goBack() {
+  history.back();
+}
+
+function logout() {
+  const uid = localStorage.getItem("userId");
+  if (uid) fetch("/logout", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({userId:uid}) }).catch(()=>{});
+  localStorage.clear();
+  location.href = "/adminvh.html";
+}
+
+// ── TOAST ──
+function showToast(msg, type = "ok") {
+  const t = document.getElementById("toast");
+  t.textContent = (type === "ok" ? "✓ " : "✗ ") + msg;
+  t.className = "toast " + type + " show";
+  setTimeout(() => { t.className = "toast"; }, 3000);
+}
+
+// ── UTILS ──
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return "—";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
+}
+function fmtDateShort(ts) {
+  if (!ts) return "—";
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return "—";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
+}
+
+// ── CHART DEFAULTS ──
+Chart.defaults.color = "#4a5568";
+Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+Chart.defaults.font.family = "Inter";
+
+let weightChartInst = null;
+let workoutChartInst = null;
+
+// ── LOAD USER PROFILE ──
+async function loadUserInfo() {
+  try {
+    const res = await fetch(`/users/${profileId}`);
+    const u = await res.json();
+    document.getElementById("pageSub").textContent = u.name ? `Пользователь: ${u.name}` : `ID: ${profileId}`;
+    document.getElementById("curWeight").textContent = u.weight ?? "—";
+    document.getElementById("tgtWeight").textContent = u.targetWeight ?? "—";
+    return u;
+  } catch { return {}; }
+}
+
+// ── WEIGHT HISTORY ──
+let weightEntries = [];
+
+async function loadWeightHistory() {
+  try {
+    const res = await fetch(`/progress/weight/${profileId}`);
+    weightEntries = await res.json();
+    renderWeightHistory();
+    renderWeightChart();
+  } catch (e) {
+    document.getElementById("weightHistory").innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
+  }
+}
+
+function renderWeightHistory() {
+  const el = document.getElementById("weightHistory");
+  if (!weightEntries.length) {
+    el.innerHTML = `<div class="empty-state">Замеров ещё нет — добавьте первый!</div>`;
+    // stats
+    document.getElementById("startWeight").textContent = "—";
+    document.getElementById("changeVal").textContent = "—";
+    document.getElementById("changeSub").textContent = "";
+    return;
+  }
+
+  // sorted oldest→newest
+  const sorted = [...weightEntries].sort((a, b) => a.report_date - b.report_date);
+  const first = sorted[0].current_weight;
+  const last  = sorted[sorted.length - 1].current_weight;
+  const diff  = +(last - first).toFixed(1);
+
+  document.getElementById("startWeight").textContent = first;
+  document.getElementById("curWeight").textContent = last;
+
+  const changeEl = document.getElementById("changeVal");
+  const subEl    = document.getElementById("changeSub");
+  if (diff === 0) {
+    changeEl.innerHTML = `<span style="color:var(--soft)">0 кг</span>`;
+    subEl.textContent = "Вес не изменился";
+    subEl.className = "s-diff diff-zero";
+  } else if (diff < 0) {
+    changeEl.innerHTML = `<span style="color:var(--green)">${diff} кг</span>`;
+    subEl.textContent = `Похудели на ${Math.abs(diff)} кг`;
+    subEl.className = "s-diff diff-pos";
+  } else {
+    changeEl.innerHTML = `<span style="color:var(--red)">+${diff} кг</span>`;
+    subEl.textContent = `Набрали ${diff} кг`;
+    subEl.className = "s-diff diff-neg";
+  }
+
+  // table newest→oldest
+  const rows = [...weightEntries].sort((a, b) => b.report_date - a.report_date);
+  const delBtn = isViewingOther ? "" : `<th></th>`;
+  el.innerHTML = `<table class="prog-table">
+    <thead><tr><th>Дата</th><th>Вес</th><th>Изменение</th>${delBtn}</tr></thead>
+    <tbody>
+    ${rows.map((r, i) => {
+      const prev = rows[i + 1];
+      let diffStr = "—", diffClass = "";
+      if (prev) {
+        const d = +(r.current_weight - prev.current_weight).toFixed(1);
+        if (d > 0)      { diffStr = `+${d} кг`; diffClass = "diff-neg"; }
+        else if (d < 0) { diffStr = `${d} кг`;  diffClass = "diff-pos"; }
+        else            { diffStr = "0 кг";      diffClass = "diff-zero"; }
+      }
+      const del = isViewingOther ? "" : `<td><button class="btn-del" onclick="deleteWeight(${r.reportid})" title="Удалить">✕</button></td>`;
+      return `<tr>
+        <td>${fmtDate(r.report_date)}</td>
+        <td style="font-weight:600;">${r.current_weight} кг</td>
+        <td class="${diffClass}">${diffStr}</td>
+        ${del}
+      </tr>`;
+    }).join("")}
+    </tbody>
+  </table>`;
+}
+
+function renderWeightChart() {
+  const ctx = document.getElementById("weightChart").getContext("2d");
+  const sorted = [...weightEntries].sort((a, b) => a.report_date - b.report_date);
+
+  if (weightChartInst) weightChartInst.destroy();
+
+  if (!sorted.length) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillStyle = "#4a5568";
+    ctx.font = "13px Inter";
+    ctx.textAlign = "center";
+    ctx.fillText("Нет данных", ctx.canvas.width / 2, 100);
+    return;
+  }
+
+  weightChartInst = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: sorted.map(r => fmtDateShort(r.report_date)),
+      datasets: [{
+        label: "Вес (кг)",
+        data: sorted.map(r => r.current_weight),
+        borderColor: "#3b8ef0",
+        backgroundColor: "rgba(59,142,240,0.1)",
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: "#60aaf8",
+        pointBorderColor: "#131c2e",
+        pointBorderWidth: 2,
+        fill: true,
+        tension: 0.35,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#1a2540",
+          borderColor: "rgba(255,255,255,0.1)",
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} кг`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 } } },
+        y: {
+          grid: { color: "rgba(255,255,255,0.04)" },
+          ticks: { font: { size: 11 }, callback: v => v + " кг" }
+        }
+      }
+    }
+  });
+}
+
+async function addWeightEntry() {
+  const w = parseFloat(document.getElementById("newWeight").value);
+  const dateVal = document.getElementById("newDate").value;
+  if (!w || w < 20 || w > 300) { showToast("Введите корректный вес (20–300 кг)", "err"); return; }
+  if (!dateVal) { showToast("Укажите дату", "err"); return; }
+
+  const ts = new Date(dateVal).getTime();
+  const btn = document.getElementById("addWeightBtn");
+  btn.disabled = true;
+  try {
+    const res = await fetch("/progress/weight", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: profileId, weight: w, date: ts })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast("Замер добавлен");
+      document.getElementById("newWeight").value = "";
+      await loadWeightHistory();
+    } else { showToast("Ошибка сохранения", "err"); }
+  } catch { showToast("Ошибка сети", "err"); }
+  finally { btn.disabled = false; }
+}
+
+async function deleteWeight(id) {
+  if (!confirm("Удалить этот замер?")) return;
+  try {
+    const res = await fetch(`/progress/weight/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.success) { showToast("Удалено"); await loadWeightHistory(); }
+    else showToast("Ошибка удаления", "err");
+  } catch { showToast("Ошибка сети", "err"); }
+}
+
+// ── WORKOUT HISTORY ──
+let workoutHistory = [];
+
+async function loadWorkoutHistory() {
+  try {
+    const res = await fetch(`/workout-history/${profileId}`);
+    workoutHistory = await res.json();
+    renderWorkoutStats();
+    renderWorkoutChart();
+    renderFullHistory();
+  } catch {
+    document.getElementById("workoutStats").innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
+    document.getElementById("fullHistory").innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
+  }
+}
+
+function renderWorkoutStats() {
+  const el = document.getElementById("workoutStats");
+  if (!workoutHistory.length) {
+    el.innerHTML = `<div class="empty-state">Тренировок пока нет</div>`;
+    return;
+  }
+  const total      = workoutHistory.length;
+  const fullyDone  = workoutHistory.filter(w => w.isFullyDone).length;
+  const pct        = Math.round(fullyDone / total * 100);
+  const lastDate   = workoutHistory[0] ? fmtDate(workoutHistory[0].completedAt) : "—";
+  const totalEx    = workoutHistory.reduce((s, w) => s + (w.completedExercises || 0), 0);
+
+  // по неделям за последние 4 недели
+  const now = Date.now();
+  const week = 7 * 86400000;
+  const weeks = [0,0,0,0];
+  workoutHistory.forEach(w => {
+    const diff = now - new Date(w.completedAt).getTime();
+    const wi = Math.floor(diff / week);
+    if (wi < 4) weeks[3 - wi]++;
+  });
+
+  el.innerHTML = `
+    <table class="prog-table">
+      <tbody>
+        <tr><td style="color:var(--muted);">Всего тренировок</td><td style="font-weight:700;color:#fff;">${total}</td></tr>
+        <tr><td style="color:var(--muted);">Полностью выполнено</td><td style="font-weight:700;color:var(--green);">${fullyDone} (${pct}%)</td></tr>
+        <tr><td style="color:var(--muted);">Упражнений выполнено</td><td style="font-weight:700;color:var(--accent2);">${totalEx}</td></tr>
+        <tr><td style="color:var(--muted);">Последняя тренировка</td><td style="font-weight:600;">${lastDate}</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;">
+      <div class="card-title" style="margin-bottom:8px;">Тренировки по неделям (последние 4)</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;height:60px;">
+        ${weeks.map((c, i) => {
+          const h = c > 0 ? Math.max(16, Math.round(c / Math.max(...weeks, 1) * 52)) : 4;
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="font-size:10px;color:var(--muted);">${c}</div>
+            <div style="width:100%;height:${h}px;background:${c > 0 ? "var(--accent)" : "rgba(255,255,255,0.06)"};border-radius:4px 4px 0 0;transition:height 0.5s;"></div>
+            <div style="font-size:9px;color:var(--muted);">нед ${i+1}</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderWorkoutChart() {
+  const ctx = document.getElementById("workoutChart").getContext("2d");
+  if (workoutChartInst) workoutChartInst.destroy();
+
+  if (!workoutHistory.length) {
+    ctx.fillStyle = "#4a5568"; ctx.font = "13px Inter"; ctx.textAlign = "center";
+    ctx.fillText("Нет данных", ctx.canvas.width / 2, 80);
+    return;
+  }
+
+  // группировка по дням (последние 14 дней)
+  const days = 14;
+  const labels = [], counts = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    labels.push(d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" }));
+    const key = d.toDateString();
+    const cnt = workoutHistory.filter(w => new Date(w.completedAt).toDateString() === key).length;
+    counts.push(cnt);
+  }
+
+  workoutChartInst = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Тренировки",
+        data: counts,
+        backgroundColor: counts.map(c => c > 0 ? "rgba(59,142,240,0.7)" : "rgba(255,255,255,0.04)"),
+        borderColor: counts.map(c => c > 0 ? "#3b8ef0" : "transparent"),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } },
+        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 }, stepSize: 1 } }
+      }
+    }
+  });
+}
+
+function renderFullHistory() {
+  const el = document.getElementById("fullHistory");
+  if (!workoutHistory.length) { el.innerHTML = `<div class="empty-state">Тренировок пока нет</div>`; return; }
+  const colors = ["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
+  el.innerHTML = `<table class="prog-table">
+    <thead><tr><th>Тренировка</th><th>Дата</th><th>Упражнения</th><th>Статус</th></tr></thead>
+    <tbody>
+    ${workoutHistory.slice(0, 20).map((r, i) => {
+      const col = colors[i % colors.length];
+      const badge = r.isFullyDone
+        ? `<span style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Выполнено</span>`
+        : `<span style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Частично</span>`;
+      return `<tr>
+        <td style="display:flex;align-items:center;gap:8px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0;"></div>
+          ${r.workoutName || "Тренировка"}
+        </td>
+        <td style="color:var(--muted);font-size:12px;">${fmtDate(r.completedAt)}</td>
+        <td style="color:var(--soft);">${r.completedExercises ?? "—"}/${r.totalExercises ?? "—"}</td>
+        <td>${badge}</td>
+      </tr>`;
+    }).join("")}
+    </tbody>
+  </table>`;
+}
+
+// ── EXERCISE PROGRESS ──
+async function loadExerciseList() {
+  try {
+    const res = await fetch(`/workouts/full/${profileId}`);
+    const workouts = await res.json();
+    const seen = new Set();
+    const exercises = [];
+    workouts.forEach(w => (w.exercises || []).forEach(e => {
+      if (!seen.has(e.name)) { seen.add(e.name); exercises.push(e); }
+    }));
+
+    const sel = document.getElementById("exSelect");
+    exercises.forEach(e => {
+      const opt = document.createElement("option");
+      opt.value = e.exerciseid || e.name;
+      opt.dataset.name = e.name;
+      opt.textContent = e.name;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function loadExerciseProgress() {
+  const sel = document.getElementById("exSelect");
+  const val = sel.value;
+  const name = sel.options[sel.selectedIndex]?.dataset?.name || val;
+  const el = document.getElementById("exProgressArea");
+
+  if (!val) { el.innerHTML = `<div class="empty-state">Выберите упражнение чтобы увидеть прогресс по весу</div>`; return; }
+
+  el.innerHTML = `<div class="skel"></div><div class="skel" style="margin-top:8px;"></div>`;
+
+  try {
+    const res = await fetch(`/progress/exercise/${profileId}?exerciseId=${val}`);
+    const rows = await res.json();
+
+    if (!rows.length) {
+      el.innerHTML = `<div class="empty-state">Нет данных о прогрессе для этого упражнения</div>`;
+      return;
+    }
+
+    const sorted = [...rows].sort((a, b) => a.progress_date - b.progress_date);
+    const maxW = Math.max(...sorted.map(r => r.weight || 0));
+
+    // mini chart
+    const canvasId = "exChart_" + Date.now();
+    el.innerHTML = `
+      <div style="height:160px;margin-bottom:16px;"><canvas id="${canvasId}"></canvas></div>
+      <table class="prog-table">
+        <thead><tr><th>Дата</th><th>Вес</th><th>Подх × Повт</th><th>Рекорд</th></tr></thead>
+        <tbody>
+        ${sorted.slice().reverse().map(r => {
+          const isMax = r.weight === maxW && maxW > 0;
+          return `<tr>
+            <td>${fmtDate(r.progress_date)}</td>
+            <td style="font-weight:700;color:${isMax ? "var(--amber)" : "#fff"};">${r.weight > 0 ? r.weight + " кг" : "—"}</td>
+            <td style="color:var(--soft);">${r.sets_count ?? "—"} × ${r.reps ?? "—"}</td>
+            <td>${isMax ? `<span style="color:var(--amber);font-size:16px;">🏆</span>` : ""}</td>
+          </tr>`;
+        }).join("")}
+        </tbody>
+      </table>
+    `;
+
+    new Chart(document.getElementById(canvasId).getContext("2d"), {
+      type: "line",
+      data: {
+        labels: sorted.map(r => fmtDateShort(r.progress_date)),
+        datasets: [{
+          label: name,
+          data: sorted.map(r => r.weight),
+          borderColor: "#a78bfa",
+          backgroundColor: "rgba(167,139,250,0.1)",
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: "#a78bfa",
+          pointBorderColor: "#131c2e",
+          pointBorderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 } } },
+          y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 }, callback: v => v + " кг" } }
+        }
+      }
+    });
+  } catch {
+    el.innerHTML = `<div class="empty-state">Не удалось загрузить данные</div>`;
+  }
+}
+
+// ── SET TODAY AS DEFAULT DATE ──
+(function setDefaultDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm   = String(today.getMonth() + 1).padStart(2, "0");
+  const dd   = String(today.getDate()).padStart(2, "0");
+  const inp  = document.getElementById("newDate");
+  if (inp) inp.value = `${yyyy}-${mm}-${dd}`;
+})();
+
+// ── INIT ──
+(async () => {
+  await loadUserInfo();
+  await Promise.all([
+    loadWeightHistory(),
+    loadWorkoutHistory(),
+    loadExerciseList(),
+  ]);
+})();
+</script>
+</body>
+</html>
