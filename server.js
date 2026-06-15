@@ -497,6 +497,19 @@ app.post("/meals", async (req, res) => {
 
 app.get("/workouts/recommended", async (req, res) => {
     try {
+        const userId = req.query.userId ? Number(req.query.userId) : null;
+
+        const params = [];
+        let excludeClause = "";
+
+        if (userId) {
+            params.push(userId);
+            excludeClause = `AND NOT EXISTS (
+                SELECT 1 FROM workouts u2
+                WHERE u2.user_id = $1 AND u2.copied_from = w.workoutid
+            )`;
+        }
+
         const workouts = await pool.query(`
             SELECT
                 w.workoutid AS id,
@@ -507,26 +520,22 @@ app.get("/workouts/recommended", async (req, res) => {
             FROM workouts w
             JOIN users u ON u.userid = w.user_id
             WHERE w.is_recommended = TRUE
+            ${excludeClause}
             ORDER BY w.workoutid DESC
-        `);
+        `, params);
 
         const result = [];
-
         for (const w of workouts.rows) {
             const exercises = await pool.query(`
                 SELECT
                     e.exerciseid AS "exerciseId",
                     e.name,
                     e.muscle_group AS "muscleGroup",
-                    we.sets,
-                    we.reps,
-                    we.weight,
-                    we.rest
+                    we.sets, we.reps, we.weight, we.rest
                 FROM workoutexercises we
                 JOIN exercises e ON e.exerciseid = we.exercise_id
                 WHERE we.workout_id = $1
             `, [w.id]);
-
             result.push({ ...w, exercises: exercises.rows });
         }
 
