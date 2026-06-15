@@ -3,33 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>FitPlan — Создание тренировки</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 body{
   margin:0;
   font-family:Inter;
   color:#0F172A;
-
   background:
     linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.55)),
     url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
     center/cover no-repeat;
-
   min-height:100vh;
 }
-
-/* container */
 .container{
   max-width:1100px;
   margin:60px auto;
   padding:0 20px;
 }
-
-/* card */
 .card{
   background:rgba(255,255,255,0.90);
   border:1px solid rgba(255,255,255,0.35);
@@ -38,27 +29,14 @@ body{
   backdrop-filter: blur(18px);
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
 }
-
-/* title */
-.title{
-  font-size:24px;
-  font-weight:700;
-}
-
-.subtitle{
-  font-size:13px;
-  color:#64748B;
-  margin-top:4px;
-}
-
-/* form */
+.title{ font-size:24px; font-weight:700; }
+.subtitle{ font-size:13px; color:#64748B; margin-top:4px; }
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:24px;
   margin-top:20px;
 }
-
 input, select{
   width:100%;
   padding:12px 14px;
@@ -68,30 +46,20 @@ input, select{
   outline:none;
   font-size:14px;
   transition:0.2s;
+  box-sizing:border-box;
 }
-
 input:focus, select:focus{
   border-color:#4F46E5;
   box-shadow:0 0 0 4px rgba(79,70,229,0.15);
   background:white;
 }
-
-/* columns */
 .columns{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:24px;
   margin-top:28px;
 }
-
-.section-title{
-  font-size:14px;
-  font-weight:600;
-  margin-bottom:12px;
-  color:#334155;
-}
-
-/* list */
+.section-title{ font-size:14px; font-weight:600; margin-bottom:12px; color:#334155; }
 .list{
   background:rgba(255,255,255,0.6);
   border:1px solid #e5e7eb;
@@ -100,8 +68,6 @@ input:focus, select:focus{
   max-height:420px;
   overflow:auto;
 }
-
-/* ================= CARD ================= */
 .item{
   background:rgba(255,255,255,0.97);
   border:1px solid #E2E8F0;
@@ -109,27 +75,18 @@ input:focus, select:focus{
   padding:16px;
   margin-bottom:14px;
   transition:0.2s;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-
-.item:hover{
-  transform:translateY(-2px);
-  box-shadow:0 14px 35px rgba(15,23,42,0.10);
-}
-
-/* header */
+.item:hover{ transform:translateY(-2px); box-shadow:0 14px 35px rgba(15,23,42,0.10); }
 .item-header{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
   margin-bottom:12px;
 }
-
-.item-header b{
-  font-size:15px;
-  font-weight:700;
-}
-
-/* badge */
+.item-header b{ font-size:15px; font-weight:700; }
 .badge{
   display:inline-block;
   margin-top:4px;
@@ -139,8 +96,6 @@ input:focus, select:focus{
   background:#EEF2FF;
   color:#4F46E5;
 }
-
-/* delete */
 .small-btn{
   padding:6px 10px;
   font-size:12px;
@@ -150,21 +105,12 @@ input:focus, select:focus{
   background:#EF4444;
   color:white;
 }
-
-/* grid inside card */
 .item-grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:10px;
 }
-
-/* field */
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
+.field{ display:flex; flex-direction:column; gap:4px; }
 .field label{
   font-size:10px;
   font-weight:600;
@@ -172,7 +118,6 @@ input:focus, select:focus{
   text-transform:uppercase;
   letter-spacing:0.5px;
 }
-
 .field input{
   padding:8px 10px;
   font-size:13px;
@@ -181,14 +126,11 @@ input:focus, select:focus{
   background:#F8FAFC;
   text-align:center;
 }
-
 .field input:focus{
   border-color:#4F46E5;
   background:white;
   box-shadow:0 0 0 3px rgba(79,70,229,0.12);
 }
-
-/* button */
 .btn{
   margin-top:20px;
   width:100%;
@@ -199,25 +141,19 @@ input:focus, select:focus{
   cursor:pointer;
   color:white;
   background:linear-gradient(135deg,#4F46E5,#22C55E);
+  font-size:15px;
 }
-
-/* responsive */
+.btn:hover{ opacity:0.9; }
+.loading{ text-align:center; color:#64748B; padding:20px; font-size:14px; }
 @media(max-width:900px){
-  .grid, .columns{
-    grid-template-columns:1fr;
-  }
-
-  .item-grid{
-    grid-template-columns:1fr 1fr;
-  }
+  .grid, .columns{ grid-template-columns:1fr; }
+  .item-grid{ grid-template-columns:1fr 1fr; }
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
-
   <div class="card">
 
     <div class="title">Создание тренировки</div>
@@ -229,12 +165,6 @@ input:focus, select:focus{
         <label>Название тренировки</label>
         <input id="workoutName" placeholder="например: День груди">
       </div>
-      <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
-  <input type="checkbox" id="isRecommended" style="width:18px; height:18px; cursor:pointer; accent-color:#4F46E5;">
-  <label for="isRecommended" style="font-size:14px; font-weight:500; color:#334155; cursor:pointer;">
-    ⭐ Рекомендовать пользователям
-  </label>
-</div>
 
       <div>
         <label>Сложность</label>
@@ -245,21 +175,31 @@ input:focus, select:focus{
           <option value="hard">Сложная</option>
         </select>
       </div>
+
+      <div style="grid-column:1/-1; display:flex; align-items:center; gap:10px;">
+        <input type="checkbox" id="isRecommended"
+          style="width:18px; height:18px; cursor:pointer; accent-color:#4F46E5; flex-shrink:0;">
+        <label for="isRecommended"
+          style="font-size:14px; font-weight:500; color:#334155; cursor:pointer;">
+          ⭐ Рекомендовать пользователям
+        </label>
+      </div>
     </div>
 
     <!-- LISTS -->
     <div class="columns">
-
       <div>
         <div class="section-title">Все упражнения</div>
-        <div class="list" id="allExercises"></div>
+        <div class="list" id="allExercises">
+          <div class="loading">Загрузка упражнений...</div>
+        </div>
       </div>
-
       <div>
         <div class="section-title">В тренировке</div>
-        <div class="list" id="selectedExercises"></div>
+        <div class="list" id="selectedExercises">
+          <div class="loading" style="color:#94A3B8;">Добавьте упражнения слева</div>
+        </div>
       </div>
-
     </div>
 
     <button class="btn" onclick="createWorkout()">
@@ -267,44 +207,53 @@ input:focus, select:focus{
     </button>
 
   </div>
-
 </div>
 
 <script>
 let selected = [];
 
-/* load exercises */
-async function loadExercises(){
-  const res = await fetch("/exercises");
-  const data = await res.json();
-
+/* ===== LOAD EXERCISES ===== */
+async function loadExercises() {
   const container = document.getElementById("allExercises");
-  container.innerHTML = "";
+  try {
+    const res = await fetch("/exercises");
 
-  data.forEach(ex => {
+    if (!res.ok) {
+      container.innerHTML = '<div class="loading" style="color:red;">Ошибка загрузки</div>';
+      return;
+    }
 
-    const div = document.createElement("div");
-    div.className = "item";
+    const data = await res.json();
+    container.innerHTML = "";
 
-    div.innerHTML = `
-      <div>
-        <b>${ex.name}</b><br>
-        <span class="badge">${ex.muscle_group}</span>
-      </div>
-      <button class="small-btn">+</button>
-    `;
+    if (data.length === 0) {
+      container.innerHTML = '<div class="loading">Нет упражнений в базе</div>';
+      return;
+    }
 
-    div.querySelector("button").onclick = () => addExercise(ex);
+    data.forEach(ex => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div>
+          <b>${ex.name}</b><br>
+          <span class="badge">${ex.muscle_group || '—'}</span>
+        </div>
+        <button class="small-btn">+</button>
+      `;
+      div.querySelector("button").onclick = () => addExercise(ex);
+      container.appendChild(div);
+    });
 
-    container.appendChild(div);
-  });
+  } catch (err) {
+    container.innerHTML = '<div class="loading" style="color:red;">Ошибка соединения</div>';
+    console.error("loadExercises error:", err);
+  }
 }
 
-/* add exercise */
-function addExercise(ex){
-
-  if(selected.find(e => e.exerciseid === ex.exerciseid)) return;
-
+/* ===== ADD EXERCISE ===== */
+function addExercise(ex) {
+  if (selected.find(e => e.exerciseid === ex.exerciseid)) return;
   selected.push({
     exerciseid: ex.exerciseid,
     name: ex.name,
@@ -315,155 +264,157 @@ function addExercise(ex){
     rest: 60,
     order: selected.length + 1
   });
-
   renderSelected();
 }
 
-/* remove */
-function removeExercise(id){
+/* ===== REMOVE ===== */
+function removeExercise(id) {
   selected = selected.filter(e => e.exerciseid !== id);
   renderSelected();
 }
 
-/* update */
-function updateField(id, field, value){
+/* ===== UPDATE FIELD ===== */
+function updateField(id, field, value) {
   const ex = selected.find(e => e.exerciseid === id);
-  if(ex) ex[field] = value;
+  if (ex) ex[field] = value;
 }
 
-/* render */
-function renderSelected(){
-
+/* ===== RENDER SELECTED ===== */
+function renderSelected() {
   const container = document.getElementById("selectedExercises");
   container.innerHTML = "";
 
-  selected.forEach(ex => {
+  if (selected.length === 0) {
+    container.innerHTML = '<div class="loading" style="color:#94A3B8;">Добавьте упражнения слева</div>';
+    return;
+  }
 
+  selected.forEach(ex => {
     const div = document.createElement("div");
     div.className = "item";
+    div.style.flexDirection = "column";
+    div.style.alignItems = "stretch";
 
     div.innerHTML = `
       <div class="item-header">
         <div>
           <b>${ex.name}</b><br>
-          <span class="badge">${ex.muscle_group}</span>
+          <span class="badge">${ex.muscle_group || '—'}</span>
         </div>
-
-        <button class="small-btn">x</button>
+        <button class="small-btn">✕</button>
       </div>
-
       <div class="item-grid">
-
         <div class="field">
           <label>Подходы</label>
-          <input type="number" value="${ex.sets}">
+          <input type="number" value="${ex.sets}" min="1">
         </div>
-
         <div class="field">
           <label>Повторения</label>
-          <input type="number" value="${ex.reps}">
+          <input type="number" value="${ex.reps}" min="1">
         </div>
-
         <div class="field">
           <label>Вес (кг)</label>
-          <input type="number" value="${ex.weight}">
+          <input type="number" value="${ex.weight}" min="0">
         </div>
-
         <div class="field">
           <label>Отдых (сек)</label>
-          <input type="number" value="${ex.rest}">
+          <input type="number" value="${ex.rest}" min="0">
         </div>
-
         <div class="field">
           <label>Порядок</label>
-          <input type="number" value="${ex.order}">
+          <input type="number" value="${ex.order}" min="1">
         </div>
-
       </div>
     `;
 
     div.querySelector("button").onclick = () => removeExercise(ex.exerciseid);
 
     const inputs = div.querySelectorAll("input");
-
-    inputs[0].oninput = e => updateField(ex.exerciseid, "sets", +e.target.value);
-    inputs[1].oninput = e => updateField(ex.exerciseid, "reps", +e.target.value);
+    inputs[0].oninput = e => updateField(ex.exerciseid, "sets",   +e.target.value);
+    inputs[1].oninput = e => updateField(ex.exerciseid, "reps",   +e.target.value);
     inputs[2].oninput = e => updateField(ex.exerciseid, "weight", +e.target.value);
-    inputs[3].oninput = e => updateField(ex.exerciseid, "rest", +e.target.value);
-    inputs[4].oninput = e => updateField(ex.exerciseid, "order", +e.target.value);
+    inputs[3].oninput = e => updateField(ex.exerciseid, "rest",   +e.target.value);
+    inputs[4].oninput = e => updateField(ex.exerciseid, "order",  +e.target.value);
 
     container.appendChild(div);
   });
 }
 
-/* create workout */
+/* ===== CREATE WORKOUT ===== */
 async function createWorkout() {
-    const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId");
 
-    if (!userId) {
-        alert("Ошибка: не найден пользователь. Войдите заново.");
-        return;
-    }
+  if (!userId) {
+    alert("Ошибка: не найден пользователь. Войдите заново.");
+    return;
+  }
 
-    const name = document.getElementById("workoutName").value.trim();
-    if (!name) {
-        alert("Введите название тренировки");
-        return;
-    }
+  const name = document.getElementById("workoutName").value.trim();
+  if (!name) {
+    alert("Введите название тренировки");
+    return;
+  }
 
-    if (selected.length === 0) {
-        alert("Добавьте хотя бы одно упражнение");
-        return;
-    }
+  if (selected.length === 0) {
+    alert("Добавьте хотя бы одно упражнение");
+    return;
+  }
 
-    const payload = {
-        userId: Number(userId),
-        name: name,
-        difficulty: document.getElementById("difficulty").value,
-        isRecommended: document.getElementById("isRecommended").checked,
-        exercises: selected
-    };
+  const payload = {
+    userId: Number(userId),
+    name: name,
+    difficulty: document.getElementById("difficulty").value,
+    isRecommended: document.getElementById("isRecommended").checked,
+    exercises: selected
+  };
 
-    try {
-        const res = await fetch("/workouts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+  try {
+    const res = await fetch("/workouts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      const workoutId = data.id;
+
+      for (const ex of selected) {
+        await fetch("/exercises", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            workoutId: workoutId,
+            exerciseId: ex.exerciseid,
+            name: ex.name,
+            sets: ex.sets,
+            reps: ex.reps,
+            weight: ex.weight,
+            rest: ex.rest
+          })
         });
+      }
 
-        const data = await res.json();
+      alert("✅ Тренировка создана!");
+      document.getElementById("workoutName").value = "";
+      document.getElementById("isRecommended").checked = false;
+      document.getElementById("difficulty").value = "";
+      selected = [];
+      renderSelected();
 
-        if (data.success) {
-            const workoutId = data.id;
-
-            for (const ex of selected) {
-                await fetch("/exercises", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        workoutId: workoutId,
-                        exerciseId: ex.exerciseid,
-                        name: ex.name,
-                        sets: ex.sets,
-                        reps: ex.reps,
-                        weight: ex.weight,
-                        rest: ex.rest
-                    })
-                });
-            }
-
-            alert("✅ Тренировка создана!");
-            document.getElementById("workoutName").value = "";
-            document.getElementById("isRecommended").checked = false;
-            selected = [];
-            renderSelected();
-        } else {
-            alert("Ошибка: " + (data.error || "неизвестная ошибка"));
-        }
-    } catch (err) {
-        alert("Ошибка соединения с сервером");
+    } else {
+      alert("Ошибка: " + (data.error || "неизвестная ошибка"));
     }
+
+  } catch (err) {
+    console.error("createWorkout error:", err);
+    alert("Ошибка соединения с сервером");
+  }
 }
+
+/* ===== INIT ===== */
+loadExercises();
 </script>
 
 </body>
