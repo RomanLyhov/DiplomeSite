@@ -145,7 +145,7 @@ body {
 }
 
 /* ── STATS ── */
-.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
 .stat-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -157,6 +157,7 @@ body {
 .s-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .s-val { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
 .s-unit { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 3px; }
+.s-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
 
 /* ── TWO COL ── */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -234,6 +235,45 @@ body {
   white-space: nowrap; margin-left: 8px;
 }
 
+/* ── LAST ACTIVITY CARD ── */
+.last-activity-card {
+  background: linear-gradient(135deg, rgba(59,142,240,0.08), rgba(59,142,240,0.02));
+  border: 1px solid rgba(59,142,240,0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+.last-activity-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
+}
+.last-activity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.last-activity-row:last-child {
+  border-bottom: none;
+}
+.last-activity-label {
+  font-size: 13px;
+  color: var(--soft);
+}
+.last-activity-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.last-activity-icon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
 /* ── STRENGTH TABLE ── */
 .strength-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .strength-table th {
@@ -308,7 +348,7 @@ body {
     </div>
   </div>
 
-  <!-- STATS -->
+  <!-- STATS (4 колонки) -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="s-label">Вес</div>
@@ -321,6 +361,10 @@ body {
     <div class="stat-card">
       <div class="s-label">Цель</div>
       <div class="s-val" id="goal" style="font-size:17px;padding-top:3px;">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">Активность</div>
+      <div class="s-val" id="activityLevel" style="font-size:15px;padding-top:3px;">—</div>
     </div>
   </div>
 
@@ -350,6 +394,35 @@ body {
       <div class="card-title">Вес</div>
       <div class="weight-big" id="weightBig">— <span class="weight-unit">кг</span></div>
       <div id="weightRows"></div>
+    </div>
+  </div>
+
+  <!-- ПОСЛЕДНЯЯ АКТИВНОСТЬ -->
+  <div class="last-activity-card">
+    <div class="last-activity-title">📊 ПОСЛЕДНЯЯ АКТИВНОСТЬ</div>
+    <div class="last-activity-row">
+      <div class="last-activity-label">
+        <span class="last-activity-icon">🏋️</span> Последняя тренировка
+      </div>
+      <div class="last-activity-value" id="lastWorkoutDate">—</div>
+    </div>
+    <div class="last-activity-row">
+      <div class="last-activity-label">
+        <span class="last-activity-icon">📅</span> Всего тренировок
+      </div>
+      <div class="last-activity-value" id="totalWorkouts">0</div>
+    </div>
+    <div class="last-activity-row">
+      <div class="last-activity-label">
+        <span class="last-activity-icon">✅</span> Выполнено полностью
+      </div>
+      <div class="last-activity-value" id="fullyCompleted">0</div>
+    </div>
+    <div class="last-activity-row">
+      <div class="last-activity-label">
+        <span class="last-activity-icon">📈</span> Процент выполнения
+      </div>
+      <div class="last-activity-value" id="completionPercent">0%</div>
     </div>
   </div>
 
@@ -396,6 +469,21 @@ function tr(map,val){
   return map[k]||val;
 }
 
+function formatDate(timestamp){
+  if(!timestamp) return "—";
+  const date = new Date(typeof timestamp === 'number' ? timestamp : Date.parse(timestamp));
+  if(isNaN(date)) return "—";
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  
+  if(targetDate.getTime() === today.getTime()) return "Сегодня";
+  if(targetDate.getTime() === yesterday.getTime()) return "Вчера";
+  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
+}
+
 const role=(localStorage.getItem("role")||"").toLowerCase();
 const authUserId=localStorage.getItem("userId");
 if(!authUserId) window.location.href="/adminvh.html";
@@ -404,17 +492,6 @@ if(role==="admin") document.getElementById("adminBtn").style.display="inline-blo
 let profileId=localStorage.getItem("selectedUserId");
 if(!profileId||profileId==="null") profileId=authUserId;
 if(role!=="admin") profileId=authUserId;
-
-function fmtDate(ts){
-  if(!ts) return "—";
-  const d=new Date(typeof ts==="number"?ts:Date.parse(ts));
-  if(isNaN(d)) return "—";
-  const now=new Date();
-  if(d.toDateString()===now.toDateString()) return "Сегодня";
-  const y=new Date(now); y.setDate(now.getDate()-1);
-  if(d.toDateString()===y.toDateString()) return "Вчера";
-  return d.toLocaleDateString("ru-RU",{day:"numeric",month:"short"});
-}
 
 const DOT_COLORS=["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
 const BADGE_STYLES=[
@@ -435,6 +512,7 @@ async function loadProfile(){
   document.getElementById("avatar").innerText=(data.name?.[0]||"U").toUpperCase();
   document.getElementById("weight").innerText=data.weight??"—";
   document.getElementById("height").innerText=data.height??"—";
+  document.getElementById("activityLevel").innerText=tr(ACTIVITY_MAP,data.activity);
 
   const goalRu=tr(GOAL_MAP,data.goal);
   document.getElementById("goal").innerText=goalRu;
@@ -490,8 +568,8 @@ async function loadTodayCalories(goalCal){
     document.getElementById("eatenCal").innerText=Math.round(eaten);
     document.getElementById("intakeFill").style.width=pct+"%";
     document.getElementById("intakeFill").style.background=pct>=100?"#fbbf24":"#3b8ef0";
-    document.getElementById("intakeSub").innerText=
-      goal>0?(left>0?`Ещё ${Math.round(left)} ккал до цели`:"Дневная цель достигнута"):"Цель по калориям не задана";
+    document.getElementById("intakeSub").innerHTML=
+      goal>0?(left>0?`Ещё ${Math.round(left)} ккал до цели`:"🎉 Дневная цель достигнута! 🎉"):"Цель по калориям не задана";
   }catch(e){
     document.getElementById("eatenCal").innerText="—";
     document.getElementById("intakeSub").innerText="Не удалось загрузить данные питания";
@@ -503,25 +581,43 @@ async function loadWorkoutHistory(){
   try{
     const res=await fetch(`/workout-history/${profileId}`);
     const rows=await res.json();
+    
+    // Обновляем карточку последней активности
+    if(rows && rows.length>0){
+      const lastWorkout = rows[0];
+      const totalWorkouts = rows.length;
+      const fullyCompleted = rows.filter(r=>r.isFullyDone).length;
+      const completionPercent = Math.round((fullyCompleted/totalWorkouts)*100);
+      
+      document.getElementById("lastWorkoutDate").innerHTML = `${lastWorkout.workoutName || "Тренировка"}<span style="font-size:10px;color:var(--muted);display:block;">${formatDate(lastWorkout.completedAt)}</span>`;
+      document.getElementById("totalWorkouts").innerText = totalWorkouts;
+      document.getElementById("fullyCompleted").innerText = fullyCompleted;
+      document.getElementById("completionPercent").innerHTML = `<span style="color:#22c55e;">${completionPercent}%</span>`;
+    } else {
+      document.getElementById("lastWorkoutDate").innerText = "Нет тренировок";
+      document.getElementById("totalWorkouts").innerText = "0";
+      document.getElementById("fullyCompleted").innerText = "0";
+      document.getElementById("completionPercent").innerText = "0%";
+    }
+    
     if(!rows||rows.length===0){
-      list.innerHTML=`<div class="empty-state">Тренировок пока нет</div>`;
+      list.innerHTML=`<div class="empty-state">🏋️ Тренировок пока нет</div>`;
       return;
     }
     list.innerHTML=rows.slice(0,5).map((r,i)=>{
       const color=DOT_COLORS[i%DOT_COLORS.length];
-      const badge=BADGE_STYLES[i%BADGE_STYLES.length];
-      const done=r.isFullyDone
-        ?`<span class="act-badge" style="${badge}">Выполнено</span>`
-        :`<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">Частично</span>`;
+      const badge=r.isFullyDone
+        ?`<span class="act-badge" style="${BADGE_STYLES[i%BADGE_STYLES.length]}">✅ Выполнено</span>`
+        :`<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">⚠ Частично</span>`;
       const sub=r.completedExercises!=null?`${r.completedExercises}/${r.totalExercises} упр.`:"";
       return `<div class="activity-row">
         <div class="act-dot" style="background:${color};"></div>
         <span class="act-name">${r.workoutName||"Тренировка"}</span>
         <div class="act-meta">
-          <span class="act-date">${fmtDate(r.completedAt)}</span>
+          <span class="act-date">${formatDate(r.completedAt)}</span>
           ${sub?`<span class="act-sub">${sub}</span>`:""}
         </div>
-        ${done}
+        ${badge}
       </div>`;
     }).join("");
   }catch(e){
@@ -535,7 +631,7 @@ async function loadWorkoutsWithExercises(){
     const res=await fetch(`/workouts/full/${profileId}`);
     const workouts=await res.json();
     if(!workouts||workouts.length===0){
-      el.innerHTML=`<div class="empty-state">Тренировки не созданы</div>`;
+      el.innerHTML=`<div class="empty-state">📋 Тренировки не созданы</div>`;
       return;
     }
     const allEx=[];
