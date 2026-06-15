@@ -563,22 +563,18 @@ app.get("/workouts/recommended", async (req, res) => {
 app.post("/logout", async (req, res) => {
     try {
         const { userId } = req.body;
-
-        await pool.query(
-            `UPDATE users
-             SET is_online = false,
-                 last_seen = $1
-             WHERE userid = $2`,
-            [Date.now(), userId]
-        );
-
+        if (userId) {
+            await pool.query(
+                `UPDATE users SET is_online = false, last_seen = NOW() WHERE userid = $1`,
+                [userId]
+            );
+        }
         res.json({ success: true });
     } catch (err) {
         console.error("LOGOUT ERROR:", err);
         res.status(500).json({ success: false });
     }
 });
-
 app.patch("/workouts/:id/recommend", async (req, res) => {
     try {
         const { isRecommended } = req.body;

@@ -116,6 +116,18 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 24px; font-weight: 700; color: #fff;
   box-shadow: 0 0 0 3px rgba(59,142,240,0.2);
+  position: relative;
+}
+/* онлайн-индикатор на аватаре */
+.avatar-online-dot {
+  position: absolute;
+  bottom: 3px; right: 3px;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--card);
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(34,197,94,0.6);
+  display: none;
 }
 .hero-info { flex: 1; }
 .hero-info h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 3px; }
@@ -157,7 +169,6 @@ body {
 .s-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .s-val { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
 .s-unit { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 3px; }
-.s-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
 
 /* ── TWO COL ── */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -174,6 +185,69 @@ body {
   margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.6px;
 }
 
+/* ── ACTIVITY INFO CARDS (3 в ряд) ── */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.2s;
+}
+.info-card:hover { border-color: var(--border2); }
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.info-card-icon { font-size: 18px; }
+.info-card-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.info-card-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.info-card-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* онлайн-статус */
+.online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.online-badge .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.online-badge.online .dot  { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.7); animation: pulse-green 2s infinite; }
+.online-badge.offline .dot { background: var(--muted); }
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 4px rgba(34,197,94,0.6); }
+  50%      { box-shadow: 0 0 10px rgba(34,197,94,0.9); }
+}
+
 /* ── KBJU ── */
 .kbju-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 18px; }
 .kbju-item {
@@ -186,20 +260,11 @@ body {
 .k-num { font-size: 20px; font-weight: 700; line-height: 1; }
 .k-lbl { font-size: 10px; font-weight: 500; color: var(--muted); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
 
-.intake-wrap { }
 .intake-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .intake-eaten { font-size: 22px; font-weight: 700; color: #fff; }
 .intake-goal { font-size: 13px; color: var(--muted); }
-.intake-bar-track {
-  height: 7px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 999px; overflow: hidden;
-}
-.intake-bar-fill {
-  height: 100%; border-radius: 999px;
-  background: var(--accent);
-  transition: width 0.7s cubic-bezier(.4,0,.2,1);
-}
+.intake-bar-track { height: 7px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+.intake-bar-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.7s cubic-bezier(.4,0,.2,1); }
 .intake-sub { font-size: 11px; color: var(--muted); margin-top: 7px; }
 
 /* ── WEIGHT ── */
@@ -212,20 +277,6 @@ body {
 }
 .weight-meta-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
 .weight-meta-val { font-size: 15px; font-weight: 600; color: var(--text); }
-
-/* ── ACTIVITY INFO CARD ── */
-.info-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
-.info-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 20px;
-  text-align: center;
-}
-.info-card-icon { font-size: 28px; margin-bottom: 8px; }
-.info-card-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.info-card-value { font-size: 20px; font-weight: 700; color: var(--text); }
-.info-card-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
 /* ── ACTIVITY LIST ── */
 .activity-list { display: flex; flex-direction: column; gap: 7px; }
@@ -273,10 +324,7 @@ body {
 }
 
 /* ── EMPTY / SKELETON ── */
-.empty-state {
-  text-align: center; padding: 32px 16px;
-  color: var(--muted); font-size: 13px;
-}
+.empty-state { text-align: center; padding: 32px 16px; color: var(--muted); font-size: 13px; }
 .skel {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.04) 25%,
@@ -308,7 +356,10 @@ body {
 
   <!-- HERO -->
   <div class="hero">
-    <div class="avatar" id="avatar">U</div>
+    <div class="avatar" id="avatar">
+      U
+      <div class="avatar-online-dot" id="avatarOnlineDot"></div>
+    </div>
     <div class="hero-info">
       <h2 id="nameTitle">Загрузка...</h2>
       <small>ID: <span id="userId"></span></small><br>
@@ -323,7 +374,7 @@ body {
     </div>
   </div>
 
-  <!-- STATS (4 колонки) -->
+  <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="s-label">Вес</div>
@@ -353,7 +404,7 @@ body {
         <div class="kbju-item"><div class="k-num" style="color:#fbbf24;" id="fat">—</div><div class="k-lbl">жиры</div></div>
         <div class="kbju-item"><div class="k-num" style="color:#34d399;" id="carbs">—</div><div class="k-lbl">углев.</div></div>
       </div>
-      <div class="intake-wrap">
+      <div>
         <div class="intake-top">
           <span class="intake-eaten" id="eatenCal">—</span>
           <span class="intake-goal" id="goalCal">из — ккал</span>
@@ -372,29 +423,42 @@ body {
     </div>
   </div>
 
-  <!-- ИНФОРМАЦИЯ О ПОСЛЕДНЕЙ АКТИВНОСТИ (2 карточки) -->
+  <!-- 3 КАРТОЧКИ АКТИВНОСТИ -->
   <div class="info-cards">
+
+    <!-- Онлайн-статус -->
     <div class="info-card">
-      <div class="info-card-icon">🏋️</div>
-      <div class="info-card-label">Последняя тренировка</div>
+      <div class="info-card-header">
+        <span class="info-card-icon">🔵</span>
+        <span class="info-card-label">Статус</span>
+      </div>
+      <div class="info-card-value" id="onlineStatusVal">—</div>
+      <div class="info-card-sub" id="lastSeenSub">—</div>
+    </div>
+
+    <!-- Последняя тренировка -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <span class="info-card-icon">🏋️</span>
+        <span class="info-card-label">Последняя тренировка</span>
+      </div>
       <div class="info-card-value" id="lastWorkoutName">—</div>
-      <div class="info-card-date" id="lastWorkoutDate">—</div>
+      <div class="info-card-sub" id="lastWorkoutDate">—</div>
     </div>
+
+    <!-- Всего тренировок -->
     <div class="info-card">
-      <div class="info-card-icon">📊</div>
-      <div class="info-card-label">Всего тренировок</div>
+      <div class="info-card-header">
+        <span class="info-card-icon">📊</span>
+        <span class="info-card-label">Всего тренировок</span>
+      </div>
       <div class="info-card-value" id="totalWorkouts">0</div>
-      <div class="info-card-date" id="completionRate"></div>
+      <div class="info-card-sub" id="completionRate">—</div>
     </div>
-    <div class="info-card">
-  <div class="info-card-icon">🟢</div>
-  <div class="info-card-label">Статус</div>
-  <div class="info-card-value" id="onlineStatus">—</div>
-  <div class="info-card-date" id="lastSeenDate">—</div>
-</div>
+
   </div>
 
-  <!-- ACTIVITY + STRENGTH -->
+  <!-- ИСТОРИЯ + УПРАЖНЕНИЯ -->
   <div class="two-col">
     <div class="card">
       <div class="card-title">Последние тренировки</div>
@@ -431,45 +495,62 @@ const ACTIVITY_MAP = {
   VERY_ACTIVE:"Высокая активность", ACTIVE:"Высокая активность",
   EXTRA_ACTIVE:"Очень высокая активность", SUPER_ACTIVE:"Очень высокая активность",
 };
-function tr(map,val){
-  if(!val) return "—";
-  const k=val.toString().toUpperCase().trim().replace(/\s+/g,"_");
-  return map[k]||val;
+
+function tr(map, val) {
+  if (!val) return "—";
+  const k = val.toString().toUpperCase().trim().replace(/\s+/g, "_");
+  return map[k] || val;
 }
 
-function formatDateFull(timestamp){
-  if(!timestamp) return "—";
-  const date = new Date(typeof timestamp === 'number' ? timestamp : Date.parse(timestamp));
-  if(isNaN(date)) return "—";
-  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
+// Форматирование даты (полная)
+function formatDateFull(ts) {
+  if (!ts) return "—";
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return "—";
+  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 }
 
-function formatDateShort(timestamp){
-  if(!timestamp) return "—";
-  const date = new Date(typeof timestamp === 'number' ? timestamp : Date.parse(timestamp));
-  if(isNaN(date)) return "—";
-  const now = new Date();
+// Форматирование даты (короткая, с "Сегодня / Вчера")
+function formatDateShort(ts) {
+  if (!ts) return "—";
+  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return "—";
+  const now  = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  
-  if(targetDate.getTime() === today.getTime()) return "Сегодня";
-  if(targetDate.getTime() === yesterday.getTime()) return "Вчера";
-  return date.toLocaleDateString("ru-RU", {day:"numeric", month:"short"});
+  const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
+  const tgt   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (tgt.getTime() === today.getTime()) return "Сегодня";
+  if (tgt.getTime() === yest.getTime())  return "Вчера";
+  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
 }
 
-const role=(localStorage.getItem("role")||"").toLowerCase();
-const authUserId=localStorage.getItem("userId");
-if(!authUserId) window.location.href="/adminvh.html";
-if(role==="admin") document.getElementById("adminBtn").style.display="inline-block";
+// "5 минут назад", "3 часа назад", "2 дня назад"
+function timeAgo(ts) {
+  if (!ts) return null;
+  const d    = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+  if (isNaN(d)) return null;
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000); // секунды
+  if (diff < 60)   return "только что";
+  if (diff < 3600) return `${Math.floor(diff / 60)} мин. назад`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} ч. назад`;
+  const days = Math.floor(diff / 86400);
+  if (days === 1)  return "вчера";
+  if (days < 30)   return `${days} дн. назад`;
+  return formatDateFull(ts);
+}
 
-let profileId=localStorage.getItem("selectedUserId");
-if(!profileId||profileId==="null") profileId=authUserId;
-if(role!=="admin") profileId=authUserId;
+// ── AUTH ──
+const role = (localStorage.getItem("role") || "").toLowerCase();
+const authUserId = localStorage.getItem("userId");
+if (!authUserId) window.location.href = "/adminvh.html";
+if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
 
-const DOT_COLORS=["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
-const BADGE_STYLES=[
+let profileId = localStorage.getItem("selectedUserId");
+if (!profileId || profileId === "null") profileId = authUserId;
+if (role !== "admin") profileId = authUserId;
+
+const DOT_COLORS   = ["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
+const BADGE_STYLES = [
   "background:rgba(59,142,240,0.15);color:#60aaf8;border:1px solid rgba(59,142,240,0.25);",
   "background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2);",
   "background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2);",
@@ -478,146 +559,202 @@ const BADGE_STYLES=[
   "background:rgba(52,211,153,0.12);color:#6ee7b7;border:1px solid rgba(52,211,153,0.2);",
 ];
 
-async function loadProfile(){
-  const res=await fetch(`/users/${profileId}`);
-  const data=await res.json();
+// ── ЗАПОЛНЕНИЕ ОНЛАЙН-СТАТУСА ──
+// data — объект пользователя из /users/:id
+// data.isOnline  — boolean
+// data.lastSeen  — timestamp (число мс) или ISO-строка
+function renderOnlineStatus(data) {
+  const isOnline = data.isOnline === true || data.isOnline === "true";
+  const lastSeen = data.lastSeen;
 
-  document.getElementById("userId").innerText=profileId;
-  document.getElementById("nameTitle").innerText=data.name||"—";
-  document.getElementById("avatar").innerText=(data.name?.[0]||"U").toUpperCase();
-  document.getElementById("weight").innerText=data.weight??"—";
-  document.getElementById("height").innerText=data.height??"—";
-  document.getElementById("activityLevel").innerText=tr(ACTIVITY_MAP,data.activity);
+  // зелёная точка на аватаре
+  const dot = document.getElementById("avatarOnlineDot");
+  if (dot) dot.style.display = isOnline ? "block" : "none";
 
-  const goalRu=tr(GOAL_MAP,data.goal);
-  document.getElementById("goal").innerText=goalRu;
-  document.getElementById("goalBadge").innerText=goalRu;
+  const statusEl = document.getElementById("onlineStatusVal");
+  const subEl    = document.getElementById("lastSeenSub");
 
-  document.getElementById("calories").innerText=data.dailyCaloriesGoal??"—";
-  document.getElementById("protein").innerText=data.dailyProteinGoal??"—";
-  document.getElementById("fat").innerText=data.dailyFatGoal??"—";
-  document.getElementById("carbs").innerText=data.dailyCarbsGoal??"—";
-  document.getElementById("goalCal").innerText=`из ${data.dailyCaloriesGoal??"—"} ккал`;
+  if (isOnline) {
+    statusEl.innerHTML = `
+      <span class="online-badge online">
+        <span class="dot"></span>
+        В сети
+      </span>`;
+    subEl.innerText = "Сейчас онлайн";
+  } else {
+    statusEl.innerHTML = `
+      <span class="online-badge offline">
+        <span class="dot"></span>
+        Не в сети
+      </span>`;
 
-  let p=0;
-  if(data.weight&&data.targetWeight&&data.weight!==data.targetWeight){
-    const w=parseFloat(data.weight),t=parseFloat(data.targetWeight);
-    const start=t<w?t+15:t-15;
-    p=Math.round(Math.abs(start-w)/Math.abs(start-t)*100);
-    p=Math.min(100,Math.max(0,p));
+    if (lastSeen) {
+      const ago = timeAgo(lastSeen);
+      subEl.innerText = ago
+        ? `Был(а) в сети: ${ago}`
+        : `Был(а) в сети: ${formatDateFull(lastSeen)}`;
+    } else {
+      subEl.innerText = "Дата последнего входа неизвестна";
+    }
   }
-  document.getElementById("progressText").innerText=p+"%";
-  document.getElementById("bar").style.width=p+"%";
+}
 
-  document.getElementById("weightBig").innerHTML=
-    `${data.weight??"—"} <span class="weight-unit">кг</span>`;
+// ── ЗАГРУЗКА ПРОФИЛЯ ──
+async function loadProfile() {
+  const res  = await fetch(`/users/${profileId}`);
+  const data = await res.json();
 
-  const rows=[];
-  if(data.targetWeight){
-    const diff=parseFloat(data.weight)-parseFloat(data.targetWeight);
-    const col=diff>0?"#f87171":"#4ade80";
-    const lbl=diff>0?"осталось сбросить":"осталось набрать";
+  document.getElementById("userId").innerText   = profileId;
+  document.getElementById("nameTitle").innerText = data.name || "—";
+  document.getElementById("avatar").childNodes[0].textContent = (data.name?.[0] || "U").toUpperCase();
+  document.getElementById("weight").innerText   = data.weight  ?? "—";
+  document.getElementById("height").innerText   = data.height  ?? "—";
+  document.getElementById("activityLevel").innerText = tr(ACTIVITY_MAP, data.activity);
+
+  const goalRu = tr(GOAL_MAP, data.goal);
+  document.getElementById("goal").innerText     = goalRu;
+  document.getElementById("goalBadge").innerText = goalRu;
+
+  document.getElementById("calories").innerText = data.dailyCaloriesGoal ?? "—";
+  document.getElementById("protein").innerText  = data.dailyProteinGoal  ?? "—";
+  document.getElementById("fat").innerText      = data.dailyFatGoal      ?? "—";
+  document.getElementById("carbs").innerText    = data.dailyCarbsGoal    ?? "—";
+  document.getElementById("goalCal").innerText  = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
+
+  // прогресс-бар цели
+  let p = 0;
+  if (data.weight && data.targetWeight && data.weight !== data.targetWeight) {
+    const w = parseFloat(data.weight), t = parseFloat(data.targetWeight);
+    const start = t < w ? t + 15 : t - 15;
+    p = Math.round(Math.abs(start - w) / Math.abs(start - t) * 100);
+    p = Math.min(100, Math.max(0, p));
+  }
+  document.getElementById("progressText").innerText = p + "%";
+  document.getElementById("bar").style.width        = p + "%";
+
+  document.getElementById("weightBig").innerHTML =
+    `${data.weight ?? "—"} <span class="weight-unit">кг</span>`;
+
+  const rows = [];
+  if (data.targetWeight) {
+    const diff = parseFloat(data.weight) - parseFloat(data.targetWeight);
+    const col  = diff > 0 ? "#f87171" : "#4ade80";
+    const lbl  = diff > 0 ? "осталось сбросить" : "осталось набрать";
     rows.push(`<div class="weight-row">
       <div><div class="weight-meta-label">Целевой вес</div><div class="weight-meta-val">${data.targetWeight} кг</div></div>
       <div style="text-align:right"><div class="weight-meta-label">${lbl}</div><div class="weight-meta-val" style="color:${col}">${Math.abs(diff).toFixed(1)} кг</div></div>
     </div>`);
   }
-  if(data.activity){
-    rows.push(`<div style="margin-top:12px;font-size:12px;color:var(--muted)">Активность: ${tr(ACTIVITY_MAP,data.activity)}</div>`);
-  }
-  document.getElementById("weightRows").innerHTML=rows.join("");
+  document.getElementById("weightRows").innerHTML = rows.join("");
+
+  // ✅ РЕНДЕРИМ ОНЛАЙН-СТАТУС — здесь data уже есть!
+  renderOnlineStatus(data);
+
   return data;
 }
 
-async function loadTodayCalories(goalCal){
-  try{
-    const now=new Date();
-    const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
-    const end=start+86400000;
-    const res=await fetch(`/meals?userId=${profileId}&start=${start}&end=${end}`);
-    const meals=await res.json();
-    const eaten=meals.reduce((s,m)=>s+(parseFloat(m.calories)||0),0);
-    const goal=parseFloat(goalCal)||0;
-    const pct=goal>0?Math.min(100,Math.round((eaten/goal)*100)):0;
-    const left=Math.max(0,goal-eaten);
-    document.getElementById("eatenCal").innerText=Math.round(eaten);
-    document.getElementById("intakeFill").style.width=pct+"%";
-    document.getElementById("intakeFill").style.background=pct>=100?"#fbbf24":"#3b8ef0";
-    document.getElementById("intakeSub").innerHTML=
-      goal>0?(left>0?`Ещё ${Math.round(left)} ккал до цели`:"🎉 Дневная цель достигнута! 🎉"):"Цель по калориям не задана";
-  }catch(e){
-    document.getElementById("eatenCal").innerText="—";
-    document.getElementById("intakeSub").innerText="Не удалось загрузить данные питания";
+// ── КАЛОРИИ ──
+async function loadTodayCalories(goalCal) {
+  try {
+    const now   = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const end   = start + 86400000;
+    const res   = await fetch(`/meals?userId=${profileId}&start=${start}&end=${end}`);
+    const meals = await res.json();
+    const eaten = meals.reduce((s, m) => s + (parseFloat(m.calories) || 0), 0);
+    const goal  = parseFloat(goalCal) || 0;
+    const pct   = goal > 0 ? Math.min(100, Math.round((eaten / goal) * 100)) : 0;
+    const left  = Math.max(0, goal - eaten);
+
+    document.getElementById("eatenCal").innerText               = Math.round(eaten);
+    document.getElementById("intakeFill").style.width           = pct + "%";
+    document.getElementById("intakeFill").style.background      = pct >= 100 ? "#fbbf24" : "#3b8ef0";
+    document.getElementById("intakeSub").innerText =
+      goal > 0
+        ? (left > 0 ? `Ещё ${Math.round(left)} ккал до цели` : "Дневная цель достигнута")
+        : "Цель по калориям не задана";
+  } catch (e) {
+    document.getElementById("eatenCal").innerText  = "—";
+    document.getElementById("intakeSub").innerText = "Не удалось загрузить данные питания";
   }
 }
 
-async function loadWorkoutHistory(){
-  const list=document.getElementById("activityList");
-  try{
-    const res=await fetch(`/workout-history/${profileId}`);
-    const rows=await res.json();
-    
-    // Обновляем карточки информации
-    if(rows && rows.length>0){
-      const lastWorkout = rows[0];
-      const totalWorkouts = rows.length;
-      const fullyCompleted = rows.filter(r=>r.isFullyDone).length;
-      const completionPercent = Math.round((fullyCompleted/totalWorkouts)*100);
-      
-      document.getElementById("lastWorkoutName").innerText = lastWorkout.workoutName || "Тренировка";
-      document.getElementById("lastWorkoutDate").innerText = formatDateFull(lastWorkout.completedAt);
-      document.getElementById("totalWorkouts").innerText = totalWorkouts;
-      document.getElementById("completionRate").innerHTML = `Выполнено: ${completionPercent}%`;
+// ── ИСТОРИЯ ТРЕНИРОВОК ──
+async function loadWorkoutHistory() {
+  const list = document.getElementById("activityList");
+  try {
+    const res  = await fetch(`/workout-history/${profileId}`);
+    const rows = await res.json();
+
+    // карточки сводки
+    if (rows && rows.length > 0) {
+      const last             = rows[0];
+      const total            = rows.length;
+      const fullyDone        = rows.filter(r => r.isFullyDone).length;
+      const pct              = Math.round((fullyDone / total) * 100);
+
+      document.getElementById("lastWorkoutName").innerText = last.workoutName || "Тренировка";
+      document.getElementById("lastWorkoutDate").innerText = formatDateShort(last.completedAt)
+        + (last.completedAt ? `, ${new Date(
+            typeof last.completedAt === "number"
+              ? last.completedAt
+              : Date.parse(last.completedAt)
+          ).toLocaleDateString("ru-RU", { day:"numeric", month:"long", year:"numeric" })}` : "");
+
+      document.getElementById("totalWorkouts").innerText  = total;
+      document.getElementById("completionRate").innerText = `Полностью выполнено: ${pct}%`;
     } else {
       document.getElementById("lastWorkoutName").innerText = "Нет тренировок";
       document.getElementById("lastWorkoutDate").innerText = "—";
-      document.getElementById("totalWorkouts").innerText = "0";
-      document.getElementById("completionRate").innerHTML = "—";
+      document.getElementById("totalWorkouts").innerText   = "0";
+      document.getElementById("completionRate").innerText  = "—";
     }
-    
-    if(!rows||rows.length===0){
-      list.innerHTML=`<div class="empty-state">🏋️ Тренировок пока нет</div>`;
+
+    // список
+    if (!rows || rows.length === 0) {
+      list.innerHTML = `<div class="empty-state">Тренировок пока нет</div>`;
       return;
     }
-    list.innerHTML=rows.slice(0,5).map((r,i)=>{
-      const color=DOT_COLORS[i%DOT_COLORS.length];
-      const badge=r.isFullyDone
-        ?`<span class="act-badge" style="${BADGE_STYLES[i%BADGE_STYLES.length]}">✅ Выполнено</span>`
-        :`<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">⚠ Частично</span>`;
-      const sub=r.completedExercises!=null?`${r.completedExercises}/${r.totalExercises} упр.`:"";
+    list.innerHTML = rows.slice(0, 5).map((r, i) => {
+      const color = DOT_COLORS[i % DOT_COLORS.length];
+      const badge = r.isFullyDone
+        ? `<span class="act-badge" style="${BADGE_STYLES[i % BADGE_STYLES.length]}">Выполнено</span>`
+        : `<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">Частично</span>`;
+      const sub = r.completedExercises != null ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
       return `<div class="activity-row">
         <div class="act-dot" style="background:${color};"></div>
-        <span class="act-name">${r.workoutName||"Тренировка"}</span>
+        <span class="act-name">${r.workoutName || "Тренировка"}</span>
         <div class="act-meta">
           <span class="act-date">${formatDateShort(r.completedAt)}</span>
-          ${sub?`<span class="act-sub">${sub}</span>`:""}
+          ${sub ? `<span class="act-sub">${sub}</span>` : ""}
         </div>
         ${badge}
       </div>`;
     }).join("");
-  }catch(e){
-    list.innerHTML=`<div class="empty-state">Не удалось загрузить</div>`;
+  } catch (e) {
+    list.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
 
-async function loadWorkoutsWithExercises(){
-  const el=document.getElementById("strengthTable");
-  try{
-    const res=await fetch(`/workouts/full/${profileId}`);
-    const workouts=await res.json();
-    if(!workouts||workouts.length===0){
-      el.innerHTML=`<div class="empty-state">📋 Тренировки не созданы</div>`;
+// ── УПРАЖНЕНИЯ И ВЕСА ──
+async function loadWorkoutsWithExercises() {
+  const el = document.getElementById("strengthTable");
+  try {
+    const res      = await fetch(`/workouts/full/${profileId}`);
+    const workouts = await res.json();
+    if (!workouts || workouts.length === 0) {
+      el.innerHTML = `<div class="empty-state">Тренировки не созданы</div>`;
       return;
     }
-    const allEx=[];
-    workouts.forEach(w=>(w.exercises||[]).forEach(ex=>allEx.push({workout:w.name,...ex})));
-    const withWeight=allEx.filter(e=>e.weight>0);
+    const allEx = [];
+    workouts.forEach(w => (w.exercises || []).forEach(ex => allEx.push({ workout: w.name, ...ex })));
+    const withWeight = allEx.filter(e => e.weight > 0);
 
-    if(withWeight.length===0){
-      el.innerHTML=workouts.slice(0,6).map((w,i)=>{
-        const cnt=(w.exercises||[]).length;
+    if (withWeight.length === 0) {
+      el.innerHTML = workouts.slice(0, 6).map((w, i) => {
+        const cnt = (w.exercises || []).length;
         return `<div class="activity-row" style="margin-bottom:6px;">
-          <div class="act-dot" style="background:${DOT_COLORS[i%DOT_COLORS.length]};"></div>
+          <div class="act-dot" style="background:${DOT_COLORS[i % DOT_COLORS.length]};"></div>
           <span class="act-name">${w.name}</span>
           <span class="act-date">${cnt} упр.</span>
         </div>`;
@@ -625,7 +762,7 @@ async function loadWorkoutsWithExercises(){
       return;
     }
 
-    const trs=withWeight.slice(0,8).map(ex=>`
+    const trs = withWeight.slice(0, 8).map(ex => `
       <tr>
         <td>${ex.name}</td>
         <td style="color:var(--muted);font-size:12px;">${ex.workout}</td>
@@ -633,7 +770,7 @@ async function loadWorkoutsWithExercises(){
         <td style="text-align:center;"><span class="s-pill">${ex.weight} кг</span></td>
       </tr>`).join("");
 
-    el.innerHTML=`<table class="strength-table">
+    el.innerHTML = `<table class="strength-table">
       <thead><tr>
         <th>Упражнение</th><th>Тренировка</th>
         <th style="text-align:center;">Подх×Повт</th>
@@ -641,27 +778,27 @@ async function loadWorkoutsWithExercises(){
       </tr></thead>
       <tbody>${trs}</tbody>
     </table>`;
-  }catch(e){
-    el.innerHTML=`<div class="empty-state">Не удалось загрузить</div>`;
+  } catch (e) {
+    el.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
 
-const onlineStatus =
-    data.isOnline
-        ? "🟢 В сети"
-        : "⚫ Не в сети";
+function logout() {
+  // говорим серверу что оффлайн
+  const uid = localStorage.getItem("userId");
+  if (uid) {
+    fetch("/logout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: uid })
+    }).catch(() => {});
+  }
+  localStorage.clear();
+  location.href = "/adminvh.html";
+}
 
-document.getElementById("onlineStatus").innerText =
-    onlineStatus;
-
-document.getElementById("lastSeenDate").innerText =
-    data.isOnline
-        ? "Сейчас онлайн"
-        : `Был в сети: ${formatDateFull(data.lastSeen)}`;
-function logout(){ localStorage.clear(); location.href="/adminvh.html"; }
-
-document.addEventListener("DOMContentLoaded",async()=>{
-  const data=await loadProfile();
+document.addEventListener("DOMContentLoaded", async () => {
+  const data = await loadProfile();
   await Promise.all([
     loadTodayCalories(data?.dailyCaloriesGoal),
     loadWorkoutHistory(),
