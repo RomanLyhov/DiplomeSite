@@ -249,7 +249,21 @@ SELECT
 FROM users
 WHERE userid=$1
 `, [req.params.id]);
-        res.json(result.rows[0] || null);
+         const userData = result.rows[0] || null;
+        // авто-оффлайн если last_seen > 10 минут назад
+        if (userData && userData.isOnline) {
+            const ONLINE_TIMEOUT_MS = 10 * 60 * 1000;
+            const lastSeenRaw = userData.lastSeen;
+            const lastSeenTs  = typeof lastSeenRaw === "number"
+                ? lastSeenRaw
+                : (lastSeenRaw ? new Date(lastSeenRaw).getTime() : null);
+            if (lastSeenTs && (Date.now() - lastSeenTs) > ONLINE_TIMEOUT_MS) {
+                userData.isOnline = false;
+                // сбрасываем в БД фоново, не блокируя ответ
+                pool.query("UPDATE users SET is_online=false WHERE userid=$1", [req.params.id]).catch(() => {});
+            }
+        }
+        res.json(userData);
     } catch (err) {
         res.status(500).send("Error");
     }
@@ -564,9 +578,9 @@ app.post("/logout", async (req, res) => {
     try {
         const { userId } = req.body;
         if (userId) {
-            await pool.query(
-                `UPDATE users SET is_online = false, last_seen = NOW() WHERE userid = $1`,
-                [userId]
+           await pool.query(
+                `UPDATE users SET is_online = false, last_seen = $2 WHERE userid = $1`,
+                [userId, Date.now()]
             );
         }
         res.json({ success: true });

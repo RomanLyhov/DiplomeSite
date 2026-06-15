@@ -64,7 +64,7 @@ body {
   color: var(--accent2);
   border: 1px solid rgba(59,142,240,0.25);
 }
-.nav-right { position: absolute; right: 24px; }
+.nav-right { position: absolute; right: 24px; display: flex; align-items: center; gap: 8px; }
 .logout {
   padding: 7px 16px;
   border-radius: 20px;
@@ -78,6 +78,22 @@ body {
   font-family: 'Inter', sans-serif;
 }
 .logout:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: var(--red); }
+
+/* кнопка "Мой профиль" — показывается только когда смотришь чужой */
+.my-profile-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(59,142,240,0.3);
+  background: rgba(59,142,240,0.12);
+  color: var(--accent2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  display: none;
+}
+.my-profile-btn:hover { background: rgba(59,142,240,0.2); }
 
 /* ── LAYOUT ── */
 .container {
@@ -139,7 +155,6 @@ body {
   color: var(--green);
   border: 1px solid rgba(34,197,94,0.25);
 }
-/* онлайн-статус под прогрессом */
 .hero-progress { text-align: right; }
 .prog-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
 .prog-num { font-size: 30px; font-weight: 800; color: var(--accent2); line-height: 1; }
@@ -305,6 +320,33 @@ body {
   border-radius: 6px; height: 14px; margin: 4px 0;
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* баннер "просмотр чужого профиля" */
+.viewing-banner {
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--amber);
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+.viewing-banner button {
+  margin-left: auto;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(251,191,36,0.3);
+  background: rgba(251,191,36,0.1);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+.viewing-banner button:hover { background: rgba(251,191,36,0.2); }
 </style>
 </head>
 <body>
@@ -318,11 +360,19 @@ body {
     <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
   </div>
   <div class="nav-right">
+    <!-- кнопка появляется только когда смотришь чужой профиль -->
+    <button class="my-profile-btn" id="myProfileBtn" onclick="goToMyProfile()">← Мой профиль</button>
     <button class="logout" onclick="logout()">Выйти</button>
   </div>
 </div>
 
 <div class="container">
+
+  <!-- баннер "вы смотрите профиль другого пользователя" -->
+  <div class="viewing-banner" id="viewingBanner">
+    <span>👁 Вы просматриваете профиль другого пользователя</span>
+    <button onclick="goToMyProfile()">Перейти к своему профилю</button>
+  </div>
 
   <!-- HERO -->
   <div class="hero">
@@ -341,7 +391,6 @@ body {
       <div class="prog-bar-wrap">
         <div class="prog-bar-fill" id="bar" style="width:0%"></div>
       </div>
-      <!-- статус онлайн под прогрессом -->
       <div class="hero-online">
         <span class="online-badge" id="onlineBadge">
           <span class="dot"></span>
@@ -481,13 +530,36 @@ function timeAgo(ts) {
 
 // ── AUTH ──
 const role = (localStorage.getItem("role") || "").toLowerCase();
-const authUserId = localStorage.getItem("userId");
+const authUserId = localStorage.getItem("userId");   // кто залогинен
 if (!authUserId) window.location.href = "/adminvh.html";
 if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
 
-let profileId = localStorage.getItem("selectedUserId");
-if (!profileId || profileId === "null") profileId = authUserId;
-if (role !== "admin") profileId = authUserId;
+// ── ОПРЕДЕЛЯЕМ чей профиль смотрим ──
+// FIX #2: если не админ — всегда показываем свой профиль
+let profileId = authUserId;
+let isViewingOther = false;
+
+if (role === "admin") {
+  const selectedId = localStorage.getItem("selectedUserId");
+  // смотрим чужой только если явно выбрали другого пользователя
+  if (selectedId && selectedId !== "null" && selectedId !== authUserId) {
+    profileId = selectedId;
+    isViewingOther = true;
+  }
+  // если selectedUserId == authUserId или не задан — показываем свой
+}
+
+// показываем UI "просмотр чужого профиля"
+if (isViewingOther) {
+  document.getElementById("viewingBanner").style.display = "flex";
+  document.getElementById("myProfileBtn").style.display = "inline-block";
+}
+
+// переход к своему профилю
+function goToMyProfile() {
+  localStorage.removeItem("selectedUserId");
+  window.location.href = "/profil.html";
+}
 
 const DOT_COLORS = ["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
 const BADGE_STYLES = [
@@ -499,8 +571,29 @@ const BADGE_STYLES = [
   "background:rgba(52,211,153,0.12);color:#6ee7b7;border:1px solid rgba(52,211,153,0.2);",
 ];
 
+// FIX #1: онлайн-статус — проверяем last_seen на клиенте
+// если is_online=true, но last_seen > 10 минут назад — считаем оффлайн
+const ONLINE_TIMEOUT_MS = 10 * 60 * 1000; // 10 минут
+
+function resolveOnlineStatus(data) {
+  const rawOnline = data.isOnline === true || data.isOnline === "true";
+  if (!rawOnline) return false;
+
+  // если is_online=true, проверяем last_seen
+  if (data.lastSeen) {
+    const lastSeenTs = typeof data.lastSeen === "number"
+      ? data.lastSeen
+      : Date.parse(data.lastSeen);
+    if (!isNaN(lastSeenTs)) {
+      const age = Date.now() - lastSeenTs;
+      if (age > ONLINE_TIMEOUT_MS) return false; // давно, считаем оффлайн
+    }
+  }
+  return true;
+}
+
 function renderOnlineStatus(data) {
-  const isOnline = data.isOnline === true || data.isOnline === "true";
+  const isOnline = resolveOnlineStatus(data);
   const lastSeen = data.lastSeen;
 
   const dot = document.getElementById("avatarOnlineDot");
@@ -618,7 +711,6 @@ async function loadWorkoutHistory() {
         ? `<span class="act-badge" style="${BADGE_STYLES[i % BADGE_STYLES.length]}">Выполнено</span>`
         : `<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">Частично</span>`;
       const sub = r.completedExercises != null ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
-      // дата: "Сегодня" / "Вчера" / "12 июн." + полная дата второй строкой
       const dateShort = formatDateShort(r.completedAt);
       const dateFull  = formatDateFull(r.completedAt);
       return `<div class="activity-row">
