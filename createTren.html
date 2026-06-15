@@ -398,9 +398,7 @@ function renderSelected(){
 
 /* create workout */
 async function createWorkout() {
-    // получаем userId из хранилища
-    const user = JSON.parse(localStorage.getItem("user") || sessionStorage.getItem("user") || "{}");
-    const userId = user.id || user.userId;
+    const userId = localStorage.getItem("userId");
 
     if (!userId) {
         alert("Ошибка: не найден пользователь. Войдите заново.");
@@ -419,14 +417,12 @@ async function createWorkout() {
     }
 
     const payload = {
-        userId: userId,
+        userId: Number(userId),
         name: name,
         difficulty: document.getElementById("difficulty").value,
         isRecommended: document.getElementById("isRecommended").checked,
         exercises: selected
     };
-
-    console.log("📤 Отправляем:", payload);
 
     try {
         const res = await fetch("/workouts", {
@@ -436,12 +432,10 @@ async function createWorkout() {
         });
 
         const data = await res.json();
-        console.log("📥 Ответ сервера:", data);
 
         if (data.success) {
             const workoutId = data.id;
 
-            // сохраняем упражнения
             for (const ex of selected) {
                 await fetch("/exercises", {
                     method: "POST",
@@ -467,7 +461,6 @@ async function createWorkout() {
             alert("Ошибка: " + (data.error || "неизвестная ошибка"));
         }
     } catch (err) {
-        console.error("❌ Ошибка:", err);
         alert("Ошибка соединения с сервером");
     }
 }
