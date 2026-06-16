@@ -538,18 +538,26 @@ app.get("/progress/weight/:userId", async (req, res) => {
 });
 
 // POST /progress/weight — добавить замер
+// POST /progress/weight — добавить замер
 app.post("/progress/weight", async (req, res) => {
     try {
         const { userId, weight, date } = req.body;
         if (!userId || !weight) return res.status(400).json({ success: false, error: "userId or weight missing" });
 
         const reportDate = date ? Number(date) : Date.now();
-const result = await pool.query(
-    `INSERT INTO progressreports(user_id, report_date, current_weight)
-     VALUES($1, $2, $3)
-     RETURNING reportid`,
-    [userId, reportDate, weight]
-);
+
+        const result = await pool.query(
+            `INSERT INTO progressreports(user_id, report_date, current_weight)
+             VALUES($1, $2, $3)
+             RETURNING reportid`,
+            [userId, reportDate, weight]
+        );
+
+        // ✅ НОВОЕ: обновляем текущий вес пользователя
+        await pool.query(
+            `UPDATE users SET weight = $1 WHERE userid = $2`,
+            [weight, userId]
+        );
 
         res.json({ success: true, id: result.rows[0].reportid });
     } catch (err) {
@@ -557,11 +565,36 @@ const result = await pool.query(
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
 // DELETE /progress/weight/:id — удалить замер
 app.delete("/progress/weight/:id", async (req, res) => {
     try {
+        // Сначала узнаём userId удаляемого замера
+        const entry = await pool.query(
+            "SELECT user_id FROM progressreports WHERE reportid = $1",
+            [req.params.id]
+        );
+
         await pool.query("DELETE FROM progressreports WHERE reportid = $1", [req.params.id]);
+
+        // ✅ НОВОЕ: обновляем текущий вес на последний оставшийся замер
+        if (entry.rows.length > 0) {
+            const userId = entry.rows[0].user_id;
+            const latest = await pool.query(
+                `SELECT current_weight FROM progressreports 
+                 WHERE user_id = $1 
+                 ORDER BY report_date DESC 
+                 LIMIT 1`,
+                [userId]
+            );
+            if (latest.rows.length > 0) {
+                await pool.query(
+                    `UPDATE users SET weight = $1 WHERE userid = $2`,
+                    [latest.rows[0].current_weight, userId]
+                );
+            }
+            // Если замеров больше нет — вес в профиле не трогаем (остаётся последний известный)
+        }
+
         res.json({ success: true });
     } catch (err) {
         console.error("DELETE progress/weight ERROR:", err);
