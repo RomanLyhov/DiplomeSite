@@ -264,8 +264,9 @@ WHERE userid = $1
                 pool.query("UPDATE users SET is_online=false WHERE userid=$1", [req.params.id]).catch(() => {});
             }
         }
-        res.json(userData);
+       res.json(userData);
     } catch (err) {
+        console.error("❌ GET USER ERROR:", err.message); 
         res.status(500).send("Error");
     }
 });
