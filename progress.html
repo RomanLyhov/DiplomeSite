@@ -773,7 +773,13 @@ allPoints.sort((a, b) => a.ts - b.ts || a.reportid - b.reportid);
     document.getElementById("curWeight").textContent = latest.weight;
   }
 }
-
+function toMs(val) {
+  if (!val) return 0;
+  const n = Number(val);
+  if (!isNaN(n) && n > 1000000000000) return n;
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? 0 : d.getTime();
+}
 async function loadWeightHistory() {
   try {
     const res = await fetch(`/progress/weight/${profileId}`);
@@ -979,9 +985,11 @@ function renderWorkoutStats() {
   const now=Date.now(), week=7*86400000;
   const weeks=[0,0,0,0];
   workoutHistory.forEach(w=>{
-    const diff=now-new Date(w.completedAt).getTime();
-    const wi=Math.floor(diff/week);
-    if(wi<4) weeks[3-wi]++;
+    const ts = toMs(w.completedAt);
+    if (!ts) return;
+    const diff = now - ts;
+    const wi = Math.floor(diff/week);
+    if (wi >= 0 && wi < 4) weeks[3-wi]++;
   });
 
   el.innerHTML=`
@@ -1018,7 +1026,10 @@ function renderWorkoutChart() {
     const d=new Date(Date.now()-i*86400000);
     labels.push(d.toLocaleDateString("ru-RU",{day:"numeric",month:"short"}));
     const key=d.toDateString();
-    counts.push(workoutHistory.filter(w=>new Date(w.completedAt).toDateString()===key).length);
+    counts.push(workoutHistory.filter(w=>{
+      const ts = toMs(w.completedAt);
+      return ts && new Date(ts).toDateString()===key;
+    }).length);
   }
   workoutChartInst=new Chart(ctx,{
     type:"bar",
@@ -1377,7 +1388,7 @@ async function generatePdf() {
     sectionTitle("Статистика тренировок");
 
     const filteredWorkouts = workoutHistory.filter(function(w) {
-      return new Date(w.completedAt).getTime() >= periodStart;
+      return toMs(w.completedAt) >= periodStart;
     });
     const total = filteredWorkouts.length;
     const fullyDone = filteredWorkouts.filter(function(w) { return w.isFullyDone; }).length;
