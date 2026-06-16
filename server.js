@@ -245,7 +245,8 @@ SELECT
     dailycaloriesgoal AS "dailyCaloriesGoal",
     dailyproteingoal  AS "dailyProteinGoal",
     dailyfatgoal      AS "dailyFatGoal",
-    dailycarbsgoal    AS "dailyCarbsGoal"
+    dailycarbsgoal    AS "dailyCarbsGoal",
+    start_weight AS "startWeight"
 FROM users
 WHERE userid = $1
 `, [req.params.id]);
@@ -553,9 +554,13 @@ app.post("/progress/weight", async (req, res) => {
             [userId, reportDate, weight]
         );
 
-        // ✅ НОВОЕ: обновляем текущий вес пользователя
+        // ✅ Обновляем ТОЛЬКО текущий вес
+        // start_weight пишем ТОЛЬКО если он ещё не задан (первый замер)
         await pool.query(
-            `UPDATE users SET weight = $1 WHERE userid = $2`,
+            `UPDATE users 
+             SET weight = $1,
+                 start_weight = COALESCE(start_weight, $1)
+             WHERE userid = $2`,
             [weight, userId]
         );
 
@@ -576,7 +581,7 @@ app.delete("/progress/weight/:id", async (req, res) => {
 
         await pool.query("DELETE FROM progressreports WHERE reportid = $1", [req.params.id]);
 
-        // ✅ НОВОЕ: обновляем текущий вес на последний оставшийся замер
+        
         if (entry.rows.length > 0) {
             const userId = entry.rows[0].user_id;
             const latest = await pool.query(

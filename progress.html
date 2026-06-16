@@ -748,7 +748,7 @@ function buildAllPoints() {
     userProfile.createdat ??
     null;
 
-  const regTs = regDate
+const regTs = regDate
     ? (typeof regDate === "number" ? regDate : new Date(regDate).getTime())
     : null;
 
@@ -759,20 +759,20 @@ function buildAllPoints() {
     isReg:    false,
   }));
 
-  if (registrationWeight && !isNaN(registrationWeight) && regTs) {
-    const regDay = new Date(regTs).toDateString();
-    const alreadyExists = allPoints.some(p => new Date(p.ts).toDateString() === regDay);
-    if (!alreadyExists) {
-      allPoints.unshift({ ts: regTs, weight: registrationWeight, reportid: null, isReg: true });
-    }
-    document.getElementById("startWeight").textContent = registrationWeight;
-    document.getElementById("startWeightSub").textContent = `с ${fmtDateShort(regTs)}`;
-  } else if (allPoints.length) {
-    const sorted = [...allPoints].sort((a, b) => a.ts - b.ts);
-    document.getElementById("startWeight").textContent = sorted[0].weight;
+  allPoints.sort((a, b) => a.ts - b.ts);
+
+  // ✅ Стартовый вес = самый ранний замер из progressreports
+  if (allPoints.length) {
+    const earliest = allPoints[0];
+    document.getElementById("startWeight").textContent = earliest.weight;
+    document.getElementById("startWeightSub").textContent = `с ${fmtDateShort(earliest.ts)}`;
   }
 
-  allPoints.sort((a, b) => a.ts - b.ts);
+  // ✅ Текущий вес = самый свежий замер
+  if (allPoints.length) {
+    const latest = [...allPoints].sort((a, b) => b.ts - a.ts)[0];
+    document.getElementById("curWeight").textContent = latest.weight;
+  }
 }
 
 async function loadWeightHistory() {
