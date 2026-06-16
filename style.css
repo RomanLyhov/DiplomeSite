@@ -411,3 +411,35 @@ tr:hover {
   border-top:1px solid rgba(255,255,255,0.1);
   padding-top:8px;
 }
+
+.filters{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* красивый select */
+.select-wrapper select,
+.date-wrapper input{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  outline: none;
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+}
+
+/* hover эффект */
+.select-wrapper select:hover,
+.date-wrapper input:hover{
+  border-color: rgba(167,139,250,0.5);
+  box-shadow: 0 0 12px rgba(167,139,250,0.15);
+}
+
+/* option (частично работает в браузерах) */
+select option{
+  background:#0b1020;
+  color:white;
+}

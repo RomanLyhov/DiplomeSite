@@ -21,16 +21,22 @@
   </div>
 </div>
 
-<div class="container">
+<div class="header">
 
-  <div class="header">
-    <h1>Журнал питания</h1>
-    <select id="userFilter"></select>
-    <input type="date" id="dayFilter">
+  <h1>Журнал питания</h1>
+
+  <div class="filters">
+
+    <div class="select-wrapper">
+      <select id="userFilter"></select>
+    </div>
+
+    <div class="date-wrapper">
+      <input type="date" id="dayFilter">
+    </div>
+
   </div>
 
-  <div class="card">
-  <div id="nutrition-cards" class="nutrition-grid"></div>
 </div>
 
 </div>
@@ -165,36 +171,27 @@ async function loadMeals(userId, startDate = null, endDate = null){
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUsers();
 
-  const today = new Date().toISOString().split("T")[0];
-  document.getElementById("dayFilter").value = today;
+  const userSelect = document.getElementById("userFilter");
+  const dateInput = document.getElementById("dayFilter");
 
-  await loadMeals(userId);
+  const today = new Date();
+  dateInput.value = today.toISOString().split("T")[0];
 
-  document.getElementById("userFilter").addEventListener("change", (e) => {
-    loadMeals(e.target.value);
-  });
+  async function refreshMeals() {
+    const uid = userSelect.value;
+    const date = dateInput.value;
 
-  document.getElementById("dayFilter").addEventListener("change", (e) => {
-    const date = e.target.value;
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setDate(end.getDate() + 1);
 
-    const start = new Date(date).getTime();
-    const end = start + 24 * 60 * 60 * 1000;
+    await loadMeals(uid, start.getTime(), end.getTime());
+  }
 
-    loadMeals(
-      document.getElementById("userFilter").value,
-      start,
-      end
-    );
-  });
-});
-// ================= INIT =================
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadUsers();
-  await loadMeals(userId);
+  userSelect.addEventListener("change", refreshMeals);
+  dateInput.addEventListener("change", refreshMeals);
 
-  document.getElementById("userFilter").addEventListener("change", (e) => {
-    loadMeals(e.target.value);
-  });
+  await refreshMeals();
 });
 </script>
 
