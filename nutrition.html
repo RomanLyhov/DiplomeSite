@@ -29,20 +29,8 @@
   </div>
 
   <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>Дата и время</th>
-          <th>Приём пищи</th>
-          <th>Продукт</th>
-          <th>Кол-во</th>
-          <th>Ккал</th>
-        </tr>
-      </thead>
-
-      <tbody id="nutrition-table-body"></tbody>
-    </table>
-  </div>
+  <div id="nutrition-cards" class="nutrition-grid"></div>
+</div>
 
 </div>
 
@@ -82,16 +70,14 @@ async function loadMeals(userId){
   const res = await fetch(`/meals?userId=${userId}`);
   const data = await res.json();
 
-  const tbody = document.getElementById("nutrition-table-body");
-  tbody.innerHTML = "";
+  const container = document.getElementById("nutrition-cards");
+  container.innerHTML = "";
 
   if (!data.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5" style="text-align:center; opacity:0.6;">
-          Нет данных
-        </td>
-      </tr>
+    container.innerHTML = `
+      <div style="opacity:0.6; text-align:center;">
+        Нет данных
+      </div>
     `;
     return;
   }
@@ -100,28 +86,42 @@ async function loadMeals(userId){
 
     const d = new Date(Number(m.date));
 
-    const formattedDate = d.toLocaleDateString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    });
-
-    const formattedTime = d.toLocaleTimeString("ru-RU", {
+    const time = d.toLocaleTimeString("ru-RU", {
       hour: "2-digit",
       minute: "2-digit"
     });
 
-    const fullDateTime = `${formattedDate} ${formattedTime}`;
+    const date = d.toLocaleDateString("ru-RU");
 
-    tbody.innerHTML += `
-      <tr>
-        <td>${fullDateTime}</td>
-        <td>${m.mealType || "-"}</td>
-        <td>${m.productName || "-"}</td>
-        <td>${m.quantity || "-"}</td>
-        <td>${m.calories || 0}</td>
-      </tr>
+    const card = document.createElement("div");
+    card.className = "meal-card";
+
+    card.innerHTML = `
+      <div class="meal-header">
+        <div>${m.mealType || "Приём пищи"}</div>
+        <div class="meal-time">${date} ${time}</div>
+      </div>
+
+      <div class="meal-body">
+        <div class="meal-product">
+          <span>${m.productName}</span>
+          <span>x${m.quantity || 1}</span>
+        </div>
+
+        <div class="meal-kbju">
+          <span>🔥 ${m.calories || 0} ккал</span>
+          <span>🥩 ${m.protein || 0} Б</span>
+          <span>🧈 ${m.fat || 0} Ж</span>
+          <span>🍚 ${m.carbs || 0} У</span>
+        </div>
+      </div>
     `;
+
+    card.addEventListener("click", () => {
+      card.classList.toggle("open");
+    });
+
+    container.appendChild(card);
   });
 }
 
