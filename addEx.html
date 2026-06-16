@@ -151,6 +151,69 @@ textarea{
     grid-template-columns:1fr;
   }
 }
+
+/* ===== ВИДЕО БЛОК ===== */
+.video-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.video-upload-btn {
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(148,163,184,0.35);
+  background: rgba(255,255,255,0.6);
+  color: #0F172A;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.video-upload-btn:hover {
+  background: rgba(255,255,255,0.95);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+}
+
+.video-file-name {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.video-preview-box {
+  margin-top: 10px;
+  display: none;
+}
+
+.video-preview-box.active {
+  display: block;
+}
+
+.video-preview-box video {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 12px;
+  background: #000;
+}
+
+.video-remove-btn {
+  margin-top: 6px;
+  padding: 6px 16px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.video-remove-btn:hover {
+  background: rgba(239,68,68,0.2);
+}
 </style>
 </head>
 
@@ -206,9 +269,25 @@ if(role !== "admin"){
           <textarea id="instruction"></textarea>
         </div>
 
+        <!-- ===== ВИДЕО БЛОК (ВМЕСТО URL) ===== -->
         <div class="form-group full">
-          <label>Видео (URL)</label>
-          <input type="text" id="videoUrl" placeholder="https://...">
+          <label>Видео-демонстрация</label>
+          <div class="video-upload-row">
+            <button type="button" class="video-upload-btn" onclick="document.getElementById('videoInput').click()">
+              📁 Выбрать видео
+            </button>
+            <span class="video-file-name" id="videoFileName">Файл не выбран</span>
+          </div>
+
+          <input type="file" id="videoInput" accept="video/*" style="display:none;">
+
+          <div class="video-preview-box" id="videoPreviewBox">
+            <video id="videoPreview" controls>
+              <source id="videoPreviewSource" src="">
+            </video>
+            <br>
+            <button type="button" class="video-remove-btn" onclick="removeVideo()">🗑 Удалить видео</button>
+          </div>
         </div>
 
       </div>
@@ -225,9 +304,13 @@ if(role !== "admin"){
 <script>
 const API = "";
 
+let editingId = null;
+let videoData = null;
+
 async function loadEdit(){
   const id = new URLSearchParams(window.location.search).get("id");
   if(!id) return;
+  editingId = id;
 
   const res = await fetch(`${API}/exercises/${id}`);
   const ex = await res.json();
@@ -236,11 +319,70 @@ async function loadEdit(){
   document.getElementById("muscleGroup").value = ex.muscle_group || "Спина";
   document.getElementById("difficulty").value = ex.difficulty || "med";
   document.getElementById("instruction").value = ex.instruction || "";
-  document.getElementById("videoUrl").value = ex.video_url || "";
+
+  // Проверяем есть ли видео
+  const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+  const exerciseVideo = videoList.find(v => v.id === `video_${id}`);
+
+  if (exerciseVideo) {
+    const storedVideo = localStorage.getItem(exerciseVideo.id);
+    if (storedVideo) {
+      videoData = storedVideo;
+      showVideoPreview(storedVideo);
+      document.getElementById("videoFileName").textContent = exerciseVideo.name || "Видео загружено";
+    }
+  }
 
   document.getElementById("addExerciseForm").dataset.editId = id;
 }
 
+// ===== ВЫБОР ВИДЕО =====
+document.getElementById("videoInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("video/")) {
+    alert("Пожалуйста, выберите видеофайл");
+    this.value = "";
+    return;
+  }
+
+  if (file.size > 100 * 1024 * 1024) {
+    alert("Файл слишком большой. Максимальный размер 100MB");
+    this.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    videoData = event.target.result;
+    showVideoPreview(videoData);
+    document.getElementById("videoFileName").textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== ПОКАЗ ПРЕВЬЮ =====
+function showVideoPreview(data) {
+  const box = document.getElementById("videoPreviewBox");
+  const video = document.getElementById("videoPreview");
+  const source = document.getElementById("videoPreviewSource");
+
+  source.src = data;
+  video.load();
+  box.classList.add("active");
+}
+
+// ===== УДАЛЕНИЕ ВИДЕО =====
+function removeVideo() {
+  videoData = null;
+  document.getElementById("videoPreviewBox").classList.remove("active");
+  document.getElementById("videoPreview").pause();
+  document.getElementById("videoFileName").textContent = "Файл не выбран";
+  document.getElementById("videoInput").value = "";
+}
+
+// ===== СОХРАНЕНИЕ =====
 document.getElementById("addExerciseForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
 
@@ -251,8 +393,7 @@ document.getElementById("addExerciseForm").addEventListener("submit", async (e)=
     name: document.getElementById("exerciseName").value,
     muscle_group: document.getElementById("muscleGroup").value,
     difficulty: document.getElementById("difficulty").value,
-    instruction: document.getElementById("instruction").value,
-    video_url: document.getElementById("videoUrl").value
+    instruction: document.getElementById("instruction").value
   };
 
   const msg = document.getElementById("formMessage");
@@ -271,6 +412,31 @@ document.getElementById("addExerciseForm").addEventListener("submit", async (e)=
     const data = await response.json();
 
     if(!response.ok) throw new Error(data.error || "Ошибка сервера");
+
+    // ===== СОХРАНЯЕМ ВИДЕО =====
+    const exerciseId = editId || data.id;
+
+    if (videoData) {
+      const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+      const oldVideo = videoList.find(v => v.id === `video_${exerciseId}`);
+      if (oldVideo) {
+        localStorage.removeItem(oldVideo.id);
+        const filtered = videoList.filter(v => v.id !== `video_${exerciseId}`);
+        localStorage.setItem("videoList", JSON.stringify(filtered));
+      }
+
+      const videoKey = `video_${exerciseId}`;
+      localStorage.setItem(videoKey, videoData);
+
+      const newVideoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+      newVideoList.push({
+        id: videoKey,
+        name: document.getElementById("videoFileName").textContent || "video.mp4",
+        exerciseId: exerciseId,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem("videoList", JSON.stringify(newVideoList));
+    }
 
     msg.innerText = "Сохранено";
 
