@@ -66,23 +66,6 @@
   transform: translateY(-1px);
 }
 
-.btn-open {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-open:hover {
-  background: rgba(34, 197, 94, 0.25);
-  transform: translateY(-1px);
-}
-
 .btn-delete {
   padding: 8px 16px;
   border: none;
@@ -119,12 +102,18 @@
 
 .workout-info {
   flex: 1;
+  cursor: pointer;
+}
+
+.workout-info:hover .workout-name {
+  color: #a78bfa;
 }
 
 .workout-name {
   font-weight: 700;
   font-size: 18px;
   color: white;
+  transition: 0.2s;
 }
 
 .workout-id {
@@ -191,7 +180,7 @@ async function loadWorkouts() {
       div.className = "workout-card";
 
       div.innerHTML = `
-        <div class="workout-info">
+        <div class="workout-info" data-id="${w.workoutid}">
           <div class="workout-name">
             🏋️ ${w.name}
           </div>
@@ -204,25 +193,21 @@ async function loadWorkouts() {
           <button class="btn-edit" data-id="${w.workoutid}">
             ✏️ Редактировать
           </button>
-          <button class="btn-open" data-id="${w.workoutid}">
-            👁 Открыть
-          </button>
           <button class="btn-delete" data-id="${w.workoutid}">
-            🗑
+            🗑 Удалить
           </button>
         </div>
       `;
+
+      // Клик по карточке для открытия
+      div.querySelector('.workout-info').onclick = () => {
+        location.href = `/workout.html?id=${w.workoutid}`;
+      };
 
       // Редактировать
       div.querySelector('.btn-edit').onclick = (e) => {
         e.stopPropagation();
         location.href = `/edit-workout.html?id=${w.workoutid}`;
-      };
-
-      // Открыть
-      div.querySelector('.btn-open').onclick = (e) => {
-        e.stopPropagation();
-        location.href = `/workout.html?id=${w.workoutid}`;
       };
 
       // Удалить
