@@ -60,11 +60,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   dateInput.value = new Date().toISOString().split("T")[0];
 
   async function refreshMeals() {
-    const uid = userSelect.value;
-    const date = new Date(dateInput.value).getTime();
+  const uid = userSelect.value;
 
-    await loadMeals(uid, date, date + 86400000);
-  }
+  const [y, m, d] = dateInput.value.split("-");
+
+  const start = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+  const end = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
+
+  await loadMeals(uid, start, end);
+}
 
   userSelect.addEventListener("change", refreshMeals);
   dateInput.addEventListener("change", refreshMeals);
