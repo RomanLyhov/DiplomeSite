@@ -633,9 +633,9 @@
     <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
   </div>
   <div class="nav-right">
-    <button class="my-profile-btn" id="progressBtn" onclick="window.location.href='/progress.html'" style="display:inline-block;border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.12);color:#c4b5fd;">📈 Прогресс</button>
+    <button class="my-profile-btn" id="progressBtn" onclick="window.location.href='/progress.html'">📈 Прогресс</button>
     <button class="my-profile-btn" id="myProfileBtn" onclick="goToMyProfile()">← Мой профиль</button>
-    <button class="logout-btn" onclick="logout()">Выйти</button>
+    <button class="logout-btn" id="logoutBtn" onclick="logout()">Выйти</button>
   </div>
 </div>
 
@@ -820,9 +820,26 @@ if (role === "admin") {
   }
 }
 
+// === УПРАВЛЕНИЕ ВИДИМОСТЬЮ КНОПОК ===
+const progressBtn = document.getElementById('progressBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const myProfileBtn = document.getElementById('myProfileBtn');
+
 if (isViewingOther) {
+  // Показываем баннер
   document.getElementById("viewingBanner").style.display = "flex";
-  document.getElementById("myProfileBtn").style.display = "inline-block";
+  
+  // Показываем кнопку "Мой профиль"
+  myProfileBtn.style.display = "inline-block";
+  
+  // Скрываем кнопки "Прогресс" и "Выйти"
+  progressBtn.style.display = "none";
+  logoutBtn.style.display = "none";
+} else {
+  // Свой профиль — показываем прогресс и выход
+  progressBtn.style.display = "inline-block";
+  logoutBtn.style.display = "inline-block";
+  myProfileBtn.style.display = "none";
 }
 
 function goToMyProfile() {
