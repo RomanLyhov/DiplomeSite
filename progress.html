@@ -343,9 +343,21 @@ function showToast(msg, type="ok") {
 // ── UTILS ─────────────────────────────────────────────────────────
 function fmtDate(ts) {
   if (!ts) return "—";
-  const d = new Date(typeof ts==="number" ? ts : Date.parse(ts));
-  if (isNaN(d)) return "—";
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
+}
+function fmtDateShort(ts) {
+  if (!ts) return "—";
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
 function fmtDateShort(ts) {
   if (!ts) return "—";
@@ -638,16 +650,6 @@ async function loadWorkoutHistory() {
     document.getElementById("workoutStats").innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
     document.getElementById("fullHistory").innerHTML  = `<div class="empty-state">Не удалось загрузить</div>`;
   }
-}
-function fmtDate(ts) {
-  if (!ts) return "—";
-  // если это строка с числом типа "1749999999999"
-  const asNum = Number(ts);
-  const d = !isNaN(asNum) && asNum > 1000000000000
-    ? new Date(asNum)
-    : new Date(ts);
-  if (isNaN(d)) return "—";
-  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
 }
 
 function renderWorkoutStats() {
