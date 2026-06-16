@@ -3,192 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitPlan — Упражнение</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>FitPlan — Упражнения</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 
 <style>
-body{
-  margin:0;
-  font-family:Inter;
-  color:#0F172A;
-
-  /* 🔥 выраженный фон + тёмный контраст */
-  background:
-    linear-gradient(
-      rgba(15, 23, 42, 0.65),
-      rgba(15, 23, 42, 0.55)
-    ),
-    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
-    center/cover no-repeat;
-
-  min-height:100vh;
-}
-
-/* контейнер */
-.container{
-  max-width:900px;
-  margin:60px auto;
-  padding:0 20px;
-}
-
-/* 💎 стеклянная карточка */
-.card{
-  background:rgba(255,255,255,0.82);
-  border:1px solid rgba(255,255,255,0.35);
-  border-radius:22px;
-  padding:28px;
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  box-shadow:0 25px 60px rgba(0,0,0,0.25);
-}
-
-/* заголовок */
+/* Дополнительные стили для выравнивания */
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 6px;
+  align-items: center;
+  padding: 0 4px 20px 4px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.header-left h1{
-  margin:0;
-  font-size:26px;
-  font-weight:700;
-  color:#0F172A;
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
-.header-left .hint{
-  margin-top:6px;
-  font-size:13px;
-  color:#64748B;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* кнопка назад */
-.btn-back {
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 16px;
+  text-decoration: none;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(12px);
+  transition: all .25s ease;
+  box-shadow: 0 0 15px rgba(168,85,247,0.08), inset 0 0 12px rgba(255,255,255,0.02);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(168,85,247,0.25);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(168,85,247,0.18), inset 0 0 12px rgba(255,255,255,0.03);
+}
+
+.add-btn:active {
+  transform: scale(.98);
+}
+
+.add-btn::before {
+  content: "+";
+  font-size: 18px;
+  font-weight: 500;
+  color: #a78bfa;
+}
+
+/* Стили для видео в таблице */
+.video-preview {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(79, 70, 229, 0.1);
-  color: #4F46E5;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 4px 10px;
+  background: rgba(168,85,247,0.12);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #a78bfa;
   cursor: pointer;
   transition: 0.2s;
   text-decoration: none;
-  white-space: nowrap;
 }
 
-.btn-back:hover {
-  background: rgba(79, 70, 229, 0.2);
-  transform: translateY(-1px);
+.video-preview:hover {
+  background: rgba(168,85,247,0.2);
 }
 
-.btn-back:active {
-  transform: scale(0.97);
+.video-preview::before {
+  content: "▶";
+  font-size: 10px;
 }
 
-/* сетка формы */
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:22px;
+.video-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(8px);
 }
 
-.form-group{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+.video-modal.active {
+  display: flex;
 }
 
-.full{
-  grid-column:1 / -1;
+.video-modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
 }
 
-/* label */
-label{
-  font-size:12px;
-  font-weight:600;
-  color:#475569;
+.video-modal-content video {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
 }
 
-/* inputs */
-input, select, textarea{
-  padding:12px 14px;
-  border-radius:14px;
-
-  border:1px solid rgba(148,163,184,0.35);
-  background:rgba(255,255,255,0.6);
-
-  color:#0F172A;
-  outline:none;
-  font-size:14px;
-
-  transition:0.2s;
+.video-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 8px;
 }
 
-/* focus эффект */
-input:focus,
-select:focus,
-textarea:focus{
-  border-color:#4F46E5;
-  background:rgba(255,255,255,0.95);
-  box-shadow:0 0 0 4px rgba(79,70,229,0.15);
+.video-modal-close:hover {
+  transform: scale(1.2);
+  color: #a78bfa;
 }
 
-/* textarea */
-textarea{
-  min-height:110px;
-  resize:none;
-}
-
-/* кнопка сохранения */
-.btn{
-  margin-top:18px;
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-weight:600;
-  cursor:pointer;
-  color:white;
-
-  background:linear-gradient(135deg,#4F46E5,#22C55E);
-
-  transition:0.2s;
-}
-
-/* hover */
-.btn:hover{
-  transform:translateY(-1px);
-  box-shadow:0 18px 35px rgba(79,70,229,0.25);
-}
-
-/* сообщение */
-.message{
-  margin-top:10px;
-  font-size:14px;
-  color:#64748B;
-}
-
-/* адаптив */
-@media(max-width:700px){
-  .form-grid{
-    grid-template-columns:1fr;
-  }
+@media (max-width: 600px) {
   .header {
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
   }
-  .btn-back {
-    align-self: flex-start;
+  .add-btn {
+    justify-content: center;
+    width: 100%;
+  }
+  .header-actions {
+    width: 100%;
   }
 }
 </style>
@@ -196,141 +168,307 @@ textarea{
 
 <body>
 
-<script>
-const role = (localStorage.getItem("role") || "").toLowerCase();
-if(role !== "admin"){
-  location.href = "/exercises.html";
-}
-</script>
+<!-- ================= NAVBAR ================= -->
+<div class="top-nav">
+  <div class="navbar">
+      <a href="/profil.html">Профиль</a>
+      <a href="/exercises.html" class="active">Упражнения</a>
+      <a href="/nutrition.html">Питание</a>
+      <a href="/workouts.html">Тренировки</a>
 
+      <a href="/users.html"
+         id="adminBtn"
+         style="display:none;">Пользователи</a>
+  </div>
+</div>
+
+<!-- ================= PAGE ================= -->
 <div class="container">
+
+  <div class="header">
+    <h1>Упражнения</h1>
+
+    <div class="header-actions">
+      <!-- Скрытый input для выбора видео -->
+      <input type="file" 
+             id="videoFileInput" 
+             accept="video/*" 
+             style="display:none;">
+
+      <button class="add-btn" id="addExerciseBtn" style="display:none;">
+        Добавить упражнение
+      </button>
+
+      <button class="add-btn" id="addVideoBtn" style="display:none;">
+        🎬 Добавить видео
+      </button>
+    </div>
+  </div>
 
   <div class="card">
 
-    <div class="header">
-      <div class="header-left">
-        <h1>Упражнение</h1>
-        <div class="hint">Создание / редактирование упражнения</div>
-      </div>
-      <button class="btn-back" onclick="window.location.href='/exercises.html'">
-        ← Назад
-      </button>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Группа</th>
+          <th>Сложность</th>
+          <th>Видео</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
 
-    <form id="addExerciseForm">
-
-      <div class="form-grid">
-
-        <div class="form-group full">
-          <label>Название</label>
-          <input type="text" id="exerciseName" required>
-        </div>
-
-        <div class="form-group">
-          <label>Группа мышц</label>
-          <select id="muscleGroup">
-            <option value="Грудные">Грудные</option>
-            <option value="Спина">Спина</option>
-            <option value="Ноги">Ноги</option>
-            <option value="Плечи">Плечи</option>
-            <option value="Руки">Руки</option>
-            <option value="Пресс">Пресс</option>
-            <option value="Кардио">Кардио</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Сложность</label>
-          <select id="difficulty">
-            <option value="easy">Лёгкая</option>
-            <option value="med">Средняя</option>
-            <option value="hard">Сложная</option>
-          </select>
-        </div>
-
-        <div class="form-group full">
-          <label>Инструкция</label>
-          <textarea id="instruction"></textarea>
-        </div>
-
-        <div class="form-group full">
-          <label>Видео (URL)</label>
-          <input type="text" id="videoUrl" placeholder="https://...">
-        </div>
-
-      </div>
-
-      <button class="btn">Сохранить</button>
-      <div id="formMessage" class="message"></div>
-  
-    </form>
+      <tbody id="exercises-table-body"></tbody>
+    </table>
 
   </div>
 
 </div>
 
+<!-- ================= МОДАЛЬНОЕ ОКНО ДЛЯ ВИДЕО ================= -->
+<div class="video-modal" id="videoModal">
+  <div class="video-modal-content">
+    <button class="video-modal-close" id="videoModalClose">✕</button>
+    <video id="videoPlayer" controls>
+      <source id="videoSource" src="">
+    </video>
+  </div>
+</div>
+
+<!-- ================= SCRIPT ================= -->
 <script>
-const API = "";
 
-async function loadEdit(){
-  const id = new URLSearchParams(window.location.search).get("id");
-  if(!id) return;
+const role = (localStorage.getItem("role") || "").toLowerCase();
+const userId = localStorage.getItem("userId");
 
-  const res = await fetch(`${API}/exercises/${id}`);
-  const ex = await res.json();
+// 🔥 защита от null (чтобы JS не падал)
+const adminBtn = document.getElementById("adminBtn");
+const addBtn = document.getElementById("addExerciseBtn");
+const addVideoBtn = document.getElementById("addVideoBtn");
+const videoFileInput = document.getElementById("videoFileInput");
+const videoModal = document.getElementById("videoModal");
+const videoPlayer = document.getElementById("videoPlayer");
+const videoSource = document.getElementById("videoSource");
+const videoModalClose = document.getElementById("videoModalClose");
 
-  document.getElementById("exerciseName").value = ex.name || "";
-  document.getElementById("muscleGroup").value = ex.muscle_group || "Спина";
-  document.getElementById("difficulty").value = ex.difficulty || "med";
-  document.getElementById("instruction").value = ex.instruction || "";
-  document.getElementById("videoUrl").value = ex.video_url || "";
-
-  document.getElementById("addExerciseForm").dataset.editId = id;
+if (role === "admin") {
+  if (adminBtn) adminBtn.style.display = "inline-block";
+  if (addBtn) addBtn.style.display = "inline-flex";
+  if (addVideoBtn) addVideoBtn.style.display = "inline-flex";
 }
 
-document.getElementById("addExerciseForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+// 🔥 проверка авторизации
+if (!userId) {
+  window.location.href = "/adminvh.html";
+}
 
-  const form = e.target;
-  const editId = form.dataset.editId;
+// ================= ОТКРЫТИЕ ПРОВОДНИКА ДЛЯ ВИДЕО =================
+if (addVideoBtn) {
+  addVideoBtn.addEventListener("click", () => {
+    videoFileInput.click();
+  });
+}
 
-  const payload = {
-    name: document.getElementById("exerciseName").value,
-    muscle_group: document.getElementById("muscleGroup").value,
-    difficulty: document.getElementById("difficulty").value,
-    instruction: document.getElementById("instruction").value,
-    video_url: document.getElementById("videoUrl").value
-  };
+// ================= ОБРАБОТКА ВЫБРАННОГО ВИДЕО =================
+if (videoFileInput) {
+  videoFileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const msg = document.getElementById("formMessage");
+    // Проверка что это видео
+    if (!file.type.startsWith("video/")) {
+      alert("Пожалуйста, выберите видеофайл");
+      videoFileInput.value = "";
+      return;
+    }
 
-  try{
+    // Проверка размера (максимум 100MB)
+    if (file.size > 100 * 1024 * 1024) {
+      alert("Файл слишком большой. Максимальный размер 100MB");
+      videoFileInput.value = "";
+      return;
+    }
 
-    const url = editId ? `/exercises/${editId}` : `/exercises`;
-    const method = editId ? "PUT" : "POST";
+    // Читаем файл как base64
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const videoData = event.target.result; // base64 строка
 
-    const response = await fetch(url,{
-      method,
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
-    });
+      // Отправляем на сервер или сохраняем в localStorage
+      // ВАРИАНТ 1: Сохраняем в localStorage (только для демонстрации)
+      // В реальном проекте отправляйте на сервер
+      
+      try {
+        // Сохраняем в localStorage с ключом video_ + имя файла
+        const videoKey = `video_${Date.now()}`;
+        localStorage.setItem(videoKey, videoData);
+        
+        // Сохраняем информацию о видео в списке
+        const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+        videoList.push({
+          id: videoKey,
+          name: file.name,
+          size: file.size,
+          date: new Date().toISOString()
+        });
+        localStorage.setItem("videoList", JSON.stringify(videoList));
 
-    const data = await response.json();
+        alert(`Видео "${file.name}" загружено!`);
+        videoFileInput.value = "";
+        
+        // Перезагружаем таблицу
+        loadExercises();
 
-    if(!response.ok) throw new Error(data.error || "Ошибка сервера");
+      } catch (err) {
+        console.error("Ошибка сохранения видео:", err);
+        alert("Ошибка при сохранении видео");
+      }
+    };
 
-    msg.innerText = "✅ Сохранено";
-    msg.style.color = "#22c55e";
+    reader.readAsDataURL(file);
+  });
+}
 
-    setTimeout(()=> location.href="/exercises.html", 700);
+// ================= ОТКРЫТИЕ ВИДЕО В МОДАЛЬНОМ ОКНЕ =================
+function openVideo(videoData) {
+  videoSource.src = videoData;
+  videoPlayer.load();
+  videoModal.classList.add("active");
+}
 
-  }catch(err){
-    msg.innerText = "❌ Ошибка: " + err.message;
-    msg.style.color = "#ef4444";
+// ================= ЗАКРЫТИЕ МОДАЛЬНОГО ОКНА =================
+if (videoModalClose) {
+  videoModalClose.addEventListener("click", () => {
+    videoModal.classList.remove("active");
+    videoPlayer.pause();
+  });
+}
+
+// Закрытие по клику на фон
+if (videoModal) {
+  videoModal.addEventListener("click", (e) => {
+    if (e.target === videoModal) {
+      videoModal.classList.remove("active");
+      videoPlayer.pause();
+    }
+  });
+}
+
+// Закрытие по Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && videoModal.classList.contains("active")) {
+    videoModal.classList.remove("active");
+    videoPlayer.pause();
   }
 });
 
-loadEdit();
+// ================= LOAD EXERCISES =================
+async function loadExercises() {
+  try {
+
+    const res = await fetch("/exercises");
+    const data = await res.json();
+
+    console.log("EXERCISES:", data);
+
+    const tbody = document.getElementById("exercises-table-body");
+
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    // Получаем список сохранённых видео
+    const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+
+    data.forEach(ex => {
+
+      const tr = document.createElement("tr");
+
+      // Проверяем, есть ли видео для этого упражнения
+      const exerciseVideo = videoList.find(v => v.id === `video_${ex.exerciseid}`) || 
+                           videoList.find(v => v.name.includes(ex.name));
+
+      let videoHtml = '<span style="opacity:0.4; font-size:12px;">Нет видео</span>';
+      
+      if (exerciseVideo) {
+        const videoData = localStorage.getItem(exerciseVideo.id);
+        if (videoData) {
+          videoHtml = `<button class="video-preview" onclick="openVideo('${videoData}')">
+                         Смотреть
+                       </button>`;
+        }
+      }
+
+      tr.innerHTML = `
+        <td>${ex.name}</td>
+        <td>${ex.muscle_group || "-"}</td>
+        <td>
+          <span class="badge ${ex.difficulty}">
+            ${ex.difficulty || "—"}
+          </span>
+        </td>
+        <td>${videoHtml}</td>
+        <td>
+          ${
+            role === "admin"
+              ? `
+                <button class="btn edit">✎</button>
+                <button class="btn delete">🗑</button>
+              `
+              : `<span style="opacity:0.6;">Только просмотр</span>`
+          }
+        </td>
+      `;
+
+      // ================= DELETE =================
+      if (role === "admin") {
+
+        const delBtn = tr.querySelector(".delete");
+
+        if (delBtn) {
+          delBtn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+
+            if (!confirm("Удалить упражнение?")) return;
+
+            // Удаляем видео, если есть
+            const videoToDelete = videoList.find(v => v.id === `video_${ex.exerciseid}`);
+            if (videoToDelete) {
+              localStorage.removeItem(videoToDelete.id);
+              const updatedList = videoList.filter(v => v.id !== videoToDelete.id);
+              localStorage.setItem("videoList", JSON.stringify(updatedList));
+            }
+
+            await fetch(`/exercises/${ex.exerciseid}`, {
+              method: "DELETE"
+            });
+
+            loadExercises();
+          });
+        }
+
+        // ================= EDIT =================
+        const editBtn = tr.querySelector(".edit");
+
+        if (editBtn) {
+          editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            location.href = `addEx.html?id=${ex.exerciseid}`;
+          });
+        }
+      }
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("ERROR LOAD EXERCISES:", err);
+  }
+}
+
+// старт
+loadExercises();
+
 </script>
 
 </body>

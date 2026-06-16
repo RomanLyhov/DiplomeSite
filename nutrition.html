@@ -48,6 +48,89 @@
   opacity: 0.6;
   font-size: 12px;
 }
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.select-wrapper,
+.date-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-wrapper label,
+.date-wrapper label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.select-wrapper select,
+.date-wrapper input {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1b1f2a;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.select-wrapper select:focus,
+.date-wrapper input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+}
+
+.select-wrapper select option {
+  background: #1b1f2a;
+  color: #e2e8f0;
+}
+
+/* Скрываем элемент */
+.hidden {
+  display: none !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 600px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .select-wrapper,
+  .date-wrapper {
+    width: 100%;
+  }
+  .select-wrapper select,
+  .date-wrapper input {
+    width: 100%;
+  }
+}
 </style>
 
 </head>
@@ -64,21 +147,29 @@
   </div>
 </div>
 
-<div class="header">
-  <h1>Журнал питания</h1>
+<div class="container">
 
-  <div class="filters">
-    <div class="select-wrapper">
-      <select id="userFilter"></select>
-    </div>
+  <div class="header">
+    <h1>Журнал питания</h1>
 
-    <div class="date-wrapper">
-      <input type="date" id="dayFilter">
+    <div class="filters">
+      <!-- ===== ВЫБОР ПОЛЬЗОВАТЕЛЯ (только для админа) ===== -->
+      <div class="select-wrapper" id="userFilterWrapper">
+        <label for="userFilter">Пользователь</label>
+        <select id="userFilter"></select>
+      </div>
+
+      <!-- ===== ВЫБОР ДАТЫ (для всех) ===== -->
+      <div class="date-wrapper">
+        <label for="dayFilter">Дата</label>
+        <input type="date" id="dayFilter">
+      </div>
     </div>
   </div>
-</div>
 
-<div id="nutrition-cards"></div>
+  <div id="nutrition-cards"></div>
+
+</div>
 
 <script>
 const role = (localStorage.getItem("role") || "").toLowerCase();
@@ -90,19 +181,38 @@ if (!userId) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+  // ===== ПОКАЗЫВАЕМ КНОПКУ "ПОЛЬЗОВАТЕЛИ" ДЛЯ АДМИНА =====
   if (role === "admin") {
     document.getElementById("adminBtn").style.display = "inline-block";
   }
 
-  await loadUsers();
+  // ===== ЕСЛИ НЕ АДМИН — СКРЫВАЕМ ВЫБОР ПОЛЬЗОВАТЕЛЯ =====
+  const userFilterWrapper = document.getElementById("userFilterWrapper");
+  if (role !== "admin") {
+    userFilterWrapper.classList.add("hidden");
+  }
+
+  // ===== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ (ТОЛЬКО ДЛЯ АДМИНА) =====
+  if (role === "admin") {
+    await loadUsers();
+  }
 
   const userSelect = document.getElementById("userFilter");
   const dateInput = document.getElementById("dayFilter");
 
+  // ===== УСТАНАВЛИВАЕМ СЕГОДНЯШНЮЮ ДАТУ =====
   dateInput.value = new Date().toISOString().split("T")[0];
 
+  // ===== ФУНКЦИЯ ОБНОВЛЕНИЯ =====
   async function refreshMeals() {
-    const uid = userSelect.value;
+    let uid;
+
+    if (role === "admin") {
+      uid = userSelect.value;
+    } else {
+      uid = userId; // всегда свой ID
+    }
+
     const [y, m, d] = dateInput.value.split("-");
 
     const start = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
@@ -111,26 +221,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadMeals(uid, start, end);
   }
 
-  userSelect.addEventListener("change", refreshMeals);
+  // ===== СОБЫТИЯ =====
+  if (role === "admin") {
+    userSelect.addEventListener("change", refreshMeals);
+  }
   dateInput.addEventListener("change", refreshMeals);
 
+  // ===== ПЕРВЫЙ ЗАПУСК =====
   refreshMeals();
 });
 
+// ===== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ (ТОЛЬКО ДЛЯ АДМИНА) =====
 async function loadUsers() {
-  const res = await fetch("/users");
-  const users = await res.json();
+  try {
+    const res = await fetch("/users");
+    const users = await res.json();
 
-  const select = document.getElementById("userFilter");
-  select.innerHTML = "";
+    const select = document.getElementById("userFilter");
+    select.innerHTML = "";
 
-  users.forEach(u => {
-    select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
-  });
+    users.forEach(u => {
+      select.innerHTML += `<option value="${u.userid}">${u.name} (${u.email})</option>`;
+    });
 
-  select.value = localStorage.getItem("userId");
+    select.value = localStorage.getItem("userId");
+  } catch (e) {
+    console.error("Ошибка загрузки пользователей:", e);
+  }
 }
 
+// ===== ЗАГРУЗКА ПРИЁМОВ ПИЩИ =====
 async function loadMeals(userId, start, end) {
   const container = document.getElementById("nutrition-cards");
   container.innerHTML = "";
@@ -140,58 +260,52 @@ async function loadMeals(userId, start, end) {
     const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = `<div style="opacity:0.6;text-align:center;">Нет данных</div>`;
+      container.innerHTML = `<div style="opacity:0.6;text-align:center;padding:40px 0;">Нет данных за этот день</div>`;
       return;
     }
 
     const groups = {};
 
-data.forEach(m => {
+    data.forEach(m => {
+      const d = new Date(Number(m.date || Date.now()));
+      const dateKey = d.toLocaleDateString("ru-RU");
+      const mealType = m.mealType || "Другое";
+      const key = `${dateKey}_${mealType}`;
 
-  const d = new Date(Number(m.date || Date.now()));
-  const dateKey = d.toLocaleDateString("ru-RU");
+      if (!groups[key]) {
+        groups[key] = {
+          date: dateKey,
+          mealType: mealType,
+          items: [],
+          calories: 0,
+          protein: 0,
+          fat: 0,
+          carbs: 0
+        };
+      }
 
-  const mealType = m.mealType || "Другое";
-
-  const key = `${dateKey}_${mealType}`;
-
-  if (!groups[key]) {
-    groups[key] = {
-      date: dateKey,
-      mealType: mealType,
-      items: [],
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbs: 0
-    };
-  }
-
-  groups[key].items.push(m);
-  groups[key].calories += Number(m.calories || 0);
-  groups[key].protein += Number(m.protein || 0);
-  groups[key].fat += Number(m.fat || 0);
-  groups[key].carbs += Number(m.carbs || 0);
-});
+      groups[key].items.push(m);
+      groups[key].calories += Number(m.calories || 0);
+      groups[key].protein += Number(m.protein || 0);
+      groups[key].fat += Number(m.fat || 0);
+      groups[key].carbs += Number(m.carbs || 0);
+    });
 
     Object.values(groups).forEach(g => {
-
       const card = document.createElement("div");
       card.className = "meal-card";
 
       card.innerHTML = `
         <div class="meal-header">
-         <div>${g.mealType}</div>
+          <div>${g.mealType}</div>
           <div>${g.date}</div>
         </div>
-
         <div class="meal-summary">
           <span>${g.calories} ккал</span>
           <span>${g.protein} Б</span>
           <span>${g.fat} Ж</span>
           <span>${g.carbs} У</span>
         </div>
-
         <div class="meal-details">
           ${g.items.map(i => `
             <div class="meal-product">
@@ -206,10 +320,8 @@ data.forEach(m => {
       `;
 
       const details = card.querySelector(".meal-details");
-
       card.addEventListener("click", () => {
-        details.style.display =
-          details.style.display === "block" ? "none" : "block";
+        details.style.display = details.style.display === "block" ? "none" : "block";
       });
 
       container.appendChild(card);
@@ -217,7 +329,7 @@ data.forEach(m => {
 
   } catch (e) {
     console.error(e);
-    container.innerHTML = "Ошибка загрузки";
+    container.innerHTML = "Ошибка загрузки данных";
   }
 }
 </script>
