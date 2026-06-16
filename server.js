@@ -600,11 +600,17 @@ app.get("/progress/exercise/:userId", async (req, res) => {
         );
 
         if (epRows.rows.length) {
-            return res.json(epRows.rows);
+            // Добавляем флаг isFirstEntry для первой записи
+            const rows = epRows.rows.map((row, index) => {
+                return {
+                    ...row,
+                    isFirstEntry: index === 0 && row.notes === '🏁 Начальный вес (зафиксирован)'
+                };
+            });
+            return res.json(rows);
         }
 
         // fallback: если exerciseprogress пустой — тянем из workout_history + workoutexercises
-        // (показываем последний известный вес упражнения по датам истории)
         const fallback = await pool.query(
             `SELECT
                 wh.completed_at AS progress_date,
@@ -1099,26 +1105,65 @@ app.post("/workouts/full", async (req, res) => {
         const workoutId = workout.rows[0].workoutid;
 
         for (const ex of exercises) {
-            const exRes = await pool.query(
-                `INSERT INTO exercises(name, muscle_group, difficulty)
-                 VALUES($1,'-','-')
-                 RETURNING exerciseid`,
-                [ex.name]
-            );
+            // Проверяем существует ли упражнение
+            let exId = ex.exerciseid;
+            
+            if (!exId) {
+                const exRes = await pool.query(
+                    `INSERT INTO exercises(name, muscle_group, difficulty)
+                     VALUES($1,$2,$3)
+                     RETURNING exerciseid`,
+                    [ex.name, ex.muscle_group || '-', ex.difficulty || 'med']
+                );
+                exId = exRes.rows[0].exerciseid;
+            }
 
+            // Добавляем в тренировку
             await pool.query(
                 `INSERT INTO workoutexercises
                 (workout_id, exercise_id, sets, reps, weight, rest)
                 VALUES ($1,$2,$3,$4,$5,$6)`,
                 [
                     workoutId,
-                    exRes.rows[0].exerciseid,
-                    ex.sets,
-                    ex.reps,
-                    ex.weight,
-                    ex.rest
+                    exId,
+                    ex.sets || 0,
+                    ex.reps || 0,
+                    ex.weight || 0,
+                    ex.rest || 0
                 ]
             );
+
+            // === НОВАЯ ЛОГИКА: создаем запись в exerciseprogress если вес > 0 ===
+            if (ex.weight > 0) {
+                // Проверяем, есть ли уже замеры для этого упражнения у пользователя
+                const existingProgress = await pool.query(
+                    `SELECT progressid 
+                     FROM exerciseprogress 
+                     WHERE user_id = $1 AND exercise_id = $2 
+                     LIMIT 1`,
+                    [userId, exId]
+                );
+
+                // Если замеров нет - создаем первый замер с пометкой "Начальный"
+                if (existingProgress.rows.length === 0) {
+                    await pool.query(
+                        `INSERT INTO exerciseprogress 
+                         (user_id, exercise_id, workout_id, progress_date, weight, reps, sets_count, notes)
+                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                        [
+                            userId, 
+                            exId, 
+                            workoutId, 
+                            Date.now(), 
+                            ex.weight, 
+                            ex.reps || 0, 
+                            ex.sets || 0, 
+                            '🏁 Начальный вес (зафиксирован)'
+                        ]
+                    );
+                    console.log("✅ Created initial weight entry for exercise:", ex.name);
+                }
+            }
         }
 
         res.json({ success: true, workoutId });
@@ -1191,6 +1236,157 @@ app.post("/calendar", async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+// GET /progress/exercise/initial/:userId - получить начальный вес упражнения
+app.get("/progress/exercise/initial/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { exerciseId } = req.query;
+
+        if (!exerciseId) {
+            return res.json({ initialWeight: null });
+        }
+
+        // ищем сначала по id, потом по имени
+        let exId = Number(exerciseId);
+        if (isNaN(exId)) {
+            const exRes = await pool.query(
+                "SELECT exerciseid FROM exercises WHERE LOWER(name)=LOWER($1) LIMIT 1",
+                [exerciseId]
+            );
+            if (!exRes.rows.length) {
+                return res.json({ initialWeight: null });
+            }
+            exId = exRes.rows[0].exerciseid;
+        }
+
+        // Получаем самый первый замер веса для этого упражнения
+        const result = await pool.query(
+            `SELECT weight, progress_date, notes
+             FROM exerciseprogress 
+             WHERE user_id = $1 AND exercise_id = $2 
+             ORDER BY progress_date ASC, progressid ASC 
+             LIMIT 1`,
+            [userId, exId]
+        );
+
+        if (result.rows.length) {
+            return res.json({ 
+                initialWeight: result.rows[0].weight,
+                progressDate: result.rows[0].progress_date,
+                notes: result.rows[0].notes
+            });
+        }
+
+        res.json({ initialWeight: null });
+
+    } catch (err) {
+        console.error("GET initial weight error:", err);
+        res.status(500).json({ initialWeight: null });
+    }
+});
+
+// POST /progress/exercise - сохранить прогресс упражнения
+app.post("/progress/exercise", async (req, res) => {
+    try {
+        const { userId, exerciseId, workoutId, weight, reps, sets, notes } = req.body;
+
+        if (!userId || !exerciseId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "userId or exerciseId missing" 
+            });
+        }
+
+        // Проверяем, существует ли уже первый замер для этого упражнения
+        const existingFirst = await pool.query(
+            `SELECT progressid, weight, notes
+             FROM exerciseprogress 
+             WHERE user_id = $1 AND exercise_id = $2 
+             ORDER BY progress_date ASC, progressid ASC 
+             LIMIT 1`,
+            [userId, exerciseId]
+        );
+
+        let isFirstEntry = existingFirst.rows.length === 0;
+        let finalNotes = notes || '';
+
+        // Если это первый замер - отмечаем его как начальный
+        if (isFirstEntry) {
+            finalNotes = '🏁 Начальный вес (зафиксирован)';
+        }
+
+        const result = await pool.query(
+            `INSERT INTO exerciseprogress 
+             (user_id, exercise_id, workout_id, progress_date, weight, reps, sets_count, notes)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             RETURNING progressid`,
+            [
+                userId, 
+                exerciseId, 
+                workoutId || null, 
+                Date.now(), 
+                weight || 0, 
+                reps || 0, 
+                sets || 0, 
+                finalNotes
+            ]
+        );
+
+        res.json({ 
+            success: true, 
+            id: result.rows[0].progressid,
+            isFirstEntry: isFirstEntry,
+            notes: finalNotes
+        });
+
+    } catch (err) {
+        console.error("POST progress/exercise ERROR:", err);
+        res.status(500).json({ 
+            success: false, 
+            error: err.message 
+        });
+    }
+});
+
+// DELETE /progress/exercise/initial - сбросить начальный вес (только для админа)
+app.delete("/progress/exercise/initial", async (req, res) => {
+    try {
+        const { userId, exerciseId } = req.body;
+
+        if (!userId || !exerciseId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "userId or exerciseId missing" 
+            });
+        }
+
+        // Находим первый замер
+        const firstEntry = await pool.query(
+            `SELECT progressid 
+             FROM exerciseprogress 
+             WHERE user_id = $1 AND exercise_id = $2 
+             ORDER BY progress_date ASC, progressid ASC 
+             LIMIT 1`,
+            [userId, exerciseId]
+        );
+
+        if (firstEntry.rows.length === 0) {
+            return res.json({ success: true, message: "No initial weight found" });
+        }
+
+        // Удаляем только первый замер
+        await pool.query(
+            "DELETE FROM exerciseprogress WHERE progressid = $1",
+            [firstEntry.rows[0].progressid]
+        );
+
+        res.json({ success: true });
+
+    } catch (err) {
+        console.error("DELETE initial weight error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 // -------------------- WORKOUT EXERCISES --------------------
 
@@ -1251,6 +1447,7 @@ app.post("/workout-exercises", async (req, res) => {
             rest
         });
 
+        // Добавляем упражнение в тренировку
         const result = await pool.query(
             `
             INSERT INTO workoutexercises(
@@ -1276,6 +1473,50 @@ app.post("/workout-exercises", async (req, res) => {
 
         console.log("✅ INSERTED:", result.rows[0]);
 
+        // === НОВАЯ ЛОГИКА: создаем запись в exerciseprogress если вес > 0 ===
+        if (weight > 0) {
+            // Получаем user_id из тренировки
+            const workoutRes = await pool.query(
+                "SELECT user_id FROM workouts WHERE workoutid = $1",
+                [workoutId]
+            );
+
+            if (workoutRes.rows.length > 0) {
+                const userId = workoutRes.rows[0].user_id;
+
+                // Проверяем, есть ли уже замеры для этого упражнения у пользователя
+                const existingProgress = await pool.query(
+                    `SELECT progressid 
+                     FROM exerciseprogress 
+                     WHERE user_id = $1 AND exercise_id = $2 
+                     LIMIT 1`,
+                    [userId, exerciseId]
+                );
+
+                // Если замеров нет - создаем первый замер с пометкой "Начальный"
+                if (existingProgress.rows.length === 0) {
+                    await pool.query(
+                        `INSERT INTO exerciseprogress 
+                         (user_id, exercise_id, workout_id, progress_date, weight, reps, sets_count, notes)
+                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                        [
+                            userId, 
+                            exerciseId, 
+                            workoutId, 
+                            Date.now(), 
+                            weight, 
+                            reps || 0, 
+                            sets || 0, 
+                            '🏁 Начальный вес (зафиксирован)'
+                        ]
+                    );
+                    console.log("✅ Created initial weight entry for exercise:", exerciseId);
+                } else {
+                    console.log("ℹ️ Exercise already has progress entries, skipping initial creation");
+                }
+            }
+        }
+
         res.json({
             success: true
         });
@@ -1290,7 +1531,6 @@ app.post("/workout-exercises", async (req, res) => {
         });
     }
 });
-
 // -------------------- PROFILE --------------------
 app.get("/api/profile/:id", async (req, res) => {
     try {
