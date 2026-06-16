@@ -7,24 +7,89 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/login.css">
+<style>
+/* Дополнительные стили для плашки */
+.register-hint {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(79,70,229,0.10), rgba(34,197,94,0.10));
+  border: 1px solid rgba(79,70,229,0.20);
+  border-radius: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.register-hint strong {
+  color: #4F46E5;
+  font-weight: 700;
+}
+
+.register-hint .highlight {
+  display: inline-block;
+  background: linear-gradient(135deg, #4F46E5, #22C55E);
+  color: white;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  margin: 0 4px;
+}
+
+.register-hint .app-icon {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.register-hint .btn-download {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #4F46E5, #22C55E);
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.register-hint .btn-download:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+</style>
 </head>
 
 <body>
 <div class="login-box">
 <form id="loginform">
-  <h2>Login</h2>
+  <h2>Вход в систему</h2>
   <div class="input-group">
     <i class="fas fa-user"></i>
       <input type="text" id="login" placeholder="Email">
-      <label>Username</label>
+      <label>Email</label>
   </div>
   <div class="input-group">
     <i class="fas fa-lock"></i>
       <input type="password" id="password" placeholder="Пароль">
-      <label>Password</label>
+      <label>Пароль</label>
   </div>
   <div id="error-msg" style="color: #ff6b6b; font-size: 14px; text-align: center; margin-top: 10px;"></div>
-  <button type="button" class="login-btn" id="submitBtn">SIGN IN</button>
+  <button type="button" class="login-btn" id="submitBtn">ВОЙТИ</button>
+
+  <!-- ===== ПЛАШКА О РЕГИСТРАЦИИ ===== -->
+  <div class="register-hint">
+    <span class="app-icon">📱</span>
+    <strong>Нет аккаунта?</strong><br>
+    Регистрация доступна только в мобильном приложении 
+    <span class="highlight">FitPlan</span>
+    <br>
+    <a href="#" class="btn-download" onclick="alert('Скачайте приложение FitPlan в Google Play или App Store')">
+      📲 Скачать приложение
+    </a>
+  </div>
 </form>
 </div>
 
