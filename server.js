@@ -238,16 +238,16 @@ SELECT
     activity,
     goal,
     gender,
-
-    last_seen AS "lastSeen",
-    is_online AS "isOnline",
-
+    last_seen       AS "lastSeen",
+    is_online       AS "isOnline",
+    register_date   AS "registerDate",
+    createdat       AS "createdAt",
     dailycaloriesgoal AS "dailyCaloriesGoal",
-    dailyproteingoal AS "dailyProteinGoal",
-    dailyfatgoal AS "dailyFatGoal",
-    dailycarbsgoal AS "dailyCarbsGoal"
+    dailyproteingoal  AS "dailyProteinGoal",
+    dailyfatgoal      AS "dailyFatGoal",
+    dailycarbsgoal    AS "dailyCarbsGoal"
 FROM users
-WHERE userid=$1
+WHERE userid = $1
 `, [req.params.id]);
          const userData = result.rows[0] || null;
         // авто-оффлайн если last_seen > 10 минут назад
