@@ -61,6 +61,30 @@ h1{
   color:#64748B;
 }
 
+/* кнопка назад */
+.btn-back{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:16px;
+  padding:8px 16px;
+  border-radius:10px;
+  border:1px solid rgba(148,163,184,0.25);
+  background:rgba(255,255,255,0.5);
+  color:#475569;
+  font-size:13px;
+  font-weight:500;
+  text-decoration:none;
+  transition:0.2s;
+  cursor:pointer;
+}
+
+.btn-back:hover{
+  background:rgba(255,255,255,0.8);
+  border-color:#4F46E5;
+  color:#0F172A;
+}
+
 /* сетка формы */
 .form-grid{
   display:grid;
@@ -229,6 +253,9 @@ if(role !== "admin"){
 <div class="container">
 
   <div class="card">
+
+    <!-- ===== КНОПКА НАЗАД ===== -->
+    <a href="/exercises.html" class="btn-back">← Назад</a>
 
     <h1>Упражнение</h1>
     <div class="hint">Создание / редактирование упражнения</div>
