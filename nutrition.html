@@ -26,6 +26,7 @@
   <div class="header">
     <h1>Журнал питания</h1>
     <select id="userFilter"></select>
+    <input type="date" id="dayFilter">
   </div>
 
   <div class="card">
@@ -66,54 +67,90 @@ async function loadUsers(){
 }
 
 // ================= MEALS =================
-async function loadMeals(userId){
-  const res = await fetch(`/meals?userId=${userId}`);
+async function loadMeals(userId, startDate = null, endDate = null){
+  let url = `/meals?userId=${userId}`;
+
+  if (startDate && endDate) {
+    url += `&start=${startDate}&end=${endDate}`;
+  }
+
+  const res = await fetch(url);
   const data = await res.json();
 
   const container = document.getElementById("nutrition-cards");
   container.innerHTML = "";
 
   if (!data.length) {
-    container.innerHTML = `
-      <div style="opacity:0.6; text-align:center;">
-        Нет данных
-      </div>
-    `;
+    container.innerHTML = `<div style="opacity:0.6;text-align:center;">Нет данных</div>`;
     return;
   }
 
-  data.forEach(m => {
+  // ================= GROUPING =================
+  const groups = {};
 
+  data.forEach(m => {
     const d = new Date(Number(m.date));
 
-    const time = d.toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    // ключ = дата + тип приема пищи
+    const dateKey = d.toLocaleDateString("ru-RU");
+    const key = `${dateKey}_${m.mealType || "Другое"}`;
 
-    const date = d.toLocaleDateString("ru-RU");
+    if (!groups[key]) {
+      groups[key] = {
+        mealType: m.mealType || "Другое",
+        date: dateKey,
+        time: d,
+        items: [],
+        calories: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0
+      };
+    }
+
+    groups[key].items.push(m);
+
+    groups[key].calories += Number(m.calories || 0);
+    groups[key].protein += Number(m.protein || 0);
+    groups[key].fat += Number(m.fat || 0);
+    groups[key].carbs += Number(m.carbs || 0);
+  });
+
+  // ================= RENDER =================
+  Object.values(groups).forEach(g => {
 
     const card = document.createElement("div");
     card.className = "meal-card";
 
+    const time = g.time.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
     card.innerHTML = `
       <div class="meal-header">
-        <div>${m.mealType || "Приём пищи"}</div>
-        <div class="meal-time">${date} ${time}</div>
+        <div>${g.mealType}</div>
+        <div class="meal-time">${g.date} ${time}</div>
       </div>
 
       <div class="meal-body">
-        <div class="meal-product">
-          <span>${m.productName}</span>
-          <span>x${m.quantity || 1}</span>
+
+        <div class="meal-products">
+          ${g.items.map(i => `
+            <div class="meal-product">
+              <span>${i.productName}</span>
+              <span>x${i.quantity || 1}</span>
+            </div>
+          `).join("")}
         </div>
 
         <div class="meal-kbju">
-          <span>🔥 ${m.calories || 0} ккал</span>
-          <span>🥩 ${m.protein || 0} Б</span>
-          <span>🧈 ${m.fat || 0} Ж</span>
-          <span>🍚 ${m.carbs || 0} У</span>
+          <span> ${g.calories} ккал</span>
+          <span> ${g.protein} Б</span>
+          <span> ${g.fat} Ж</span>
+          <span> ${g.carbs} У</span>
         </div>
+
       </div>
     `;
 
@@ -125,6 +162,31 @@ async function loadMeals(userId){
   });
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadUsers();
+
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("dayFilter").value = today;
+
+  await loadMeals(userId);
+
+  document.getElementById("userFilter").addEventListener("change", (e) => {
+    loadMeals(e.target.value);
+  });
+
+  document.getElementById("dayFilter").addEventListener("change", (e) => {
+    const date = e.target.value;
+
+    const start = new Date(date).getTime();
+    const end = start + 24 * 60 * 60 * 1000;
+
+    loadMeals(
+      document.getElementById("userFilter").value,
+      start,
+      end
+    );
+  });
+});
 // ================= INIT =================
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUsers();
