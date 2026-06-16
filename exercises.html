@@ -10,12 +10,13 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
-/* Дополнительные стили для выравнивания */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 4px 20px 4px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .header h1 {
@@ -46,6 +47,7 @@
   transition: all .25s ease;
   box-shadow: 0 0 15px rgba(168,85,247,0.08), inset 0 0 12px rgba(255,255,255,0.02);
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .add-btn:hover {
@@ -71,7 +73,6 @@
   .header {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
   }
   .add-btn {
     justify-content: center;
@@ -90,10 +91,7 @@
       <a href="/exercises.html" class="active">Упражнения</a>
       <a href="/nutrition.html">Питание</a>
       <a href="/workouts.html">Тренировки</a>
-
-      <a href="/users.html"
-         id="adminBtn"
-         style="display:none;">Пользователи</a>
+      <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
   </div>
 </div>
 
@@ -102,16 +100,12 @@
 
   <div class="header">
     <h1>Упражнения</h1>
-
-    <a class="add-btn"
-   href="addEx.html"
-   id="addExerciseBtn"
-   style="display:none;">
-   Добавить упражнение
-</a>
+    <a class="add-btn" href="addEx.html" id="addExerciseBtn" style="display:none;">
+      Добавить упражнение
+    </a>
   </div>
-  <div class="card">
 
+  <div class="card">
     <table>
       <thead>
         <tr>
@@ -121,10 +115,8 @@
           <th>Действия</th>
         </tr>
       </thead>
-
       <tbody id="exercises-table-body"></tbody>
     </table>
-
   </div>
 
 </div>
@@ -135,7 +127,6 @@
 const role = (localStorage.getItem("role") || "").toLowerCase();
 const userId = localStorage.getItem("userId");
 
-// 🔥 защита от null (чтобы JS не падал)
 const adminBtn = document.getElementById("adminBtn");
 const addBtn = document.getElementById("addExerciseBtn");
 
@@ -144,36 +135,27 @@ if (role === "admin") {
   if (addBtn) addBtn.style.display = "inline-flex";
 }
 
-// 🔥 проверка авторизации
 if (!userId) {
   window.location.href = "/adminvh.html";
 }
 
-// ================= LOAD EXERCISES =================
 async function loadExercises() {
   try {
-
     const res = await fetch("/exercises");
     const data = await res.json();
 
-    console.log("EXERCISES:", data); // 🔥 для проверки
-
     const tbody = document.getElementById("exercises-table-body");
-
     if (!tbody) return;
-
     tbody.innerHTML = "";
 
     data.forEach(ex => {
-
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
         <td>${ex.name}</td>
         <td>${ex.muscle_group || "-"}</td>
         <td>
           <span class="badge ${ex.difficulty}">
-            ${ex.difficulty}
+            ${ex.difficulty || "—"}
           </span>
         </td>
         <td>
@@ -188,28 +170,18 @@ async function loadExercises() {
         </td>
       `;
 
-      // ================= DELETE =================
       if (role === "admin") {
-
         const delBtn = tr.querySelector(".delete");
-
         if (delBtn) {
           delBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
-
             if (!confirm("Удалить упражнение?")) return;
-
-            await fetch(`/exercises/${ex.exerciseid}`, {
-              method: "DELETE"
-            });
-
+            await fetch(`/exercises/${ex.exerciseid}`, { method: "DELETE" });
             loadExercises();
           });
         }
 
-        // ================= EDIT =================
         const editBtn = tr.querySelector(".edit");
-
         if (editBtn) {
           editBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -226,7 +198,6 @@ async function loadExercises() {
   }
 }
 
-// старт
 loadExercises();
 
 </script>

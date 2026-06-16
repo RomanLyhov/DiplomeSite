@@ -3,164 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>FitPlan — Упражнения</title>
+<title>FitPlan — Добавление упражнения</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 
 <style>
-/* Дополнительные стили для выравнивания */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px 20px 4px;
-  flex-wrap: wrap;
-  gap: 12px;
+.form-group {
+  margin-bottom: 20px;
 }
 
-.header h1 {
-  font-size: 28px;
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #94a3b8;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1b1f2a;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
   font-weight: 700;
-  background: linear-gradient(135deg, #ffffff, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4F46E5, #22C55E);
+  color: white;
+  transition: 0.2s;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.btn-save:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
-.add-btn {
+.btn-save:active {
+  transform: scale(0.98);
+}
+
+.btn-back {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  height: 44px;
-  padding: 0 20px;
-  border-radius: 16px;
+  padding: 10px 20px;
+  border-radius: 12px;
   text-decoration: none;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  color: #e2e8f0;
+  color: #94a3b8;
   font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  backdrop-filter: blur(12px);
-  transition: all .25s ease;
-  box-shadow: 0 0 15px rgba(168,85,247,0.08), inset 0 0 12px rgba(255,255,255,0.02);
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.add-btn:hover {
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(168,85,247,0.25);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 0 18px rgba(168,85,247,0.18), inset 0 0 12px rgba(255,255,255,0.03);
-}
-
-.add-btn:active {
-  transform: scale(.98);
-}
-
-.add-btn::before {
-  content: "+";
-  font-size: 18px;
   font-weight: 500;
-  color: #a78bfa;
-}
-
-/* Стили для видео в таблице */
-.video-preview {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: rgba(168,85,247,0.12);
-  border-radius: 8px;
-  font-size: 12px;
-  color: #a78bfa;
-  cursor: pointer;
   transition: 0.2s;
-  text-decoration: none;
+  margin-bottom: 20px;
 }
 
-.video-preview:hover {
-  background: rgba(168,85,247,0.2);
+.btn-back:hover {
+  background: rgba(255,255,255,0.08);
+  color: #e2e8f0;
 }
 
-.video-preview::before {
-  content: "▶";
-  font-size: 10px;
+/* ===== ВИДЕО БЛОК ===== */
+.video-upload-section {
+  background: rgba(168,85,247,0.05);
+  border: 1px dashed rgba(168,85,247,0.25);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 10px;
 }
 
-.video-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(8px);
+.video-upload-section .label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  display: block;
 }
 
-.video-modal.active {
+.video-upload-area {
   display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.video-modal-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-}
-
-.video-modal-content video {
-  max-width: 100%;
-  max-height: 80vh;
-  border-radius: 16px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-}
-
-.video-modal-close {
-  position: absolute;
-  top: -40px;
-  right: 0;
-  background: none;
+.video-upload-btn {
+  padding: 10px 24px;
+  border-radius: 10px;
   border: none;
-  color: white;
-  font-size: 28px;
+  background: rgba(168,85,247,0.15);
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   transition: 0.2s;
-  padding: 8px;
 }
 
-.video-modal-close:hover {
-  transform: scale(1.2);
-  color: #a78bfa;
+.video-upload-btn:hover {
+  background: rgba(168,85,247,0.25);
+}
+
+.video-file-name {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.video-preview-container {
+  margin-top: 14px;
+  display: none;
+}
+
+.video-preview-container.active {
+  display: block;
+}
+
+.video-preview-container video {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  background: #000;
+}
+
+.video-remove-btn {
+  margin-top: 10px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.video-remove-btn:hover {
+  background: rgba(239,68,68,0.25);
 }
 
 @media (max-width: 600px) {
-  .header {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .video-upload-area {
     flex-direction: column;
     align-items: stretch;
-  }
-  .add-btn {
-    justify-content: center;
-    width: 100%;
-  }
-  .header-actions {
-    width: 100%;
   }
 }
 </style>
@@ -168,307 +188,256 @@
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
   <div class="navbar">
-      <a href="/profil.html">Профиль</a>
-      <a href="/exercises.html" class="active">Упражнения</a>
-      <a href="/nutrition.html">Питание</a>
-      <a href="/workouts.html">Тренировки</a>
-
-      <a href="/users.html"
-         id="adminBtn"
-         style="display:none;">Пользователи</a>
+    <a href="/profil.html">Профиль</a>
+    <a href="/exercises.html" class="active">Упражнения</a>
+    <a href="/nutrition.html">Питание</a>
+    <a href="/workouts.html">Тренировки</a>
+    <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
   </div>
 </div>
 
-<!-- ================= PAGE ================= -->
 <div class="container">
 
-  <div class="header">
-    <h1>Упражнения</h1>
-
-    <div class="header-actions">
-      <!-- Скрытый input для выбора видео -->
-      <input type="file" 
-             id="videoFileInput" 
-             accept="video/*" 
-             style="display:none;">
-
-      <button class="add-btn" id="addExerciseBtn" style="display:none;">
-        Добавить упражнение
-      </button>
-
-      <button class="add-btn" id="addVideoBtn" style="display:none;">
-        🎬 Добавить видео
-      </button>
-    </div>
-  </div>
+  <a href="/exercises.html" class="btn-back">← Назад к упражнениям</a>
 
   <div class="card">
+    <h1 id="pageTitle" style="margin-top:0;">Добавление упражнения</h1>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Название</th>
-          <th>Группа</th>
-          <th>Сложность</th>
-          <th>Видео</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
+    <form id="exerciseForm" onsubmit="saveExercise(event)">
 
-      <tbody id="exercises-table-body"></tbody>
-    </table>
+      <!-- ===== ОСНОВНЫЕ ПОЛЯ ===== -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="exName">Название упражнения *</label>
+          <input type="text" id="exName" placeholder="например: Жим лёжа" required>
+        </div>
+        <div class="form-group">
+          <label for="exMuscle">Группа мышц</label>
+          <input type="text" id="exMuscle" placeholder="например: Грудные">
+        </div>
+      </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="exDifficulty">Сложность</label>
+          <select id="exDifficulty">
+            <option value="">Без уровня</option>
+            <option value="easy">Лёгкая</option>
+            <option value="med">Средняя</option>
+            <option value="hard">Сложная</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exDescription">Описание</label>
+          <textarea id="exDescription" placeholder="Техника выполнения..."></textarea>
+        </div>
+      </div>
+
+      <!-- ===== ВИДЕО БЛОК ===== -->
+      <div class="video-upload-section">
+        <span class="label">🎬 Видео-демонстрация</span>
+        <div class="video-upload-area">
+          <button type="button" class="video-upload-btn" onclick="document.getElementById('videoInput').click()">
+            📁 Выбрать видео
+          </button>
+          <span class="video-file-name" id="videoFileName">Файл не выбран</span>
+        </div>
+
+        <input type="file" id="videoInput" accept="video/*" style="display:none;">
+
+        <div class="video-preview-container" id="videoPreviewContainer">
+          <video id="videoPreview" controls>
+            <source id="videoPreviewSource" src="">
+          </video>
+          <br>
+          <button type="button" class="video-remove-btn" onclick="removeVideo()">🗑 Удалить видео</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-save" id="submitBtn">Создать упражнение</button>
+    </form>
   </div>
 
 </div>
 
-<!-- ================= МОДАЛЬНОЕ ОКНО ДЛЯ ВИДЕО ================= -->
-<div class="video-modal" id="videoModal">
-  <div class="video-modal-content">
-    <button class="video-modal-close" id="videoModalClose">✕</button>
-    <video id="videoPlayer" controls>
-      <source id="videoSource" src="">
-    </video>
-  </div>
-</div>
-
-<!-- ================= SCRIPT ================= -->
 <script>
-
 const role = (localStorage.getItem("role") || "").toLowerCase();
 const userId = localStorage.getItem("userId");
 
-// 🔥 защита от null (чтобы JS не падал)
-const adminBtn = document.getElementById("adminBtn");
-const addBtn = document.getElementById("addExerciseBtn");
-const addVideoBtn = document.getElementById("addVideoBtn");
-const videoFileInput = document.getElementById("videoFileInput");
-const videoModal = document.getElementById("videoModal");
-const videoPlayer = document.getElementById("videoPlayer");
-const videoSource = document.getElementById("videoSource");
-const videoModalClose = document.getElementById("videoModalClose");
-
 if (role === "admin") {
-  if (adminBtn) adminBtn.style.display = "inline-block";
-  if (addBtn) addBtn.style.display = "inline-flex";
-  if (addVideoBtn) addVideoBtn.style.display = "inline-flex";
+  document.getElementById("adminBtn").style.display = "inline-block";
 }
 
-// 🔥 проверка авторизации
 if (!userId) {
   window.location.href = "/adminvh.html";
 }
 
-// ================= ОТКРЫТИЕ ПРОВОДНИКА ДЛЯ ВИДЕО =================
-if (addVideoBtn) {
-  addVideoBtn.addEventListener("click", () => {
-    videoFileInput.click();
-  });
+// ===== ПЕРЕМЕННЫЕ =====
+let editingId = null;
+let videoData = null; // base64
+
+// ===== ПОЛУЧАЕМ ID ИЗ URL =====
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+if (id) {
+  editingId = id;
+  document.getElementById("pageTitle").textContent = "Редактирование упражнения";
+  document.getElementById("submitBtn").textContent = "Сохранить изменения";
+  loadExercise(id);
 }
 
-// ================= ОБРАБОТКА ВЫБРАННОГО ВИДЕО =================
-if (videoFileInput) {
-  videoFileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Проверка что это видео
-    if (!file.type.startsWith("video/")) {
-      alert("Пожалуйста, выберите видеофайл");
-      videoFileInput.value = "";
-      return;
-    }
-
-    // Проверка размера (максимум 100MB)
-    if (file.size > 100 * 1024 * 1024) {
-      alert("Файл слишком большой. Максимальный размер 100MB");
-      videoFileInput.value = "";
-      return;
-    }
-
-    // Читаем файл как base64
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const videoData = event.target.result; // base64 строка
-
-      // Отправляем на сервер или сохраняем в localStorage
-      // ВАРИАНТ 1: Сохраняем в localStorage (только для демонстрации)
-      // В реальном проекте отправляйте на сервер
-      
-      try {
-        // Сохраняем в localStorage с ключом video_ + имя файла
-        const videoKey = `video_${Date.now()}`;
-        localStorage.setItem(videoKey, videoData);
-        
-        // Сохраняем информацию о видео в списке
-        const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
-        videoList.push({
-          id: videoKey,
-          name: file.name,
-          size: file.size,
-          date: new Date().toISOString()
-        });
-        localStorage.setItem("videoList", JSON.stringify(videoList));
-
-        alert(`Видео "${file.name}" загружено!`);
-        videoFileInput.value = "";
-        
-        // Перезагружаем таблицу
-        loadExercises();
-
-      } catch (err) {
-        console.error("Ошибка сохранения видео:", err);
-        alert("Ошибка при сохранении видео");
-      }
-    };
-
-    reader.readAsDataURL(file);
-  });
-}
-
-// ================= ОТКРЫТИЕ ВИДЕО В МОДАЛЬНОМ ОКНЕ =================
-function openVideo(videoData) {
-  videoSource.src = videoData;
-  videoPlayer.load();
-  videoModal.classList.add("active");
-}
-
-// ================= ЗАКРЫТИЕ МОДАЛЬНОГО ОКНА =================
-if (videoModalClose) {
-  videoModalClose.addEventListener("click", () => {
-    videoModal.classList.remove("active");
-    videoPlayer.pause();
-  });
-}
-
-// Закрытие по клику на фон
-if (videoModal) {
-  videoModal.addEventListener("click", (e) => {
-    if (e.target === videoModal) {
-      videoModal.classList.remove("active");
-      videoPlayer.pause();
-    }
-  });
-}
-
-// Закрытие по Escape
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && videoModal.classList.contains("active")) {
-    videoModal.classList.remove("active");
-    videoPlayer.pause();
-  }
-});
-
-// ================= LOAD EXERCISES =================
-async function loadExercises() {
+// ===== ЗАГРУЗКА УПРАЖНЕНИЯ ДЛЯ РЕДАКТИРОВАНИЯ =====
+async function loadExercise(id) {
   try {
+    const res = await fetch(`/exercises/${id}`);
+    const ex = await res.json();
 
-    const res = await fetch("/exercises");
-    const data = await res.json();
+    document.getElementById("exName").value = ex.name || "";
+    document.getElementById("exMuscle").value = ex.muscle_group || "";
+    document.getElementById("exDifficulty").value = ex.difficulty || "";
+    document.getElementById("exDescription").value = ex.description || "";
 
-    console.log("EXERCISES:", data);
-
-    const tbody = document.getElementById("exercises-table-body");
-
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    // Получаем список сохранённых видео
+    // Проверяем, есть ли видео
     const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+    const exerciseVideo = videoList.find(v => v.id === `video_${id}`);
 
-    data.forEach(ex => {
-
-      const tr = document.createElement("tr");
-
-      // Проверяем, есть ли видео для этого упражнения
-      const exerciseVideo = videoList.find(v => v.id === `video_${ex.exerciseid}`) || 
-                           videoList.find(v => v.name.includes(ex.name));
-
-      let videoHtml = '<span style="opacity:0.4; font-size:12px;">Нет видео</span>';
-      
-      if (exerciseVideo) {
-        const videoData = localStorage.getItem(exerciseVideo.id);
-        if (videoData) {
-          videoHtml = `<button class="video-preview" onclick="openVideo('${videoData}')">
-                         Смотреть
-                       </button>`;
-        }
+    if (exerciseVideo) {
+      const storedVideo = localStorage.getItem(exerciseVideo.id);
+      if (storedVideo) {
+        videoData = storedVideo;
+        showVideoPreview(storedVideo);
+        document.getElementById("videoFileName").textContent = exerciseVideo.name || "Видео загружено";
       }
-
-      tr.innerHTML = `
-        <td>${ex.name}</td>
-        <td>${ex.muscle_group || "-"}</td>
-        <td>
-          <span class="badge ${ex.difficulty}">
-            ${ex.difficulty || "—"}
-          </span>
-        </td>
-        <td>${videoHtml}</td>
-        <td>
-          ${
-            role === "admin"
-              ? `
-                <button class="btn edit">✎</button>
-                <button class="btn delete">🗑</button>
-              `
-              : `<span style="opacity:0.6;">Только просмотр</span>`
-          }
-        </td>
-      `;
-
-      // ================= DELETE =================
-      if (role === "admin") {
-
-        const delBtn = tr.querySelector(".delete");
-
-        if (delBtn) {
-          delBtn.addEventListener("click", async (e) => {
-            e.stopPropagation();
-
-            if (!confirm("Удалить упражнение?")) return;
-
-            // Удаляем видео, если есть
-            const videoToDelete = videoList.find(v => v.id === `video_${ex.exerciseid}`);
-            if (videoToDelete) {
-              localStorage.removeItem(videoToDelete.id);
-              const updatedList = videoList.filter(v => v.id !== videoToDelete.id);
-              localStorage.setItem("videoList", JSON.stringify(updatedList));
-            }
-
-            await fetch(`/exercises/${ex.exerciseid}`, {
-              method: "DELETE"
-            });
-
-            loadExercises();
-          });
-        }
-
-        // ================= EDIT =================
-        const editBtn = tr.querySelector(".edit");
-
-        if (editBtn) {
-          editBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            location.href = `addEx.html?id=${ex.exerciseid}`;
-          });
-        }
-      }
-
-      tbody.appendChild(tr);
-    });
+    }
 
   } catch (err) {
-    console.error("ERROR LOAD EXERCISES:", err);
+    console.error("Ошибка загрузки упражнения:", err);
+    alert("Не удалось загрузить упражнение");
   }
 }
 
-// старт
-loadExercises();
+// ===== ВЫБОР ВИДЕО =====
+document.getElementById("videoInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
+  if (!file.type.startsWith("video/")) {
+    alert("Пожалуйста, выберите видеофайл");
+    this.value = "";
+    return;
+  }
+
+  if (file.size > 100 * 1024 * 1024) {
+    alert("Файл слишком большой. Максимальный размер 100MB");
+    this.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    videoData = event.target.result;
+    showVideoPreview(videoData);
+    document.getElementById("videoFileName").textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== ПОКАЗ ПРЕВЬЮ ВИДЕО =====
+function showVideoPreview(data) {
+  const container = document.getElementById("videoPreviewContainer");
+  const video = document.getElementById("videoPreview");
+  const source = document.getElementById("videoPreviewSource");
+
+  source.src = data;
+  video.load();
+  container.classList.add("active");
+}
+
+// ===== УДАЛЕНИЕ ВИДЕО =====
+function removeVideo() {
+  videoData = null;
+  document.getElementById("videoPreviewContainer").classList.remove("active");
+  document.getElementById("videoPreview").pause();
+  document.getElementById("videoFileName").textContent = "Файл не выбран";
+  document.getElementById("videoInput").value = "";
+}
+
+// ===== СОХРАНЕНИЕ =====
+async function saveExercise(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("exName").value.trim();
+  if (!name) {
+    alert("Введите название упражнения");
+    return;
+  }
+
+  const payload = {
+    name: name,
+    muscle_group: document.getElementById("exMuscle").value.trim() || null,
+    difficulty: document.getElementById("exDifficulty").value || null,
+    description: document.getElementById("exDescription").value.trim() || null
+  };
+
+  try {
+    let res;
+    let exerciseId;
+
+    if (editingId) {
+      // === РЕДАКТИРОВАНИЕ ===
+      res = await fetch(`/exercises/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      exerciseId = editingId;
+    } else {
+      // === СОЗДАНИЕ ===
+      res = await fetch("/exercises", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      exerciseId = data.id;
+    }
+
+    // ===== СОХРАНЯЕМ ВИДЕО =====
+    if (videoData) {
+      // Удаляем старое видео, если есть
+      const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+      const oldVideo = videoList.find(v => v.id === `video_${exerciseId}`);
+      if (oldVideo) {
+        localStorage.removeItem(oldVideo.id);
+        const filtered = videoList.filter(v => v.id !== `video_${exerciseId}`);
+        localStorage.setItem("videoList", JSON.stringify(filtered));
+      }
+
+      // Сохраняем новое видео
+      const videoKey = `video_${exerciseId}`;
+      localStorage.setItem(videoKey, videoData);
+
+      const newVideoList = JSON.parse(localStorage.getItem("videoList") || "[]");
+      newVideoList.push({
+        id: videoKey,
+        name: document.getElementById("videoFileName").textContent || "video.mp4",
+        exerciseId: exerciseId,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem("videoList", JSON.stringify(newVideoList));
+    }
+
+    alert(editingId ? "Упражнение обновлено!" : "Упражнение создано!");
+    window.location.href = "/exercises.html";
+
+  } catch (err) {
+    console.error("Ошибка сохранения:", err);
+    alert("Ошибка при сохранении упражнения");
+  }
+}
 </script>
 
 </body>
