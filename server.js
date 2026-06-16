@@ -529,7 +529,7 @@ app.get("/progress/weight/:userId", async (req, res) => {
             `SELECT reportid, user_id, report_date, current_weight
              FROM progressreports
              WHERE user_id = $1
-             ORDER BY report_date DESC`,
+             ORDER BY report_date DESC, reportid DESC`,
             [req.params.userId]
         );
         res.json(result.rows);
@@ -544,9 +544,6 @@ app.get("/progress/weight/:userId", async (req, res) => {
 app.post("/progress/weight", async (req, res) => {
     try {
         const { userId, weight, date } = req.body;
-        
-        console.log("📥 POST /progress/weight body:", { userId, weight, date }); // ← добавь
-        
         if (!userId || !weight) return res.status(400).json({ success: false, error: "userId or weight missing" });
 
         const reportDate = date ? Number(date) : Date.now();
@@ -558,21 +555,26 @@ app.post("/progress/weight", async (req, res) => {
             [userId, reportDate, weight]
         );
 
-        console.log("✅ INSERT done, reportid:", result.rows[0].reportid); // ← добавь
+        // настоящий последний по дате (с тай-брейком по reportid)
+        const latest = await pool.query(
+            `SELECT current_weight FROM progressreports
+             WHERE user_id = $1
+             ORDER BY report_date DESC, reportid DESC
+             LIMIT 1`,
+            [userId]
+        );
 
         await pool.query(
-    `UPDATE users 
-     SET weight = $1::numeric,
-         start_weight = COALESCE(start_weight, $1::numeric)
-     WHERE userid = $2`,
-    [weight, userId]
-);
-
-        console.log("✅ UPDATE users done"); // ← добавь
+            `UPDATE users 
+             SET weight = $1::numeric,
+                 start_weight = COALESCE(start_weight, $2::numeric)
+             WHERE userid = $3`,
+            [latest.rows[0].current_weight, weight, userId]
+        );
 
         res.json({ success: true, id: result.rows[0].reportid });
     } catch (err) {
-        console.error("POST progress/weight ERROR:", err.message); // уже есть
+        console.error("POST progress/weight ERROR:", err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -591,12 +593,12 @@ app.delete("/progress/weight/:id", async (req, res) => {
         if (entry.rows.length > 0) {
             const userId = entry.rows[0].user_id;
             const latest = await pool.query(
-                `SELECT current_weight FROM progressreports 
-                 WHERE user_id = $1 
-                 ORDER BY report_date DESC 
-                 LIMIT 1`,
-                [userId]
-            );
+    `SELECT current_weight FROM progressreports 
+     WHERE user_id = $1 
+     ORDER BY report_date DESC, reportid DESC
+     LIMIT 1`,
+    [userId]
+);
             if (latest.rows.length > 0) {
                 await pool.query(
                     `UPDATE users SET weight = $1 WHERE userid = $2`,
@@ -639,7 +641,7 @@ app.get("/progress/exercise/:userId", async (req, res) => {
                     progress_date, weight, reps, sets_count, notes
              FROM exerciseprogress
              WHERE user_id = $1 AND exercise_id = $2
-             ORDER BY progress_date ASC`,
+             ORDER BY progress_date ASC, progressid ASC`,
             [userId, exId]
         );
 

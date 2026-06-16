@@ -792,12 +792,10 @@ async function calcGoalProgress(currentWeight, targetWeight) {
     const rows = await res.json();
 
     if (rows && rows.length > 0) {
-      // ✅ Текущий = последний замер по дате
-      const byDate = [...rows].sort((a, b) => toMs(b.report_date) - toMs(a.report_date));
+      const byDate = [...rows].sort((a, b) => (toMs(b.report_date) - toMs(a.report_date)) || (b.reportid - a.reportid));
       latestWeight = parseFloat(byDate[0].current_weight);
 
-      // ✅ Стартовый = самый ранний замер (он не меняется)
-      const earliest = [...rows].sort((a, b) => toMs(a.report_date) - toMs(b.report_date));
+      const earliest = [...rows].sort((a, b) => (toMs(a.report_date) - toMs(b.report_date)) || (a.reportid - b.reportid));
       startWeight = parseFloat(earliest[0].current_weight);
 
       // ✅ Обновляем отображение текущего веса на странице

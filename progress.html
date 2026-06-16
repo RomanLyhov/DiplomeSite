@@ -759,7 +759,7 @@ const regTs = regDate
     isReg:    false,
   }));
 
-  allPoints.sort((a, b) => a.ts - b.ts);
+allPoints.sort((a, b) => a.ts - b.ts || a.reportid - b.reportid);
 
   // ✅ Стартовый вес = самый ранний замер из progressreports
   if (allPoints.length) {
@@ -768,9 +768,8 @@ const regTs = regDate
     document.getElementById("startWeightSub").textContent = `с ${fmtDateShort(earliest.ts)}`;
   }
 
-  // ✅ Текущий вес = самый свежий замер
   if (allPoints.length) {
-    const latest = [...allPoints].sort((a, b) => b.ts - a.ts)[0];
+    const latest = allPoints[allPoints.length - 1];
     document.getElementById("curWeight").textContent = latest.weight;
   }
 }
@@ -804,7 +803,7 @@ function renderWeightHistory() {
   const diff   = +(last - first).toFixed(1);
 
   const cur = weightEntries.length
-    ? [...weightEntries].sort((a,b) => b.report_date - a.report_date)[0].current_weight
+    ? [...weightEntries].sort((a,b) => (b.report_date - a.report_date) || (b.reportid - a.reportid))[0].current_weight
     : userProfile.weight;
   document.getElementById("curWeight").textContent = cur ?? "—";
 
