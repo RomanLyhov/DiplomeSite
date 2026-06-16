@@ -477,34 +477,39 @@ app.post("/meals", async (req, res) => {
             productId = insertProduct.rows[0].productid;
         }
 
-        // -------- INSERT MEAL --------
-        const result = await pool.query(
-            `INSERT INTO nutritionlog(
-                user_id,
-                product_id,
-                meal_type,
-                quantity,
-                calories,
-                protein,
-                fat,
-                carbs,
-                date
-            )
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-            RETURNING logid`,
-            [
-                parsedUserId,
-                productId,
-                mealType || "Другое",
-                parsedQuantity,
-                parsedCalories,
-                parsedProtein,
-                parsedFat,
-                parsedCarbs,
-                mealDate
-            ]
-        );
+        const mealDate = Number.isFinite(Number(date))
+    ? Number(date)
+    : Date.now();
 
+// -------- INSERT MEAL --------
+const result = await pool.query(
+    `INSERT INTO nutritionlog(
+        user_id,
+        product_id,
+        meal_type,
+        quantity,
+        calories,
+        protein,
+        fat,
+        carbs,
+        date,
+        created_at
+    )
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+    RETURNING logid`,
+    [
+        parsedUserId,
+        productId,
+        mealType || "Другое",
+        parsedQuantity,
+        parsedCalories,
+        parsedProtein,
+        parsedFat,
+        parsedCarbs,
+        mealDate,
+        Date.now()
+    ]
+);
         console.log("✅ MEAL SAVED ID:", result.rows[0].logid);
 
         return res.json({
