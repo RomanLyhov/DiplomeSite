@@ -9,15 +9,31 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
+/* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ ФОРМЫ ===== */
+.card {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.card h1 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
   font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 6px;
+  font-size: 13px;
+  margin-bottom: 4px;
   color: #94a3b8;
 }
 
@@ -25,8 +41,8 @@
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
   background: #1b1f2a;
   color: #e2e8f0;
@@ -40,31 +56,55 @@
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: #a78bfa;
-  box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.12);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
+/* ===== КНОПКА НАЗАД ===== */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.2s;
+  margin-bottom: 16px;
+}
+
+.btn-back:hover {
+  background: rgba(255,255,255,0.08);
+  color: #e2e8f0;
+}
+
+/* ===== КНОПКА СОХРАНЕНИЯ ===== */
 .btn-save {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   background: linear-gradient(135deg, #4F46E5, #22C55E);
   color: white;
   transition: 0.2s;
+  margin-top: 8px;
 }
 
 .btn-save:hover {
@@ -76,65 +116,44 @@
   transform: scale(0.98);
 }
 
-.btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+/* ===== ВИДЕО БЛОК (ПРОСТОЙ) ===== */
+.video-section {
+  margin-top: 4px;
+  padding: 14px 16px;
+  background: rgba(168,85,247,0.04);
+  border: 1px dashed rgba(168,85,247,0.15);
   border-radius: 12px;
-  text-decoration: none;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: #94a3b8;
-  font-size: 14px;
-  font-weight: 500;
-  transition: 0.2s;
-  margin-bottom: 20px;
 }
 
-.btn-back:hover {
-  background: rgba(255,255,255,0.08);
-  color: #e2e8f0;
-}
-
-/* ===== ВИДЕО БЛОК ===== */
-.video-upload-section {
-  background: rgba(168,85,247,0.05);
-  border: 1px dashed rgba(168,85,247,0.25);
-  border-radius: 14px;
-  padding: 20px;
-  margin-top: 10px;
-}
-
-.video-upload-section .label {
+.video-section .label {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   color: #94a3b8;
-  margin-bottom: 12px;
   display: block;
+  margin-bottom: 8px;
 }
 
-.video-upload-area {
+.video-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.video-upload-btn {
-  padding: 10px 24px;
-  border-radius: 10px;
+.video-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
   border: none;
-  background: rgba(168,85,247,0.15);
+  background: rgba(168,85,247,0.12);
   color: #a78bfa;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
-.video-upload-btn:hover {
-  background: rgba(168,85,247,0.25);
+.video-btn:hover {
+  background: rgba(168,85,247,0.2);
 }
 
 .video-file-name {
@@ -142,45 +161,40 @@
   color: #64748b;
 }
 
-.video-preview-container {
-  margin-top: 14px;
+.video-preview-box {
+  margin-top: 10px;
   display: none;
 }
 
-.video-preview-container.active {
+.video-preview-box.active {
   display: block;
 }
 
-.video-preview-container video {
+.video-preview-box video {
   max-width: 100%;
-  max-height: 300px;
-  border-radius: 12px;
+  max-height: 200px;
+  border-radius: 10px;
   background: #000;
 }
 
-.video-remove-btn {
-  margin-top: 10px;
-  padding: 6px 16px;
-  border-radius: 8px;
+.video-remove {
+  margin-top: 6px;
+  padding: 4px 14px;
+  border-radius: 6px;
   border: none;
-  background: rgba(239,68,68,0.15);
+  background: rgba(239,68,68,0.12);
   color: #ef4444;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.video-remove-btn:hover {
-  background: rgba(239,68,68,0.25);
+.video-remove:hover {
+  background: rgba(239,68,68,0.2);
 }
 
 @media (max-width: 600px) {
   .form-row {
     grid-template-columns: 1fr;
-  }
-  .video-upload-area {
-    flex-direction: column;
-    align-items: stretch;
   }
 }
 </style>
@@ -188,6 +202,7 @@
 
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
   <div class="navbar">
     <a href="/profil.html">Профиль</a>
@@ -198,24 +213,25 @@
   </div>
 </div>
 
+<!-- ================= PAGE ================= -->
 <div class="container">
 
-  <a href="/exercises.html" class="btn-back">← Назад к упражнениям</a>
-
   <div class="card">
-    <h1 id="pageTitle" style="margin-top:0;">Добавление упражнения</h1>
+
+    <a href="/exercises.html" class="btn-back">← Назад</a>
+
+    <h1 id="pageTitle">Добавление упражнения</h1>
 
     <form id="exerciseForm" onsubmit="saveExercise(event)">
 
-      <!-- ===== ОСНОВНЫЕ ПОЛЯ ===== -->
       <div class="form-row">
         <div class="form-group">
-          <label for="exName">Название упражнения *</label>
-          <input type="text" id="exName" placeholder="например: Жим лёжа" required>
+          <label for="exName">Название *</label>
+          <input type="text" id="exName" placeholder="Жим лёжа" required>
         </div>
         <div class="form-group">
           <label for="exMuscle">Группа мышц</label>
-          <input type="text" id="exMuscle" placeholder="например: Грудные">
+          <input type="text" id="exMuscle" placeholder="Грудные">
         </div>
       </div>
 
@@ -236,10 +252,10 @@
       </div>
 
       <!-- ===== ВИДЕО БЛОК ===== -->
-      <div class="video-upload-section">
+      <div class="video-section">
         <span class="label">🎬 Видео-демонстрация</span>
-        <div class="video-upload-area">
-          <button type="button" class="video-upload-btn" onclick="document.getElementById('videoInput').click()">
+        <div class="video-row">
+          <button type="button" class="video-btn" onclick="document.getElementById('videoInput').click()">
             📁 Выбрать видео
           </button>
           <span class="video-file-name" id="videoFileName">Файл не выбран</span>
@@ -247,22 +263,25 @@
 
         <input type="file" id="videoInput" accept="video/*" style="display:none;">
 
-        <div class="video-preview-container" id="videoPreviewContainer">
+        <div class="video-preview-box" id="videoPreviewBox">
           <video id="videoPreview" controls>
             <source id="videoPreviewSource" src="">
           </video>
           <br>
-          <button type="button" class="video-remove-btn" onclick="removeVideo()">🗑 Удалить видео</button>
+          <button type="button" class="video-remove" onclick="removeVideo()">🗑 Удалить</button>
         </div>
       </div>
 
       <button type="submit" class="btn-save" id="submitBtn">Создать упражнение</button>
     </form>
+
   </div>
 
 </div>
 
+<!-- ================= SCRIPT ================= -->
 <script>
+
 const role = (localStorage.getItem("role") || "").toLowerCase();
 const userId = localStorage.getItem("userId");
 
@@ -274,11 +293,10 @@ if (!userId) {
   window.location.href = "/adminvh.html";
 }
 
-// ===== ПЕРЕМЕННЫЕ =====
 let editingId = null;
-let videoData = null; // base64
+let videoData = null;
 
-// ===== ПОЛУЧАЕМ ID ИЗ URL =====
+// ===== ID ИЗ URL =====
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
@@ -289,7 +307,7 @@ if (id) {
   loadExercise(id);
 }
 
-// ===== ЗАГРУЗКА УПРАЖНЕНИЯ ДЛЯ РЕДАКТИРОВАНИЯ =====
+// ===== ЗАГРУЗКА ДЛЯ РЕДАКТИРОВАНИЯ =====
 async function loadExercise(id) {
   try {
     const res = await fetch(`/exercises/${id}`);
@@ -300,7 +318,6 @@ async function loadExercise(id) {
     document.getElementById("exDifficulty").value = ex.difficulty || "";
     document.getElementById("exDescription").value = ex.description || "";
 
-    // Проверяем, есть ли видео
     const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
     const exerciseVideo = videoList.find(v => v.id === `video_${id}`);
 
@@ -314,7 +331,7 @@ async function loadExercise(id) {
     }
 
   } catch (err) {
-    console.error("Ошибка загрузки упражнения:", err);
+    console.error("Ошибка загрузки:", err);
     alert("Не удалось загрузить упражнение");
   }
 }
@@ -325,13 +342,13 @@ document.getElementById("videoInput").addEventListener("change", function(e) {
   if (!file) return;
 
   if (!file.type.startsWith("video/")) {
-    alert("Пожалуйста, выберите видеофайл");
+    alert("Выберите видеофайл");
     this.value = "";
     return;
   }
 
   if (file.size > 100 * 1024 * 1024) {
-    alert("Файл слишком большой. Максимальный размер 100MB");
+    alert("Файл больше 100MB");
     this.value = "";
     return;
   }
@@ -345,21 +362,21 @@ document.getElementById("videoInput").addEventListener("change", function(e) {
   reader.readAsDataURL(file);
 });
 
-// ===== ПОКАЗ ПРЕВЬЮ ВИДЕО =====
+// ===== ПОКАЗ ПРЕВЬЮ =====
 function showVideoPreview(data) {
-  const container = document.getElementById("videoPreviewContainer");
+  const box = document.getElementById("videoPreviewBox");
   const video = document.getElementById("videoPreview");
   const source = document.getElementById("videoPreviewSource");
 
   source.src = data;
   video.load();
-  container.classList.add("active");
+  box.classList.add("active");
 }
 
 // ===== УДАЛЕНИЕ ВИДЕО =====
 function removeVideo() {
   videoData = null;
-  document.getElementById("videoPreviewContainer").classList.remove("active");
+  document.getElementById("videoPreviewBox").classList.remove("active");
   document.getElementById("videoPreview").pause();
   document.getElementById("videoFileName").textContent = "Файл не выбран";
   document.getElementById("videoInput").value = "";
@@ -387,7 +404,6 @@ async function saveExercise(e) {
     let exerciseId;
 
     if (editingId) {
-      // === РЕДАКТИРОВАНИЕ ===
       res = await fetch(`/exercises/${editingId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -395,7 +411,6 @@ async function saveExercise(e) {
       });
       exerciseId = editingId;
     } else {
-      // === СОЗДАНИЕ ===
       res = await fetch("/exercises", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -405,9 +420,8 @@ async function saveExercise(e) {
       exerciseId = data.id;
     }
 
-    // ===== СОХРАНЯЕМ ВИДЕО =====
+    // ===== СОХРАНЕНИЕ ВИДЕО =====
     if (videoData) {
-      // Удаляем старое видео, если есть
       const videoList = JSON.parse(localStorage.getItem("videoList") || "[]");
       const oldVideo = videoList.find(v => v.id === `video_${exerciseId}`);
       if (oldVideo) {
@@ -416,7 +430,6 @@ async function saveExercise(e) {
         localStorage.setItem("videoList", JSON.stringify(filtered));
       }
 
-      // Сохраняем новое видео
       const videoKey = `video_${exerciseId}`;
       localStorage.setItem(videoKey, videoData);
 
@@ -434,10 +447,11 @@ async function saveExercise(e) {
     window.location.href = "/exercises.html";
 
   } catch (err) {
-    console.error("Ошибка сохранения:", err);
-    alert("Ошибка при сохранении упражнения");
+    console.error("Ошибка:", err);
+    alert("Ошибка при сохранении");
   }
 }
+
 </script>
 
 </body>
