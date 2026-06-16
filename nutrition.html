@@ -6,34 +6,21 @@
 <title>FitPlan — Питание</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
+
 <div class="top-nav">
   <div class="navbar">
       <a href="/profil.html">Профиль</a>
       <a href="/exercises.html">Упражнения</a>
       <a href="/nutrition.html" class="active">Питание</a>
-            <a href="/workouts.html">Тренировки</a>
-      <a href="/users.html"
-        id="adminBtn"
-
-        style="display:none;">Пользователи</a>
+      <a href="/workouts.html">Тренировки</a>
+      <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
+  </div>
 </div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const roleCheck = (localStorage.getItem("role") || "").toLowerCase();
 
-  if (roleCheck === "admin") {
-    const btn = document.getElementById("adminBtn");
-    if (btn) btn.style.display = "inline-block";
-  }
-});
-
-</script>
 <div class="container">
 
   <div class="header">
@@ -43,19 +30,19 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="card">
-
     <table>
       <thead>
         <tr>
           <th>Время</th>
+          <th>Приём пищи</th>
           <th>Продукт</th>
+          <th>Кол-во</th>
           <th>Ккал</th>
         </tr>
       </thead>
 
       <tbody id="nutrition-table-body"></tbody>
     </table>
-
   </div>
 
 </div>
@@ -68,12 +55,15 @@ if (!role || !userId) {
   window.location.href = "/adminvh.html";
 }
 
-function logout(){
-  localStorage.clear();
-  location.href="/adminvh.html";
-}
+// показать админ кнопку
+document.addEventListener("DOMContentLoaded", () => {
+  if (role === "admin") {
+    const btn = document.getElementById("adminBtn");
+    if (btn) btn.style.display = "inline-block";
+  }
+});
 
-// USERS
+// ================= USERS =================
 async function loadUsers(){
   const res = await fetch("/users");
   const users = await res.json();
@@ -84,9 +74,57 @@ async function loadUsers(){
   users.forEach(u => {
     select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
   });
+
+  select.value = userId;
 }
 
-loadUsers();
+// ================= MEALS =================
+async function loadMeals(userId){
+  const res = await fetch(`/meals?userId=${userId}`);
+  const data = await res.json();
+
+  const tbody = document.getElementById("nutrition-table-body");
+  tbody.innerHTML = "";
+
+  if (!data.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; opacity:0.6;">
+          Нет данных
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(m => {
+
+    const time = new Date(m.date).toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${time}</td>
+        <td>${m.mealType || "-"}</td>
+        <td>${m.productName || "-"}</td>
+        <td>${m.quantity || "-"}</td>
+        <td>${m.calories || 0}</td>
+      </tr>
+    `;
+  });
+}
+
+// ================= INIT =================
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadUsers();
+  await loadMeals(userId);
+
+  document.getElementById("userFilter").addEventListener("change", (e) => {
+    loadMeals(e.target.value);
+  });
+});
 </script>
 
 </body>
