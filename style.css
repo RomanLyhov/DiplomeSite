@@ -386,7 +386,6 @@ tr:hover {
 
 .meal-body{
   margin-top:10px;
-  display:none;
   flex-direction:column;
   gap:6px;
 }
