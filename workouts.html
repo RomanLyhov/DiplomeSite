@@ -40,6 +40,111 @@
 
 </div>
 
+<style>
+/* Дополнительные стили для кнопок */
+.workout-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-edit {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-edit:hover {
+  background: rgba(167, 139, 250, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-open {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-open:hover {
+  background: rgba(34, 197, 94, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.22);
+  transform: translateY(-1px);
+}
+
+.workout-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.workout-card:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(167, 139, 250, 0.15);
+}
+
+.workout-info {
+  flex: 1;
+}
+
+.workout-name {
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+}
+
+.workout-id {
+  font-size: 12px;
+  opacity: 0.6;
+  color: #94a3b8;
+}
+
+@media (max-width: 600px) {
+  .workout-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .workout-actions {
+    justify-content: flex-start;
+  }
+}
+</style>
+
 <script>
 
 const userId = localStorage.getItem("userId");
@@ -57,53 +162,119 @@ if (role === "admin") {
 
 /* LOAD WORKOUTS */
 async function loadWorkouts() {
+  try {
+    const res = await fetch(`/workouts/${userId}`);
+    
+    if (!res.ok) {
+      throw new Error('Ошибка загрузки тренировок');
+    }
+    
+    const workouts = await res.json();
 
-  const res = await fetch(`/workouts/${userId}`);
-  const workouts = await res.json();
+    const container = document.getElementById("workoutsList");
+    container.innerHTML = "";
 
-  const container = document.getElementById("workoutsList");
-  container.innerHTML = "";
+    if (!workouts || !workouts.length) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
+          <div style="font-size:48px; margin-bottom:12px;">🏋️</div>
+          <p style="font-size:16px;">У вас пока нет тренировок</p>
+          <a href="/createTren.html" style="display:inline-block; margin-top:12px; 
+             color:#a78bfa; text-decoration:underline;">Создать первую тренировку</a>
+        </div>
+      `;
+      return;
+    }
 
-  if (!workouts.length) {
+    workouts.forEach(w => {
+      const div = document.createElement("div");
+      div.className = "workout-card";
+
+      div.innerHTML = `
+        <div class="workout-info">
+          <div class="workout-name">
+            🏋️ ${w.name}
+          </div>
+          <div class="workout-id">
+            ID: ${w.workoutid}
+          </div>
+        </div>
+
+        <div class="workout-actions">
+          <button class="btn-edit" data-id="${w.workoutid}">
+            ✏️ Редактировать
+          </button>
+          <button class="btn-open" data-id="${w.workoutid}">
+            👁 Открыть
+          </button>
+          <button class="btn-delete" data-id="${w.workoutid}">
+            🗑
+          </button>
+        </div>
+      `;
+
+      // Редактировать
+      div.querySelector('.btn-edit').onclick = (e) => {
+        e.stopPropagation();
+        location.href = `/edit-workout.html?id=${w.workoutid}`;
+      };
+
+      // Открыть
+      div.querySelector('.btn-open').onclick = (e) => {
+        e.stopPropagation();
+        location.href = `/workout.html?id=${w.workoutid}`;
+      };
+
+      // Удалить
+      div.querySelector('.btn-delete').onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Удалить тренировку "${w.name}"?`)) return;
+        
+        try {
+          const delRes = await fetch(`/workouts/${w.workoutid}`, {
+            method: 'DELETE'
+          });
+          
+          if (delRes.ok) {
+            div.remove();
+            // Если больше нет тренировок, показываем пустое состояние
+            if (container.children.length === 0) {
+              container.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
+                  <div style="font-size:48px; margin-bottom:12px;">🏋️</div>
+                  <p style="font-size:16px;">У вас пока нет тренировок</p>
+                  <a href="/createTren.html" style="display:inline-block; margin-top:12px; 
+                     color:#a78bfa; text-decoration:underline;">Создать первую тренировку</a>
+                </div>
+              `;
+            }
+          } else {
+            alert('Ошибка при удалении');
+          }
+        } catch (err) {
+          console.error('Delete error:', err);
+          alert('Ошибка при удалении');
+        }
+      };
+
+      container.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error('Load workouts error:', err);
+    const container = document.getElementById("workoutsList");
     container.innerHTML = `
-      <div class="card">
-        <p style="opacity:0.7;">У вас пока нет тренировок</p>
+      <div style="text-align:center; padding:20px; color:#ef4444;">
+        ❌ Ошибка загрузки тренировок
+        <br>
+        <button onclick="loadWorkouts()" style="margin-top:12px; 
+           padding:8px 20px; border-radius:10px; border:none; 
+           background:#a78bfa; color:white; cursor:pointer;">
+          Повторить
+        </button>
       </div>
     `;
-    return;
   }
-
-  workouts.forEach(w => {
-
-    const div = document.createElement("div");
-
-    div.className = "card";
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.marginBottom = "10px";
-
-    div.innerHTML = `
-      <div>
-        <div style="font-weight:700; font-size:18px;">
-          🏋️ ${w.name}
-        </div>
-        <div style="font-size:12px; opacity:0.6;">
-          ID: ${w.workoutid}
-        </div>
-      </div>
-
-      <button class="btn">
-        Открыть
-      </button>
-    `;
-
-    div.querySelector("button").onclick = () => {
-      location.href = `/workout.html?id=${w.workoutid}`;
-    };
-
-    container.appendChild(div);
-  });
 }
 
 loadWorkouts();

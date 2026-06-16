@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPlan — Редактирование тренировки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050816;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            padding: 20px;
+        }
+
+        .top-nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            padding: 18px 35px;
+            border-radius: 60px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.03);
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #ffffffcc;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .navbar a:hover {
+            color: white;
+        }
+
+        .navbar a::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -8px;
+            width: 0%;
+            height: 2px;
+            background: #ff4fd8;
+            transform: translateX(-50%);
+            transition: 0.3s;
+            box-shadow: 0 0 10px #ff4fd8;
+        }
+
+        .navbar a:hover::after {
+            width: 100%;
+        }
+
+        .navbar a.active {
+            color: white;
+        }
+
+        .navbar a.active::after {
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 20px 4px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 14px;
+            transition: 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #a78bfa;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .list {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .list::-webkit-scrollbar-thumb {
+            background: rgba(167, 139, 250, 0.3);
+            border-radius: 10px;
+        }
+
+        .item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+
+        .item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .item-header b {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 999px;
+            background: rgba(167, 139, 250, 0.15);
+            color: #a78bfa;
+        }
+
+        .small-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-add {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .btn-add:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-remove {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .field input {
+            padding: 6px 8px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .field input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        }
+
+        .field input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #94a3b8;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(135deg, #4F46E5, #22C55E);
+            font-size: 15px;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            padding: 8px 16px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #64748b;
+        }
+
+        .empty-state .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 14px;
+            background: rgba(34, 197, 94, 0.95);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 900px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+            .item-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .navbar {
+                flex-wrap: wrap;
+                gap: 20px;
+                padding: 14px 20px;
+            }
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="navbar">
+            <a href="/profil.html">Профиль</a>
+            <a href="/exercises.html">Упражнения</a>
+            <a href="/nutrition.html">Питание</a>
+            <a href="/worckouts.html" class="active">Тренировки</a>
+            <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">Редактирование тренировки</h1>
+            <div style="display:flex; gap:12px;">
+                <button class="btn-secondary" onclick="window.location.href='/worckouts.html'">← Назад</button>
+                <button class="btn-danger" onclick="deleteWorkout()">🗑 Удалить</button>
+            </div>
+        </div>
+
+        <!-- Основная информация -->
+        <div class="card">
+            <div class="card-title">Основная информация</div>
+            <div class="form-group">
+                <label>Название тренировки</label>
+                <input id="workoutName" placeholder="Введите название">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="isRecommended">
+                <label for="isRecommended">⭐ Рекомендовать пользователям</label>
+            </div>
+        </div>
+
+        <!-- Упражнения -->
+        <div class="card">
+            <div class="card-title">Упражнения</div>
+            <div class="columns">
+                <div>
+                    <div class="section-title">Доступные упражнения</div>
+                    <input class="search-input" id="searchExercises" placeholder="🔍 Поиск упражнений...">
+                    <div class="list" id="allExercises">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">В тренировке</div>
+                    <div class="list" id="selectedExercises">
+                        <div class="loading">Добавьте упражнения</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="saveWorkout()">💾 Сохранить изменения</button>
+    </div>
+
+    <div id="toast" class="toast">Готово!</div>
+
+    <script>
+        // ===== STATE =====
+        let workoutId = null;
+        let workoutName = '';
+        let isRecommended = false;
+        let selected = [];
+        let allExercises = [];
+
+        // ===== DOM REFS =====
+        const workoutNameInput = document.getElementById('workoutName');
+        const isRecommendedCheckbox = document.getElementById('isRecommended');
+        const allExercisesContainer = document.getElementById('allExercises');
+        const selectedExercisesContainer = document.getElementById('selectedExercises');
+        const searchInput = document.getElementById('searchExercises');
+
+        // ===== INIT =====
+        async function init() {
+            // Получаем ID из URL
+            const params = new URLSearchParams(window.location.search);
+            workoutId = params.get('id');
+
+            if (!workoutId) {
+                showToast('Не указан ID тренировки', 'error');
+                return;
+            }
+
+            // Проверка пользователя
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = '/adminvh.html';
+                return;
+            }
+
+            // Кнопка админа
+            const role = (localStorage.getItem('role') || '').toLowerCase();
+            if (role === 'admin') {
+                document.getElementById('adminBtn').style.display = 'inline-block';
+            }
+
+            // Загружаем данные
+            await loadWorkoutData();
+            await loadExercises();
+        }
+
+        // ===== LOAD WORKOUT DATA =====
+        async function loadWorkoutData() {
+            try {
+                const userId = localStorage.getItem('userId');
+                const res = await fetch(`/workouts/${userId}`);
+                const workouts = await res.json();
+
+                const workout = workouts.find(w => w.id == workoutId || w.workoutid == workoutId);
+
+                if (!workout) {
+                    showToast('Тренировка не найдена', 'error');
+                    return;
+                }
+
+                workoutName = workout.name || workout.workout_name || '';
+                workoutNameInput.value = workoutName;
+                document.getElementById('pageTitle').textContent = `✏️ ${workoutName}`;
+
+                // Загружаем упражнения тренировки
+                const exRes = await fetch(`/workout-exercises/${workoutId}`);
+                const exercises = await exRes.json();
+
+                selected = exercises.map(ex => ({
+                    exerciseId: ex.exerciseId,
+                    name: ex.name,
+                    sets: ex.sets || 3,
+                    reps: ex.reps || 10,
+                    weight: ex.weight || 0,
+                    rest: ex.rest || 60,
+                    muscle_group: ex.muscle_group || ''
+                }));
+
+                renderSelected();
+
+                // Проверяем статус recommended
+                // Нужно отдельно получить инфо о тренировке
+                const workoutInfoRes = await fetch(`/workouts/full/${userId}`);
+                const allWorkouts = await workoutInfoRes.json();
+                const fullWorkout = allWorkouts.find(w => w.id == workoutId);
+                if (fullWorkout) {
+                    isRecommended = fullWorkout.isRecommended || false;
+                    isRecommendedCheckbox.checked = isRecommended;
+                }
+
+            } catch (err) {
+                console.error('Error loading workout:', err);
+                showToast('Ошибка загрузки данных', 'error');
+            }
+        }
+
+        // ===== LOAD EXERCISES =====
+        async function loadExercises() {
+            try {
+                const res = await fetch('/exercises');
+                allExercises = await res.json();
+                renderAllExercises();
+            } catch (err) {
+                console.error('Error loading exercises:', err);
+                allExercisesContainer.innerHTML = '<div class="loading">❌ Ошибка загрузки</div>';
+            }
+        }
+
+        // ===== RENDER ALL EXERCISES =====
+        function renderAllExercises() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            let filtered = allExercises;
+
+            if (searchTerm) {
+                filtered = allExercises.filter(ex =>
+                    ex.name.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Исключаем уже добавленные
+            const selectedIds = selected.map(e => e.exerciseId);
+            filtered = filtered.filter(ex => !selectedIds.includes(ex.exerciseid));
+
+            allExercisesContainer.innerHTML = '';
+
+            if (filtered.length === 0) {
+                allExercisesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔍</div>
+                        <div>${searchTerm ? 'Ничего не найдено' : 'Нет доступных упражнений'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(ex => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <div class="item-header">
+                        <div>
+                            <b>${ex.name}</b>
+                            <div class="badge">${ex.muscle_group || '—'}</div>
+                        </div>
+                        <button class="small-btn btn-add" data-id="${ex.exerciseid}">+ Добавить</button>
+                    </div>
+                `;
+                div.querySelector('button').onclick = () => addExercise(ex);
+                allExercisesContainer.appendChild(div);
+            });
+        }
+
+        // ===== ADD EXERCISE =====
+        function addExercise(ex) {
+            if (selected.find(e => e.exerciseId === ex.exerciseid)) return;
+
+            selected.push({
+                exerciseId: ex.exerciseid,
+                name: ex.name,
+                muscle_group: ex.muscle_group || '',
+                sets: 3,
+                reps: 10,
+                weight: 0,
+                rest: 60
+            });
+
+            renderSelected();
+            renderAllExercises();
+            showToast(`➕ ${ex.name} добавлено`);
+        }
+
+        // ===== REMOVE EXERCISE =====
+        function removeExercise(exerciseId) {
+            const ex = selected.find(e => e.exerciseId === exerciseId);
+            selected = selected.filter(e => e.exerciseId !== exerciseId);
+            renderSelected();
+            renderAllExercises();
+            if (ex) showToast(`➖ ${ex.name} удалено`);
+        }
+
+        // ===== UPDATE FIELD =====
+        function updateField(exerciseId, field, value) {
+            const ex = selected.find(e => e.exerciseId === exerciseId);
+            if (ex) {
+                ex[field] = parseFloat(value) || 0;
+            }
+        }
+
+        // ===== RENDER SELECTED =====
+        function renderSelected() {
+            selectedExercisesContainer.innerHTML = '';
+
+            if (selected.length === 0) {
+                selectedExercisesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <div>Нет упражнений</div>
+                        <div style="font-size:12px; margin-top:4px;">Добавьте из списка слева</div>
+                    </div>
+                `;
+                return;
+            }
+
+            selected.forEach((ex, index) => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <div class="item-header">
+                        <div>
+                            <b>${index + 1}. ${ex.name}</b>
+                            <div class="badge">${ex.muscle_group || '—'}</div>
+                        </div>
+                        <button class="small-btn btn-remove">✕</button>
+                    </div>
+                    <div class="item-grid">
+                        <div class="field">
+                            <label>Подходы</label>
+                            <input type="number" value="${ex.sets}" min="1" data-field="sets">
+                        </div>
+                        <div class="field">
+                            <label>Повторения</label>
+                            <input type="number" value="${ex.reps}" min="1" data-field="reps">
+                        </div>
+                        <div class="field">
+                            <label>Вес (кг)</label>
+                            <input type="number" value="${ex.weight}" min="0" step="0.5" data-field="weight">
+                        </div>
+                        <div class="field">
+                            <label>Отдых (сек)</label>
+                            <input type="number" value="${ex.rest}" min="0" data-field="rest">
+                        </div>
+                    </div>
+                `;
+
+                // Remove
+                div.querySelector('.btn-remove').onclick = () => removeExercise(ex.exerciseId);
+
+                // Inputs
+                const inputs = div.querySelectorAll('.field input');
+                inputs.forEach(input => {
+                    const field = input.dataset.field;
+                    input.oninput = () => updateField(ex.exerciseId, field, input.value);
+                });
+
+                selectedExercisesContainer.appendChild(div);
+            });
+        }
+
+        // ===== SEARCH =====
+        searchInput.oninput = renderAllExercises;
+
+        // ===== SAVE WORKOUT =====
+        async function saveWorkout() {
+            const name = workoutNameInput.value.trim();
+            if (!name) {
+                showToast('Введите название тренировки', 'error');
+                return;
+            }
+
+            if (selected.length === 0) {
+                showToast('Добавьте хотя бы одно упражнение', 'error');
+                return;
+            }
+
+            try {
+                // 1. Обновляем название
+                await fetch(`/workouts/${workoutId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                // 2. Обновляем статус recommended
+                const recommended = isRecommendedCheckbox.checked;
+                await fetch(`/workouts/${workoutId}/recommend`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isRecommended: recommended })
+                });
+
+                // 3. Удаляем старые упражнения
+                await fetch(`/workouts/${workoutId}/exercises`, {
+                    method: 'DELETE'
+                });
+
+                // 4. Добавляем новые упражнения
+                for (const ex of selected) {
+                    // Проверяем существует ли упражнение в базе
+                    let exerciseId = ex.exerciseId;
+
+                    // Если exerciseId это число, проверяем существует ли оно
+                    if (exerciseId) {
+                        const checkRes = await fetch(`/exercises/${exerciseId}`);
+                        if (!checkRes.ok) {
+                            // Если не существует, создаём новое
+                            const createRes = await fetch('/exercises', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    name: ex.name,
+                                    muscle_group: ex.muscle_group || '-',
+                                    difficulty: 'medium'
+                                })
+                            });
+                            const data = await createRes.json();
+                            if (data.success) {
+                                // Нужно получить ID созданного упражнения
+                                // Запрашиваем все упражнения и ищем по имени
+                                const allExRes = await fetch('/exercises');
+                                const allEx = await allExRes.json();
+                                const found = allEx.find(e => e.name === ex.name);
+                                if (found) exerciseId = found.exerciseid;
+                            }
+                        }
+                    }
+
+                    if (!exerciseId) {
+                        console.error('Cannot find exercise ID for:', ex.name);
+                        continue;
+                    }
+
+                    await fetch('/workout-exercises', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            workoutId: workoutId,
+                            exerciseId: exerciseId,
+                            sets: ex.sets,
+                            reps: ex.reps,
+                            weight: ex.weight,
+                            rest: ex.rest
+                        })
+                    });
+                }
+
+                showToast('✅ Тренировка сохранена!');
+                setTimeout(() => {
+                    window.location.href = `/worckouts.html`;
+                }, 1000);
+
+            } catch (err) {
+                console.error('Save error:', err);
+                showToast('❌ Ошибка сохранения: ' + err.message, 'error');
+            }
+        }
+
+        // ===== DELETE WORKOUT =====
+        async function deleteWorkout() {
+            if (!confirm(`Удалить тренировку "${workoutNameInput.value}"?`)) return;
+
+            try {
+                const res = await fetch(`/workouts/${workoutId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('🗑 Тренировка удалена');
+                    setTimeout(() => {
+                        window.location.href = '/worckouts.html';
+                    }, 500);
+                } else {
+                    showToast('❌ Ошибка удаления', 'error');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('❌ Ошибка удаления', 'error');
+            }
+        }
+
+        // ===== TOAST =====
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            if (type === 'error') toast.classList.add('error');
+            toast.classList.add('show');
+
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ===== START =====
+        init();
+    </script>
+</body>
+</html>
