@@ -25,7 +25,6 @@
 
   <div class="header">
     <h1>Журнал питания</h1>
-
     <select id="userFilter"></select>
   </div>
 
@@ -33,7 +32,7 @@
     <table>
       <thead>
         <tr>
-          <th>Время</th>
+          <th>Дата и время</th>
           <th>Приём пищи</th>
           <th>Продукт</th>
           <th>Кол-во</th>
@@ -99,14 +98,24 @@ async function loadMeals(userId){
 
   data.forEach(m => {
 
-    const time = new Date(m.date).toLocaleTimeString("ru-RU", {
+    const d = new Date(Number(m.date));
+
+    const formattedDate = d.toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+
+    const formattedTime = d.toLocaleTimeString("ru-RU", {
       hour: "2-digit",
       minute: "2-digit"
     });
 
+    const fullDateTime = `${formattedDate} ${formattedTime}`;
+
     tbody.innerHTML += `
       <tr>
-        <td>${time}</td>
+        <td>${fullDateTime}</td>
         <td>${m.mealType || "-"}</td>
         <td>${m.productName || "-"}</td>
         <td>${m.quantity || "-"}</td>
