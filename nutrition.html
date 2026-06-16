@@ -7,6 +7,49 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+
+<style>
+.meal-card {
+  background: #1b1f2a;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.meal-summary {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.meal-details {
+  margin-top: 10px;
+  display: none;
+}
+
+.meal-product {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 14px;
+}
+
+.meal-time-small {
+  opacity: 0.6;
+  font-size: 12px;
+}
+</style>
+
 </head>
 
 <body>
@@ -35,7 +78,6 @@
   </div>
 </div>
 
-<!-- ✅ ВАЖНО: контейнер ОБЯЗАТЕЛЬНО -->
 <div id="nutrition-cards"></div>
 
 <script>
@@ -60,15 +102,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   dateInput.value = new Date().toISOString().split("T")[0];
 
   async function refreshMeals() {
-  const uid = userSelect.value;
+    const uid = userSelect.value;
+    const [y, m, d] = dateInput.value.split("-");
 
-  const [y, m, d] = dateInput.value.split("-");
+    const start = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+    const end = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
 
-  const start = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
-  const end = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
-
-  await loadMeals(uid, start, end);
-}
+    await loadMeals(uid, start, end);
+  }
 
   userSelect.addEventListener("change", refreshMeals);
   dateInput.addEventListener("change", refreshMeals);
@@ -91,15 +132,12 @@ async function loadUsers() {
 }
 
 async function loadMeals(userId, start, end) {
-
   const container = document.getElementById("nutrition-cards");
   container.innerHTML = "";
 
   try {
     const res = await fetch(`/meals?userId=${userId}&start=${start}&end=${end}`);
     const data = await res.json();
-
-    console.log("MEALS:", data);
 
     if (!Array.isArray(data) || data.length === 0) {
       container.innerHTML = `<div style="opacity:0.6;text-align:center;">Нет данных</div>`;
@@ -137,28 +175,36 @@ async function loadMeals(userId, start, end) {
 
       card.innerHTML = `
         <div class="meal-header">
-          <div>Питание</div>
-          <div class="meal-time">${g.date}</div>
+          <div>🍽 Питание</div>
+          <div>${g.date}</div>
         </div>
 
-        <div class="meal-body" style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+        <div class="meal-summary">
+          <span>${g.calories} ккал</span>
+          <span>${g.protein} Б</span>
+          <span>${g.fat} Ж</span>
+          <span>${g.carbs} У</span>
+        </div>
 
+        <div class="meal-details">
           ${g.items.map(i => `
             <div class="meal-product">
               <span>${i.productName}</span>
               <span>x${i.quantity || 1}</span>
+              <span class="meal-time-small">
+                ${new Date(Number(i.date)).toLocaleTimeString()}
+              </span>
             </div>
           `).join("")}
-
-          <div class="meal-kbju">
-            <span>${g.calories} ккал</span>
-            <span>${g.protein} Б</span>
-            <span>${g.fat} Ж</span>
-            <span>${g.carbs} У</span>
-          </div>
-
         </div>
       `;
+
+      const details = card.querySelector(".meal-details");
+
+      card.addEventListener("click", () => {
+        details.style.display =
+          details.style.display === "block" ? "none" : "block";
+      });
 
       container.appendChild(card);
     });
@@ -169,5 +215,6 @@ async function loadMeals(userId, start, end) {
   }
 }
 </script>
+
 </body>
 </html>
