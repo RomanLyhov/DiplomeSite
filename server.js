@@ -543,8 +543,7 @@ app.post("/progress/weight", async (req, res) => {
         const { userId, weight, date } = req.body;
         if (!userId || !weight) return res.status(400).json({ success: false, error: "userId or weight missing" });
 
-        const reportDate = date ? new Date(Number(date)).toISOString() : new Date().toISOString();
-
+        const reportDate = date ? Number(date) : Date.now();
 const result = await pool.query(
     `INSERT INTO progressreports(user_id, report_date, current_weight)
      VALUES($1, $2, $3)

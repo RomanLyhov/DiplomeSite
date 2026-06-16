@@ -359,12 +359,6 @@ function fmtDateShort(ts) {
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
-function fmtDateShort(ts) {
-  if (!ts) return "—";
-  const d = new Date(typeof ts==="number" ? ts : Date.parse(ts));
-  if (isNaN(d)) return "—";
-  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
-}
 
 Chart.defaults.color = "#4a5568";
 Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
