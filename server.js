@@ -1026,6 +1026,7 @@ app.get("/workout-history/:userId", async (req, res) => {
 
 console.log("✅ EXERCISES POST ROUTE LOADED");
 
+// server.js - обновите POST /exercises
 app.post("/exercises", async (req, res) => {
     try {
         console.log("🔥 BODY:", req.body);
@@ -1041,7 +1042,6 @@ app.post("/exercises", async (req, res) => {
 
         let finalExerciseId = exerciseId ? Number(exerciseId) : null;
 
-        // если клиент прислал готовый id — пропускаем поиск/создание
         if (!finalExerciseId) {
             const existing = await pool.query(
                 `SELECT exerciseid FROM exercises WHERE LOWER(name) = LOWER($1) LIMIT 1`,
@@ -1050,7 +1050,6 @@ app.post("/exercises", async (req, res) => {
 
             if (existing.rows.length > 0) {
                 finalExerciseId = existing.rows[0].exerciseid;
-                console.log("✅ Using existing exerciseId:", finalExerciseId);
             } else {
                 const inserted = await pool.query(
                     `INSERT INTO exercises(name, muscle_group, difficulty)
@@ -1058,16 +1057,13 @@ app.post("/exercises", async (req, res) => {
                     [name]
                 );
                 finalExerciseId = inserted.rows[0].exerciseid;
-                console.log("✅ Created new exerciseId:", finalExerciseId);
             }
-        } else {
-            console.log("✅ Using exerciseId from client:", finalExerciseId);
         }
 
         await pool.query(
             `INSERT INTO workoutexercises(workout_id, exercise_id, sets, reps, weight, rest)
              VALUES($1, $2, $3, $4, $5, $6)`,
-            [workoutId, finalExerciseId, sets || 0, reps || 0, weight || 0, rest || 0]
+            [workoutId, finalExerciseId, sets || 0, reps || 0, weight || 0, rest || 90]  // ← rest или 90 по умолчанию
         );
 
         res.json({ success: true });
@@ -1429,14 +1425,7 @@ app.post("/workout-exercises", async (req, res) => {
 
         console.log("🔥 WORKOUT EXERCISE BODY:", req.body);
 
-        const {
-            workoutId,
-            exerciseId,
-            sets,
-            reps,
-            weight,
-            rest
-        } = req.body;
+       const { workoutId, exerciseId, sets, reps, weight, rest } = req.body;
 
         console.log("🔥 VALUES:", {
             workoutId,
@@ -1448,28 +1437,13 @@ app.post("/workout-exercises", async (req, res) => {
         });
 
         // Добавляем упражнение в тренировку
-        const result = await pool.query(
-            `
-            INSERT INTO workoutexercises(
-                workout_id,
-                exercise_id,
-                sets,
-                reps,
-                weight,
-                rest
-            )
-            VALUES($1,$2,$3,$4,$5,$6)
-            RETURNING *
-            `,
-            [
-                workoutId,
-                exerciseId,
-                sets,
-                reps,
-                weight,
-                rest
-            ]
+       const result = await pool.query(
+            `INSERT INTO workoutexercises(
+                workout_id, exercise_id, sets, reps, weight, rest
+            ) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
+            [workoutId, exerciseId, sets || 0, reps || 0, weight || 0, rest || 90]  // ← rest
         );
+
 
         console.log("✅ INSERTED:", result.rows[0]);
 
