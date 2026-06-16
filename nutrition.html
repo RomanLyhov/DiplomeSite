@@ -5,8 +5,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitPlan — Питание</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Inter;
+  background:#0b0f1a;
+  color:white;
+}
+
+.top-nav{
+  padding:15px;
+  background:#111827;
+}
+
+.navbar a{
+  margin-right:15px;
+  color:white;
+  text-decoration:none;
+  opacity:0.7;
+}
+
+.navbar a.active{
+  opacity:1;
+  font-weight:600;
+}
+
+.header{
+  padding:20px;
+}
+
+.filters{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+#nutrition-cards{
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+/* ===== CARD ===== */
+.meal-card{
+  background:#151c2c;
+  border-radius:16px;
+  padding:15px;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.meal-card:hover{
+  transform:scale(1.01);
+}
+
+.meal-header{
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.meal-time{
+  font-size:12px;
+  opacity:0.7;
+}
+
+.meal-products{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.meal-product{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  opacity:0.9;
+}
+
+.meal-kbju{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  opacity:0.8;
+}
+</style>
 </head>
 
 <body>
@@ -25,37 +114,56 @@
   <h1>Журнал питания</h1>
 
   <div class="filters">
-    <div class="select-wrapper">
-      <select id="userFilter"></select>
-    </div>
-
-    <div class="date-wrapper">
-      <input type="date" id="dayFilter">
-    </div>
+    <select id="userFilter"></select>
+    <input type="date" id="dayFilter">
   </div>
 </div>
 
-<!-- ✅ ВАЖНО: контейнер ОБЯЗАТЕЛЬНО -->
 <div id="nutrition-cards"></div>
 
 <script>
-const role = (localStorage.getItem("role") || "").toLowerCase();
-const userId = localStorage.getItem("userId");
+let role = "";
+let userId = "";
 
-if (!role || !userId) {
-  window.location.href = "/adminvh.html";
-}
+/* ===== INIT ===== */
+document.addEventListener("DOMContentLoaded", async () => {
 
-// показать админ кнопку
-document.addEventListener("DOMContentLoaded", () => {
-  if (role === "admin") {
-    const btn = document.getElementById("adminBtn");
-    if (btn) btn.style.display = "inline-block";
+  role = (localStorage.getItem("role") || "").toLowerCase();
+  userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    window.location.href = "/adminvh.html";
+    return;
   }
+
+  if (role === "admin") {
+    document.getElementById("adminBtn").style.display = "inline-block";
+  }
+
+  await loadUsers();
+
+  const userSelect = document.getElementById("userFilter");
+  const dateInput = document.getElementById("dayFilter");
+
+  dateInput.value = new Date().toISOString().split("T")[0];
+
+  userSelect.value = userId;
+
+  async function refresh() {
+    const uid = userSelect.value;
+    const date = new Date(dateInput.value).getTime();
+
+    await loadMeals(uid, date, date + 86400000);
+  }
+
+  userSelect.onchange = refresh;
+  dateInput.onchange = refresh;
+
+  refresh();
 });
 
-// ================= USERS =================
-async function loadUsers() {
+/* ===== USERS ===== */
+async function loadUsers(){
   const res = await fetch("/users");
   const users = await res.json();
 
@@ -65,44 +173,30 @@ async function loadUsers() {
   users.forEach(u => {
     select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
   });
-
-  select.value = String(userId);
 }
 
-// ================= MEALS =================
-async function loadMeals(userId, start, end) {
+/* ===== MEALS ===== */
+async function loadMeals(userId, start, end){
   const container = document.getElementById("nutrition-cards");
-  if (!container) return;
-
-  let url = `/meals?userId=${userId}`;
-
-  if (start && end) {
-    url += `&start=${start}&end=${end}`;
-  }
-
-  const res = await fetch(url);
-  const data = await res.json();
-
   container.innerHTML = "";
 
-  if (!data.length) {
-    container.innerHTML = `<div style="opacity:0.6;text-align:center;">Нет данных</div>`;
+  const res = await fetch(`/meals?userId=${userId}&start=${start}&end=${end}`);
+  const data = await res.json();
+
+  if (!data.length){
+    container.innerHTML = "<p style='opacity:0.6'>Нет данных</p>";
     return;
   }
 
-  // ===== grouping =====
   const groups = {};
 
   data.forEach(m => {
     const d = new Date(Number(m.date));
-    const dateKey = d.toLocaleDateString("ru-RU");
-    const key = `${dateKey}_${m.mealType || "Другое"}`;
+    const key = d.toLocaleDateString("ru-RU");
 
-    if (!groups[key]) {
+    if (!groups[key]){
       groups[key] = {
-        mealType: m.mealType || "Другое",
-        date: dateKey,
-        time: d,
+        date: key,
         items: [],
         calories: 0,
         protein: 0,
@@ -118,77 +212,37 @@ async function loadMeals(userId, start, end) {
     groups[key].carbs += Number(m.carbs || 0);
   });
 
-  // ===== render =====
   Object.values(groups).forEach(g => {
 
     const card = document.createElement("div");
     card.className = "meal-card";
 
-    const time = g.time.toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
     card.innerHTML = `
       <div class="meal-header">
-        <div>${g.mealType}</div>
-        <div class="meal-time">${g.date} ${time}</div>
+        <div>Питание</div>
+        <div class="meal-time">${g.date}</div>
       </div>
 
-      <div class="meal-body">
+      <div class="meal-products">
+        ${g.items.map(i => `
+          <div class="meal-product">
+            <span>${i.productName}</span>
+            <span>x${i.quantity}</span>
+          </div>
+        `).join("")}
+      </div>
 
-        <div class="meal-products">
-          ${g.items.map(i => `
-            <div class="meal-product">
-              <span>${i.productName}</span>
-              <span>x${i.quantity || 1}</span>
-            </div>
-          `).join("")}
-        </div>
-
-        <div class="meal-kbju">
-          <span>${g.calories} ккал</span>
-          <span>${g.protein} Б</span>
-          <span>${g.fat} Ж</span>
-          <span>${g.carbs} У</span>
-        </div>
-
+      <div class="meal-kbju">
+        <span>${g.calories} ккал</span>
+        <span>${g.protein} Б</span>
+        <span>${g.fat} Ж</span>
+        <span>${g.carbs} У</span>
       </div>
     `;
-
-    card.addEventListener("click", () => {
-      card.classList.toggle("open");
-    });
 
     container.appendChild(card);
   });
 }
-
-// ================= INIT (ОДИН РАЗ!) =================
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadUsers();
-
-  const userSelect = document.getElementById("userFilter");
-  const dateInput = document.getElementById("dayFilter");
-
-  const today = new Date();
-  dateInput.value = today.toISOString().split("T")[0];
-
-  async function refreshMeals() {
-    const uid = userSelect.value;
-    const date = dateInput.value;
-
-    const start = new Date(date).getTime();
-    const end = start + 24 * 60 * 60 * 1000;
-
-    await loadMeals(uid, start, end);
-  }
-
-  userSelect.addEventListener("change", refreshMeals);
-  dateInput.addEventListener("change", refreshMeals);
-
-  await refreshMeals();
-});
 </script>
 
 </body>
