@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
+/* Дополнительные стили для страницы прогресса */
 .progress-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -17,6 +18,7 @@
   gap: 20px;
 }
 
+/* ХЕДЕР СТРАНИЦЫ */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -58,6 +60,7 @@
   color: #fbbf24;
 }
 
+/* СТАТИСТИКА */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -109,6 +112,7 @@
 .diff-neg { color: #f87171; }
 .diff-zero { color: #64748b; }
 
+/* КАРТОЧКИ */
 .card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
@@ -126,12 +130,14 @@
   letter-spacing: 0.6px;
 }
 
+/* ДВЕ КОЛОНКИ */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
+/* ГРАФИК */
 .chart-wrap {
   position: relative;
   height: 220px;
@@ -142,6 +148,7 @@
   width: 100% !important;
 }
 
+/* ФОРМА ДОБАВЛЕНИЯ ВЕСА */
 .add-weight-form {
   display: flex;
   gap: 10px;
@@ -227,6 +234,17 @@
   color: #fff;
 }
 
+.btn-danger {
+  background: rgba(239,68,68,0.12);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.15);
+}
+
+.btn-danger:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+/* ТАБЛИЦЫ */
 .prog-table {
   width: 100%;
   border-collapse: collapse;
@@ -289,6 +307,7 @@
   color: #f87171;
 }
 
+/* ПУСТЫЕ СОСТОЯНИЯ */
 .empty-state {
   text-align: center;
   padding: 32px 16px;
@@ -296,6 +315,7 @@
   font-size: 13px;
 }
 
+/* СКЕЛЕТОН */
 .skel {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.04) 25%,
@@ -313,6 +333,7 @@
   100% { background-position: -200% 0; }
 }
 
+/* СЕЛЕКТ УПРАЖНЕНИЙ */
 .ex-select {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
@@ -344,6 +365,7 @@
   margin-bottom: 16px;
 }
 
+/* ТОСТ */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -379,6 +401,7 @@
   color: #f87171;
 }
 
+/* МОДАЛКА PDF */
 .pdf-modal-overlay {
   display: none;
   position: fixed;
@@ -425,25 +448,51 @@
   flex: 1;
 }
 
+/* АДАПТИВ */
 @media (max-width: 768px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .two-col { grid-template-columns: 1fr; }
-  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .header-actions { width: 100%; flex-wrap: wrap; }
-  .add-weight-form { flex-direction: column; align-items: stretch; }
-  .add-weight-form .form-input { width: 100%; }
-  .add-weight-form .form-input[type="date"] { width: 100%; }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .add-weight-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .add-weight-form .form-input {
+    width: 100%;
+  }
+  .add-weight-form .form-input[type="date"] {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .stat-card { padding: 14px 16px; }
-  .s-val { font-size: 20px; }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-card {
+    padding: 14px 16px;
+  }
+  .s-val {
+    font-size: 20px;
+  }
 }
 </style>
 </head>
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
   <div class="navbar">
     <a href="/profil.html">Профиль</a>
@@ -454,16 +503,17 @@
   </div>
 </div>
 
+<!-- ================= PAGE ================= -->
 <div class="container progress-container">
 
   <div class="page-header">
     <div>
-      <h1>Прогресс</h1>
+      <h1> Прогресс</h1>
       <div class="subtitle" id="pageSub">Загрузка...</div>
     </div>
     <div class="header-actions">
       <div id="viewingPill" style="display:none;">
-        <span class="viewing-pill">Просмотр чужого профиля</span>
+        <span class="viewing-pill"> Просмотр чужого профиля</span>
       </div>
       <button class="add-btn" onclick="openPdfModal()" style="height:40px; padding:0 18px; font-size:13px;">
         ⬇ PDF
@@ -472,6 +522,7 @@
     </div>
   </div>
 
+  <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="s-label">Стартовый вес</div>
@@ -493,7 +544,9 @@
     </div>
   </div>
 
+  <!-- WEIGHT LOG + CHART -->
   <div class="two-col">
+
     <div class="card">
       <div class="card-title">График веса</div>
       <div class="chart-wrap">
@@ -522,8 +575,10 @@
         <div id="weightHistory"><div class="skel"></div><div class="skel" style="margin-top:8px;"></div></div>
       </div>
     </div>
+
   </div>
 
+  <!-- ТРЕНИРОВКИ -->
   <div class="two-col">
     <div class="card">
       <div class="card-title">Тренировочная активность</div>
@@ -537,6 +592,7 @@
     </div>
   </div>
 
+  <!-- УПРАЖНЕНИЯ -->
   <div class="card">
     <div class="card-title">Прогресс по упражнениям</div>
     <div class="ex-select-row">
@@ -552,6 +608,7 @@
     </div>
   </div>
 
+  <!-- ИСТОРИЯ ТРЕНИРОВОК -->
   <div class="card">
     <div class="card-title">Все тренировки</div>
     <div id="fullHistory">
@@ -563,8 +620,10 @@
 
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- PDF MODAL -->
 <div class="pdf-modal-overlay" id="pdfModal">
   <div class="pdf-modal">
     <h3>📄 Экспорт PDF</h3>
@@ -619,41 +678,35 @@ function showToast(msg, type="ok") {
   setTimeout(() => { t.className = "toast"; }, 3000);
 }
 
-// ── ИСПРАВЛЕНИЕ: универсальная нормализация дат ───────────────────
-// Postgres может вернуть как строку "2024-01-15T18:30:00.000Z",
-// так и число (если хранится как BIGINT миллисекунды).
-// Эта функция всегда возвращает миллисекунды.
-function toMs(val) {
-  if (!val) return 0;
-  const n = Number(val);
-  // Если число и похоже на timestamp в миллисекундах (после 2001 года)
-  if (!isNaN(n) && n > 978307200000) return n;
-  // Пробуем распарсить как строку даты
-  const d = new Date(val);
-  if (!isNaN(d.getTime())) return d.getTime();
-  return 0;
-}
-
 // ── UTILS ─────────────────────────────────────────────────────────
 function fmtDate(ts) {
   if (!ts) return "—";
-  const ms = toMs(ts);
-  if (!ms) return "—";
-  return new Date(ms).toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
 }
 
 function fmtDatePdf(ts) {
   if (!ts) return "—";
-  const ms = toMs(ts);
-  if (!ms) return "—";
-  return new Date(ms).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 }
 
 function fmtDateShort(ts) {
   if (!ts) return "—";
-  const ms = toMs(ts);
-  if (!ms) return "—";
-  return new Date(ms).toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
 
 Chart.defaults.color = "#94a3b8";
@@ -695,10 +748,12 @@ function buildAllPoints() {
     userProfile.createdat ??
     null;
 
-  const regTs = regDate ? toMs(regDate) : null;
+  const regTs = regDate
+    ? (typeof regDate === "number" ? regDate : new Date(regDate).getTime())
+    : null;
 
   allPoints = weightEntries.map(r => ({
-    ts:       toMs(r.report_date),
+    ts:       r.report_date,
     weight:   parseFloat(r.current_weight),
     reportid: r.reportid,
     isReg:    false,
@@ -749,7 +804,7 @@ function renderWeightHistory() {
   const diff   = +(last - first).toFixed(1);
 
   const cur = weightEntries.length
-    ? [...weightEntries].sort((a,b) => toMs(b.report_date) - toMs(a.report_date))[0].current_weight
+    ? [...weightEntries].sort((a,b) => b.report_date - a.report_date)[0].current_weight
     : userProfile.weight;
   document.getElementById("curWeight").textContent = cur ?? "—";
 
@@ -904,57 +959,33 @@ async function loadWorkoutHistory() {
   try {
     const res = await fetch(`/workout-history/${profileId}`);
     workoutHistory = await res.json();
-
-    // Дебаг — покажет что реально приходит с сервера
-    console.log("🔍 workoutHistory count:", workoutHistory.length);
-    if (workoutHistory[0]) {
-      console.log("🔍 sample completedAt raw:", workoutHistory[0].completedAt);
-      console.log("🔍 sample completedAt toMs:", toMs(workoutHistory[0].completedAt));
-    }
-
     renderWorkoutStats();
     renderWorkoutChart();
     renderFullHistory();
-  } catch(err) {
-    console.error("loadWorkoutHistory error:", err);
+  } catch {
     document.getElementById("workoutStats").innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
     document.getElementById("fullHistory").innerHTML  = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
 
-// ── ИСПРАВЛЕНО: renderWorkoutStats использует toMs() ─────────────
 function renderWorkoutStats() {
   const el = document.getElementById("workoutStats");
   if (!workoutHistory.length) { el.innerHTML=`<div class="empty-state">Тренировок пока нет</div>`; return; }
-
   const total     = workoutHistory.length;
-  const fullyDone = workoutHistory.filter(w => w.isFullyDone).length;
-  const pct       = Math.round(fullyDone / total * 100);
-  const totalEx   = workoutHistory.reduce((s, w) => s + (w.completedExercises || 0), 0);
+  const fullyDone = workoutHistory.filter(w=>w.isFullyDone).length;
+  const pct       = Math.round(fullyDone/total*100);
+  const lastDate  = workoutHistory[0] ? fmtDate(workoutHistory[0].completedAt) : "—";
+  const totalEx   = workoutHistory.reduce((s,w)=>s+(w.completedExercises||0),0);
 
-  // Сортируем по дате чтобы найти последнюю тренировку
-  const sorted = [...workoutHistory].sort((a, b) => toMs(b.completedAt) - toMs(a.completedAt));
-  const lastDate = sorted[0] ? fmtDate(toMs(sorted[0].completedAt)) : "—";
-
-  // Считаем тренировки по неделям (последние 4 недели)
-  const now = Date.now();
-  const week = 7 * 86400000;
-  const weeks = [0, 0, 0, 0];
-
-  workoutHistory.forEach(w => {
-    const ts = toMs(w.completedAt);
-    if (!ts) return; // пропускаем если дата не распозналась
-    const diff = now - ts;
-    if (diff < 0) return; // дата в будущем — пропускаем
-    const wi = Math.floor(diff / week);
-    if (wi < 4) weeks[3 - wi]++;
+  const now=Date.now(), week=7*86400000;
+  const weeks=[0,0,0,0];
+  workoutHistory.forEach(w=>{
+    const diff=now-new Date(w.completedAt).getTime();
+    const wi=Math.floor(diff/week);
+    if(wi<4) weeks[3-wi]++;
   });
 
-  console.log("🔍 weeks array:", weeks);
-
-  const maxVal = Math.max(...weeks, 1);
-
-  el.innerHTML = `
+  el.innerHTML=`
     <table class="prog-table"><tbody>
       <tr><td style="color:#94a3b8;">Всего тренировок</td><td style="font-weight:700;color:#fff;">${total}</td></tr>
       <tr><td style="color:#94a3b8;">Полностью выполнено</td><td style="font-weight:700;color:#22c55e;">${fullyDone} (${pct}%)</td></tr>
@@ -964,86 +995,70 @@ function renderWorkoutStats() {
     <div style="margin-top:14px;">
       <div class="card-title" style="margin-bottom:8px;">Тренировки по неделям (последние 4)</div>
       <div style="display:flex;gap:8px;align-items:flex-end;height:60px;">
-        ${weeks.map((c, i) => {
-          const h = c > 0 ? Math.max(16, Math.round(c / maxVal * 52)) : 4;
+        ${weeks.map((c,i)=>{
+          const h=c>0?Math.max(16,Math.round(c/Math.max(...weeks,1)*52)):4;
           return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div style="font-size:10px;color:#94a3b8;">${c}</div>
-            <div style="width:100%;height:${h}px;background:${c > 0 ? "linear-gradient(180deg,#a78bfa,#4F46E5)" : "rgba(255,255,255,0.06)"};border-radius:4px 4px 0 0;"></div>
-            <div style="font-size:9px;color:#94a3b8;">нед ${i + 1}</div>
+            <div style="width:100%;height:${h}px;background:${c>0?"linear-gradient(180deg,#a78bfa,#4F46E5)":"rgba(255,255,255,0.06)"};border-radius:4px 4px 0 0;"></div>
+            <div style="font-size:9px;color:#94a3b8;">нед ${i+1}</div>
           </div>`;
         }).join("")}
       </div>
     </div>`;
 }
 
-// ── ИСПРАВЛЕНО: renderWorkoutChart использует toMs() ──────────────
 function renderWorkoutChart() {
-  const ctx = document.getElementById("workoutChart").getContext("2d");
-  if (workoutChartInst) workoutChartInst.destroy();
-
-  if (!workoutHistory.length) {
-    ctx.fillStyle = "#94a3b8"; ctx.font = "13px Inter"; ctx.textAlign = "center";
-    ctx.fillText("Нет данных", ctx.canvas.width / 2, 80);
-    return;
+  const ctx=document.getElementById("workoutChart").getContext("2d");
+  if(workoutChartInst) workoutChartInst.destroy();
+  if(!workoutHistory.length){
+    ctx.fillStyle="#94a3b8"; ctx.font="13px Inter"; ctx.textAlign="center";
+    ctx.fillText("Нет данных", ctx.canvas.width/2, 80); return;
   }
-
-  const days = 14, labels = [], counts = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000);
-    labels.push(d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" }));
-    const key = d.toDateString();
-    counts.push(workoutHistory.filter(w => {
-      const ts = toMs(w.completedAt);
-      if (!ts) return false;
-      return new Date(ts).toDateString() === key;
-    }).length);
+  const days=14, labels=[], counts=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(Date.now()-i*86400000);
+    labels.push(d.toLocaleDateString("ru-RU",{day:"numeric",month:"short"}));
+    const key=d.toDateString();
+    counts.push(workoutHistory.filter(w=>new Date(w.completedAt).toDateString()===key).length);
   }
-
-  workoutChartInst = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Тренировки",
-        data: counts,
-        backgroundColor: counts.map(c => c > 0 ? "rgba(167,139,250,0.7)" : "rgba(255,255,255,0.04)"),
-        borderColor: counts.map(c => c > 0 ? "#a78bfa" : "transparent"),
-        borderWidth: 1,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } },
-        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 }, stepSize: 1 } }
+  workoutChartInst=new Chart(ctx,{
+    type:"bar",
+    data:{ labels, datasets:[{
+      label:"Тренировки", data:counts,
+      backgroundColor:counts.map(c=>c>0?"rgba(167,139,250,0.7)":"rgba(255,255,255,0.04)"),
+      borderColor:counts.map(c=>c>0?"#a78bfa":"transparent"),
+      borderWidth:1, borderRadius:4,
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},maxRotation:45}},
+        y:{grid:{color:"rgba(255,255,255,0.04)"},ticks:{font:{size:11},stepSize:1}}
       }
     }
   });
 }
 
 function renderFullHistory() {
-  const el = document.getElementById("fullHistory");
-  if (!workoutHistory.length) { el.innerHTML=`<div class="empty-state">Тренировок пока нет</div>`; return; }
-
-  const colors = ["#a78bfa","#22c55e","#fbbf24","#4F46E5","#f87171","#34d399"];
-
-  el.innerHTML = `<table class="prog-table">
+  const el=document.getElementById("fullHistory");
+  if(!workoutHistory.length){el.innerHTML=`<div class="empty-state">Тренировок пока нет</div>`;return;}
+  const colors=["#a78bfa","#22c55e","#fbbf24","#4F46E5","#f87171","#34d399"];
+  el.innerHTML=`<table class="prog-table">
     <thead><tr><th>Тренировка</th><th>Дата</th><th>Упражнения</th><th>Статус</th></tr></thead>
     <tbody>
-    ${workoutHistory.slice(0, 20).map((r, i) => {
-      const col = colors[i % colors.length];
-      const badge = r.isFullyDone
-        ? `<span style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Выполнено</span>`
-        : `<span style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Частично</span>`;
+    ${workoutHistory.slice(0,20).map((r,i)=>{
+      const col=colors[i%colors.length];
+      const badge=r.isFullyDone
+        ?`<span style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Выполнено</span>`
+        :`<span style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;">Частично</span>`;
       return `<tr>
         <td style="display:flex;align-items:center;gap:8px;">
           <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0;"></div>
-          ${r.workoutName || "Тренировка"}
+          ${r.workoutName||"Тренировка"}
         </td>
-        <td style="color:#94a3b8;font-size:12px;">${fmtDate(toMs(r.completedAt))}</td>
-        <td style="color:#94a3b8;">${r.completedExercises ?? "—"}/${r.totalExercises ?? "—"}</td>
+        <td style="color:#94a3b8;font-size:12px;">${fmtDate(r.completedAt)}</td>
+        <td style="color:#94a3b8;">${r.completedExercises??"—"}/${r.totalExercises??"—"}</td>
         <td>${badge}</td>
       </tr>`;
     }).join("")}
@@ -1054,69 +1069,69 @@ function renderFullHistory() {
 // ── ПРОГРЕСС ПО УПРАЖНЕНИЯМ ───────────────────────────────────────
 async function loadExerciseList() {
   try {
-    const res = await fetch(`/workouts/full/${profileId}`);
-    const workouts = await res.json();
-    const seen = new Set(), exercises = [];
-    workouts.forEach(w => (w.exercises || []).forEach(e => {
-      if (!seen.has(e.name)) { seen.add(e.name); exercises.push(e); }
+    const res=await fetch(`/workouts/full/${profileId}`);
+    const workouts=await res.json();
+    const seen=new Set(), exercises=[];
+    workouts.forEach(w=>(w.exercises||[]).forEach(e=>{
+      if(!seen.has(e.name)){seen.add(e.name);exercises.push(e);}
     }));
-    const sel = document.getElementById("exSelect");
-    exercises.forEach(e => {
-      const opt = document.createElement("option");
-      opt.value = e.exerciseid || e.name;
-      opt.dataset.name = e.name;
-      opt.textContent = e.name;
+    const sel=document.getElementById("exSelect");
+    exercises.forEach(e=>{
+      const opt=document.createElement("option");
+      opt.value=e.exerciseid||e.name;
+      opt.dataset.name=e.name;
+      opt.textContent=e.name;
       sel.appendChild(opt);
     });
   } catch {}
 }
 
 async function loadExerciseProgress() {
-  const sel = document.getElementById("exSelect");
-  const val = sel.value;
-  const name = sel.options[sel.selectedIndex]?.dataset?.name || val;
-  const el = document.getElementById("exProgressArea");
-  if (!val) { el.innerHTML=`<div class="empty-state">Выберите упражнение чтобы увидеть прогресс по весу</div>`; return; }
-  el.innerHTML = `<div class="skel"></div><div class="skel" style="margin-top:8px;"></div>`;
+  const sel=document.getElementById("exSelect");
+  const val=sel.value;
+  const name=sel.options[sel.selectedIndex]?.dataset?.name||val;
+  const el=document.getElementById("exProgressArea");
+  if(!val){el.innerHTML=`<div class="empty-state">Выберите упражнение чтобы увидеть прогресс по весу</div>`;return;}
+  el.innerHTML=`<div class="skel"></div><div class="skel" style="margin-top:8px;"></div>`;
   try {
-    const res = await fetch(`/progress/exercise/${profileId}?exerciseId=${val}`);
-    const rows = await res.json();
-    if (!rows.length) { el.innerHTML=`<div class="empty-state">Нет данных о прогрессе для этого упражнения</div>`; return; }
-    const sorted = [...rows].sort((a, b) => toMs(a.progress_date) - toMs(b.progress_date));
-    const maxW = Math.max(...sorted.map(r => r.weight || 0));
-    const canvasId = "exChart_" + Date.now();
-    el.innerHTML = `
+    const res=await fetch(`/progress/exercise/${profileId}?exerciseId=${val}`);
+    const rows=await res.json();
+    if(!rows.length){el.innerHTML=`<div class="empty-state">Нет данных о прогрессе для этого упражнения</div>`;return;}
+    const sorted=[...rows].sort((a,b)=>a.progress_date-b.progress_date);
+    const maxW=Math.max(...sorted.map(r=>r.weight||0));
+    const canvasId="exChart_"+Date.now();
+    el.innerHTML=`
       <div style="height:160px;margin-bottom:16px;"><canvas id="${canvasId}"></canvas></div>
       <table class="prog-table">
         <thead><tr><th>Дата</th><th>Вес</th><th>Подх × Повт</th></tr></thead>
         <tbody>
-        ${sorted.slice().reverse().map(r => {
-          const isMax = r.weight === maxW && maxW > 0;
+        ${sorted.slice().reverse().map(r=>{
+          const isMax=r.weight===maxW&&maxW>0;
           return `<tr>
-            <td>${fmtDate(toMs(r.progress_date))}</td>
-            <td style="font-weight:700;color:${isMax ? "#fbbf24" : "#fff"};">${r.weight > 0 ? r.weight+" кг" : "—"}</td>
-            <td style="color:#94a3b8;">${r.sets_count ?? "—"} × ${r.reps ?? "—"}</td>
+            <td>${fmtDate(r.progress_date)}</td>
+            <td style="font-weight:700;color:${isMax?"#fbbf24":"#fff"};">${r.weight>0?r.weight+" кг":"—"}</td>
+            <td style="color:#94a3b8;">${r.sets_count??"—"} × ${r.reps??"—"}</td>
           </tr>`;
         }).join("")}
         </tbody>
       </table>`;
-    new Chart(document.getElementById(canvasId).getContext("2d"), {
-      type: "line",
-      data: {
-        labels: sorted.map(r => fmtDateShort(toMs(r.progress_date))),
-        datasets: [{
-          label: name, data: sorted.map(r => r.weight),
-          borderColor: "#a78bfa", backgroundColor: "rgba(167,139,250,0.1)",
-          borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: "#a78bfa",
-          pointBorderColor: "#131c2e", pointBorderWidth: 2, fill: true, tension: 0.3,
+    new Chart(document.getElementById(canvasId).getContext("2d"),{
+      type:"line",
+      data:{
+        labels:sorted.map(r=>fmtDateShort(r.progress_date)),
+        datasets:[{
+          label:name, data:sorted.map(r=>r.weight),
+          borderColor:"#a78bfa", backgroundColor:"rgba(167,139,250,0.1)",
+          borderWidth:2.5, pointRadius:4, pointBackgroundColor:"#a78bfa",
+          pointBorderColor:"#131c2e", pointBorderWidth:2, fill:true, tension:0.3,
         }]
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 } } },
-          y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { font: { size: 11 }, callback: v => v+" кг" } }
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:"rgba(255,255,255,0.04)"},ticks:{font:{size:11}}},
+          y:{grid:{color:"rgba(255,255,255,0.04)"},ticks:{font:{size:11},callback:v=>v+" кг"}}
         }
       }
     });
@@ -1124,10 +1139,10 @@ async function loadExerciseProgress() {
 }
 
 // ── ДАТА ПО УМОЛЧАНИЮ ─────────────────────────────────────────────
-(function setDefaultDate() {
-  const today = new Date();
-  const inp = document.getElementById("newDate");
-  if (inp) inp.value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+(function setDefaultDate(){
+  const today=new Date();
+  const inp=document.getElementById("newDate");
+  if(inp) inp.value=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
 })();
 
 // ── PDF EXPORT ────────────────────────────────────────────────────
@@ -1144,25 +1159,49 @@ function closePdfModal() {
 
 function loadPdfLibrary() {
   return new Promise((resolve, reject) => {
-    if (window.jspdf && window.jspdf.jsPDF) { pdfLibLoaded = true; resolve(); return; }
+    if (window.jspdf && window.jspdf.jsPDF) {
+      pdfLibLoaded = true;
+      resolve();
+      return;
+    }
     const script = document.createElement("script");
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
     script.onload = function() {
-      if (window.jspdf && window.jspdf.jsPDF) { pdfLibLoaded = true; resolve(); }
-      else {
-        const alt = document.createElement("script");
-        alt.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
-        alt.onload = () => { pdfLibLoaded = true; resolve(); };
-        alt.onerror = () => reject(new Error("Ошибка загрузки jspdf"));
-        document.head.appendChild(alt);
+      if (window.jspdf && window.jspdf.jsPDF) {
+        pdfLibLoaded = true;
+        resolve();
+      } else {
+        const altScript = document.createElement("script");
+        altScript.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
+        altScript.onload = function() {
+          if (window.jspdf && window.jspdf.jsPDF) {
+            pdfLibLoaded = true;
+            resolve();
+          } else {
+            reject(new Error("Не удалось загрузить jspdf"));
+          }
+        };
+        altScript.onerror = function() {
+          reject(new Error("Ошибка загрузки jspdf"));
+        };
+        document.head.appendChild(altScript);
       }
     };
     script.onerror = function() {
-      const alt = document.createElement("script");
-      alt.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
-      alt.onload = () => { pdfLibLoaded = true; resolve(); };
-      alt.onerror = () => reject(new Error("Ошибка загрузки jspdf"));
-      document.head.appendChild(alt);
+      const altScript = document.createElement("script");
+      altScript.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
+      altScript.onload = function() {
+        if (window.jspdf && window.jspdf.jsPDF) {
+          pdfLibLoaded = true;
+          resolve();
+        } else {
+          reject(new Error("Не удалось загрузить jspdf"));
+        }
+      };
+      altScript.onerror = function() {
+        reject(new Error("Ошибка загрузки jspdf"));
+      };
+      document.head.appendChild(altScript);
     };
     document.head.appendChild(script);
   });
@@ -1201,6 +1240,7 @@ async function generatePdf() {
       "180": "6 месяцев", "365": "1 год", "all": "Всё время"
     }[periodVal];
 
+    // HEADER
     doc.setFillColor(8, 12, 20);
     doc.rect(0, 0, W, 40, "F");
     doc.setFillColor(167, 139, 250);
@@ -1227,6 +1267,7 @@ async function generatePdf() {
 
     y = 50;
 
+    // HELPERS
     const sectionTitle = function(title) {
       doc.setFillColor(19, 28, 46);
       doc.rect(margin, y, W - margin * 2, 8, "F");
@@ -1262,6 +1303,7 @@ async function generatePdf() {
       y += isHeader ? 5 : 7;
     };
 
+    // WEIGHT STATS
     sectionTitle("Статистика веса");
 
     const filteredWeights = allPoints.filter(function(p) { return p.ts >= periodStart; });
@@ -1302,6 +1344,7 @@ async function generatePdf() {
     });
     y += 26;
 
+    // WEIGHT LOG
     checkPage(30);
     sectionTitle("История замеров");
     drawRow(["Дата", "Вес", "Изменение"], true, false);
@@ -1317,16 +1360,25 @@ async function generatePdf() {
         const d = +(r.weight - prev.weight).toFixed(1);
         diffStr = d > 0 ? ("+" + d + " кг") : d < 0 ? (d + " кг") : "0 кг";
       }
-      if (r.isReg) { doc.setTextColor(251, 191, 36); } else { doc.setTextColor(232, 237, 245); }
-      drawRow([fmtDatePdf(r.ts), r.weight + " кг" + (r.isReg ? " (при рег.)" : ""), diffStr], false, i % 2 === 0);
+      if (r.isReg) {
+        doc.setTextColor(251, 191, 36);
+      } else {
+        doc.setTextColor(232, 237, 245);
+      }
+      drawRow(
+        [fmtDatePdf(r.ts), r.weight + " кг" + (r.isReg ? " (при рег.)" : ""), diffStr],
+        false,
+        i % 2 === 0
+      );
     });
     y += 4;
 
+    // WORKOUT STATS
     checkPage(40);
     sectionTitle("Статистика тренировок");
 
     const filteredWorkouts = workoutHistory.filter(function(w) {
-      return toMs(w.completedAt) >= periodStart;
+      return new Date(w.completedAt).getTime() >= periodStart;
     });
     const total = filteredWorkouts.length;
     const fullyDone = filteredWorkouts.filter(function(w) { return w.isFullyDone; }).length;
@@ -1353,6 +1405,7 @@ async function generatePdf() {
     });
     y += 28;
 
+    // WORKOUT HISTORY
     if (filteredWorkouts.length) {
       checkPage(30);
       sectionTitle("История тренировок");
@@ -1371,14 +1424,19 @@ async function generatePdf() {
         doc.setFontSize(8.5);
         doc.setTextColor(232, 237, 245);
         doc.text(r.workoutName || "Тренировка", margin + 2, y, { maxWidth: colW4 - 4 });
-        doc.text(fmtDatePdf(toMs(r.completedAt)), margin + colW4 + 2, y);
+        doc.text(fmtDatePdf(r.completedAt), margin + colW4 + 2, y);
         doc.text((r.completedExercises || 0) + "/" + (r.totalExercises || 0), margin + colW4 * 2 + 2, y);
-        if (r.isFullyDone) { doc.setTextColor(34, 197, 94); } else { doc.setTextColor(251, 191, 36); }
+        if (r.isFullyDone) {
+          doc.setTextColor(34, 197, 94);
+        } else {
+          doc.setTextColor(251, 191, 36);
+        }
         doc.text(r.isFullyDone ? "Выполнено" : "Частично", margin + colW4 * 3 + 2, y);
         y += 7;
       });
     }
 
+    // FOOTER
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);

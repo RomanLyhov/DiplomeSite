@@ -781,62 +781,76 @@ function renderOnlineStatus(data) {
 //   Если замеров нет — показываем 0% (цель не начата)
 //   Если вес уже равен целевому — 100%
 async function calcGoalProgress(currentWeight, targetWeight) {
-  const w = parseFloat(currentWeight);
   const t = parseFloat(targetWeight);
-
-  // Нет данных — прогресс не считаем
-  if (isNaN(w) || isNaN(t)) return { pct: 0, hint: "Нет данных для расчёта" };
-
-  // Уже достигли цели
-  if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
+  if (isNaN(t)) return { pct: 0, hint: "Нет данных для расчёта" };
 
   let startWeight = null;
+  let latestWeight = parseFloat(currentWeight); // текущий из users.weight по умолчанию
 
   try {
-    // Пытаемся взять реальный стартовый вес из истории замеров
     const res  = await fetch(`/progress/weight/${profileId}`);
     const rows = await res.json();
 
     if (rows && rows.length > 0) {
-      // Сортируем по дате (самый старый первый)
       const sorted = [...rows].sort((a, b) => toMs(a.report_date) - toMs(b.report_date));
       startWeight = parseFloat(sorted[0].current_weight);
-    }
-  } catch (e) {
-    // Если API недоступен — используем текущий вес как старт (0%)
-  }
 
-  // Если замеров нет вообще — стартовый вес неизвестен, показываем 0%
+      // ✅ Берём актуальный вес из последнего замера
+      const latest = [...rows].sort((a, b) => toMs(b.report_date) - toMs(a.report_date));
+      latestWeight = parseFloat(latest[0].current_weight);
+
+      // ✅ Обновляем отображение веса везде на странице
+      document.getElementById("weight").innerText = latestWeight;
+      document.getElementById("weightBig").innerHTML =
+        `${latestWeight} <span class="weight-unit">кг</span>`;
+
+      // Обновляем блок "осталось сбросить/набрать"
+      if (!isNaN(t)) {
+        const diff = latestWeight - t;
+        const col  = diff > 0 ? "#f87171" : "#4ade80";
+        const lbl  = diff > 0 ? "осталось сбросить" : "осталось набрать";
+        document.getElementById("weightRows").innerHTML = `<div class="weight-row">
+          <div>
+            <div class="weight-meta-label">Целевой вес</div>
+            <div class="weight-meta-val">${t} кг</div>
+          </div>
+          <div style="text-align:right">
+            <div class="weight-meta-label">${lbl}</div>
+            <div class="weight-meta-val" style="color:${col}">${Math.abs(diff).toFixed(1)} кг</div>
+          </div>
+        </div>`;
+      }
+    }
+  } catch (e) {}
+
+  const w = latestWeight;
+
+  if (isNaN(w)) return { pct: 0, hint: "Нет данных для расчёта" };
+  if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
+
   if (!startWeight || isNaN(startWeight)) {
     return { pct: 0, hint: "Добавьте первый замер веса" };
   }
 
-  // Стартовый вес совпадает с целевым — некорректные данные
   if (Math.abs(startWeight - t) < 0.1) {
     return { pct: 100, hint: "Цель достигнута!" };
   }
 
-  // Считаем: сколько прошли из нужного пути
-  const totalPath   = Math.abs(startWeight - t);  // всего нужно пройти
-  const gonePath    = Math.abs(startWeight - w);  // уже прошли
+  const totalPath = Math.abs(startWeight - t);
+  const gonePath  = Math.abs(startWeight - w);
 
-  // Проверяем что двигаемся в правильную сторону
   const goingRight =
-    (t < startWeight && w <= startWeight) ||  // худеем
-    (t > startWeight && w >= startWeight);    // набираем
+    (t < startWeight && w <= startWeight) ||
+    (t > startWeight && w >= startWeight);
 
   if (!goingRight) {
-    // Откатились назад — 0%
     return { pct: 0, hint: `Старт: ${startWeight} кг → Цель: ${t} кг` };
   }
 
   const pct = Math.min(100, Math.round((gonePath / totalPath) * 100));
-
   const diff = Math.abs(w - t).toFixed(1);
   const direction = t < w ? "сбросить" : "набрать";
-  const hint = pct >= 100
-    ? "Цель достигнута!"
-    : `Осталось ${direction} ${diff} кг`;
+  const hint = pct >= 100 ? "Цель достигнута!" : `Осталось ${direction} ${diff} кг`;
 
   return { pct, hint };
 }
