@@ -545,18 +545,12 @@ app.post("/progress/weight", async (req, res) => {
 
         const reportDate = date ? new Date(Number(date)).toISOString() : new Date().toISOString();
 
-        const result = await pool.query(
-            `INSERT INTO progressreports(user_id, report_date, current_weight)
-             VALUES($1, $2, $3)
-             RETURNING reportid`,
-            [userId, reportDate, weight]
-        );
-
-        // также обновляем текущий вес пользователя
-        await pool.query(
-            `UPDATE users SET weight = $1 WHERE userid = $2`,
-            [weight, userId]
-        );
+const result = await pool.query(
+    `INSERT INTO progressreports(user_id, report_date, current_weight)
+     VALUES($1, $2, $3)
+     RETURNING reportid`,
+    [userId, reportDate, weight]
+);
 
         res.json({ success: true, id: result.rows[0].reportid });
     } catch (err) {
