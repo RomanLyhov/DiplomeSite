@@ -29,8 +29,41 @@ body{
   backdrop-filter: blur(18px);
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
 }
+
+/* ---- HEADER С КНОПКОЙ НАЗАД ---- */
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:4px;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.back-btn{
+  background:rgba(255,255,255,0.7);
+  border:1px solid rgba(148,163,184,0.3);
+  border-radius:12px;
+  padding:8px 16px;
+  font-size:14px;
+  font-weight:600;
+  color:#334155;
+  cursor:pointer;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.back-btn:hover{
+  background:#F1F5F9;
+  border-color:#94A3B8;
+  transform:translateX(-2px);
+}
 .title{ font-size:24px; font-weight:700; }
 .subtitle{ font-size:13px; color:#64748B; margin-top:4px; }
+
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -148,6 +181,7 @@ input:focus, select:focus{
 @media(max-width:900px){
   .grid, .columns{ grid-template-columns:1fr; }
   .item-grid{ grid-template-columns:1fr 1fr; }
+  .header-row{ flex-wrap:wrap; gap:10px; }
 }
 </style>
 </head>
@@ -156,8 +190,18 @@ input:focus, select:focus{
 <div class="container">
   <div class="card">
 
-    <div class="title">Создание тренировки</div>
-    <div class="subtitle">Собери свою программу тренировок</div>
+    <!-- ===== HEADER С КНОПКОЙ НАЗАД ===== -->
+    <div class="header-row">
+      <div class="header-left">
+        <button class="back-btn" onclick="goBack()">
+          ← Назад
+        </button>
+        <div>
+          <div class="title">Создание тренировки</div>
+          <div class="subtitle">Собери свою программу тренировок</div>
+        </div>
+      </div>
+    </div>
 
     <!-- FORM -->
     <div class="grid">
@@ -211,6 +255,18 @@ input:focus, select:focus{
 
 <script>
 let selected = [];
+
+/* ===== КНОПКА НАЗАД ===== */
+function goBack() {
+  // Вариант 1: на главную админки (замените URL на свой)
+  window.location.href = "/admin";
+
+  // Вариант 2: в истории браузера (если она есть)
+  // window.history.back();
+
+  // Вариант 3: на конкретный URL
+  // window.location.href = "/dashboard";
+}
 
 /* ===== LOAD EXERCISES ===== */
 async function loadExercises() {
