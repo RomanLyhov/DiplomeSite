@@ -215,7 +215,7 @@ if(role !== "admin"){
 
       <button class="btn">Сохранить</button>
       <div id="formMessage" class="message"></div>
-
+  
     </form>
 
   </div>
@@ -272,12 +272,12 @@ document.getElementById("addExerciseForm").addEventListener("submit", async (e)=
 
     if(!response.ok) throw new Error(data.error || "Ошибка сервера");
 
-    msg.innerText = "✅ Сохранено";
+    msg.innerText = "Сохранено";
 
     setTimeout(()=> location.href="/exercises.html", 700);
 
   }catch(err){
-    msg.innerText = "❌ " + err.message;
+    msg.innerText = "Ошибка:" + err.message;
   }
 });
 

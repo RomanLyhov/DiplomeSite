@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="container">
 
   <div class="header">
-    <h1>🥗 Журнал питания</h1>
+    <h1>Журнал питания</h1>
 
     <select id="userFilter"></select>
   </div>
@@ -82,7 +82,6 @@ async function loadUsers(){
   select.innerHTML = "";
 
   users.forEach(u => {
-    // ✅ исправлено: u.userid (а не u.UserID)
     select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
   });
 }
