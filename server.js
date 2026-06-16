@@ -544,6 +544,9 @@ app.get("/progress/weight/:userId", async (req, res) => {
 app.post("/progress/weight", async (req, res) => {
     try {
         const { userId, weight, date } = req.body;
+        
+        console.log("📥 POST /progress/weight body:", { userId, weight, date }); // ← добавь
+        
         if (!userId || !weight) return res.status(400).json({ success: false, error: "userId or weight missing" });
 
         const reportDate = date ? Number(date) : Date.now();
@@ -555,8 +558,8 @@ app.post("/progress/weight", async (req, res) => {
             [userId, reportDate, weight]
         );
 
-        // ✅ Обновляем ТОЛЬКО текущий вес
-        // start_weight пишем ТОЛЬКО если он ещё не задан (первый замер)
+        console.log("✅ INSERT done, reportid:", result.rows[0].reportid); // ← добавь
+
         await pool.query(
             `UPDATE users 
              SET weight = $1,
@@ -565,9 +568,11 @@ app.post("/progress/weight", async (req, res) => {
             [weight, userId]
         );
 
+        console.log("✅ UPDATE users done"); // ← добавь
+
         res.json({ success: true, id: result.rows[0].reportid });
     } catch (err) {
-        console.error("POST progress/weight ERROR:", err);
+        console.error("POST progress/weight ERROR:", err.message); // уже есть
         res.status(500).json({ success: false, error: err.message });
     }
 });
