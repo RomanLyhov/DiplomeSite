@@ -192,14 +192,17 @@ option { background:#131c2e; }
 <div class="container">
 
   <div class="page-header">
-    <div>
-      <div class="page-title"> Отчёт о прогрессе</div>
-      <div class="page-sub" id="pageSub">Загрузка...</div>
-    </div>
+  <div>
+    <div class="page-title">Отчёт о прогрессе</div>
+    <div class="page-sub" id="pageSub">Загрузка...</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
     <div id="viewingPill" style="display:none;">
       <div class="viewing-pill">👁 Просмотр чужого профиля</div>
     </div>
+    <button class="btn-add" onclick="openPdfModal()">⬇ Скачать PDF</button>
   </div>
+</div>
 
   <!-- STATS -->
   <div class="stats-grid">
@@ -341,6 +344,7 @@ function showToast(msg, type="ok") {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────
+// Для страницы (русский)
 function fmtDate(ts) {
   if (!ts) return "—";
   const asNum = Number(ts);
@@ -349,6 +353,17 @@ function fmtDate(ts) {
     : new Date(ts);
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short", year:"numeric" });
+}
+
+// Для PDF (английский, без кракозябров)
+function fmtDatePdf(ts) {
+  if (!ts) return "—";
+  const asNum = Number(ts);
+  const d = !isNaN(asNum) && asNum > 1000000000000
+    ? new Date(asNum)
+    : new Date(ts);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 }
 function fmtDateShort(ts) {
   if (!ts) return "—";
@@ -446,7 +461,6 @@ function buildAllPoints() {
 
   allPoints.sort((a, b) => a.ts - b.ts);
 }
-
 
 async function loadWeightHistory() {
   try {
@@ -763,6 +777,217 @@ async function loadExerciseList() {
     });
   } catch {}
 }
+// ── PDF EXPORT ────────────────────────────────────────────────────
+function openPdfModal() {
+  document.getElementById("pdfModal").style.display = "flex";
+}
+function closePdfModal() {
+  document.getElementById("pdfModal").style.display = "none";
+}
+
+async function generatePdf() {
+  const btn = document.getElementById("genPdfBtn");
+  btn.disabled = true; btn.textContent = "Генерация...";
+
+  if (!window.jspdf) {
+    await new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+    const W = 210, margin = 18;
+    let y = 0;
+
+    const periodVal = document.getElementById("pdfPeriod").value;
+    const now = Date.now();
+    const periodMs = periodVal === "all" ? Infinity : Number(periodVal) * 86400000;
+    const periodStart = periodVal === "all" ? 0 : now - periodMs;
+
+    const periodLabel = {
+      "7":"7 days", "30":"30 days", "90":"3 months",
+      "180":"6 months", "365":"1 year", "all":"All time"
+    }[periodVal];
+
+    doc.setFillColor(8, 12, 20);
+    doc.rect(0, 0, W, 40, "F");
+    doc.setFillColor(59, 142, 240);
+    doc.rect(0, 0, 5, 40, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22); doc.setTextColor(255, 255, 255);
+    doc.text("FitPlan", margin + 4, 16);
+
+    doc.setFontSize(11); doc.setFont("helvetica", "normal");
+    doc.setTextColor(136, 150, 168);
+    doc.text("Progress Report", margin + 4, 24);
+
+    doc.setFontSize(10); doc.setTextColor(96, 170, 248);
+    doc.text(`Period: ${periodLabel}`, margin + 4, 33);
+
+    const userName = userProfile.name || `User #${profileId}`;
+    // ← ИСПРАВЛЕНО: английская дата вместо русской
+    const genDate = new Date().toLocaleDateString("en-GB", {day:"numeric", month:"long", year:"numeric"});
+    doc.setTextColor(136, 150, 168);
+    doc.text(`${userName}   |   Generated: ${genDate}`, W - margin, 20, {align:"right"});
+
+    y = 50;
+
+    const sectionTitle = (title) => {
+      doc.setFillColor(19, 28, 46);
+      doc.roundedRect(margin, y, W - margin*2, 8, 2, 2, "F");
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+      doc.setTextColor(96, 170, 248);
+      doc.text(title.toUpperCase(), margin + 4, y + 5.5);
+      y += 12;
+    };
+
+    const statBox = (label, value, unit="", col) => {
+      const bw = (W - margin*2 - 9) / 4;
+      doc.setFillColor(19, 28, 46);
+      doc.roundedRect(col, y, bw, 22, 3, 3, "F");
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(74, 85, 104);
+      doc.text(label.toUpperCase(), col + 4, y + 6);
+      doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.setTextColor(255,255,255);
+      doc.text(String(value), col + 4, y + 15);
+      if (unit) { doc.setFontSize(8); doc.setTextColor(74,85,104); doc.text(unit, col + 4 + doc.getTextWidth(String(value)) + 1, y + 15); }
+    };
+
+    const drawRow = (cols, isHeader=false, shade=false) => {
+      const colW = (W - margin*2) / cols.length;
+      if (shade) { doc.setFillColor(19, 28, 46); doc.rect(margin, y-3, W-margin*2, 7, "F"); }
+      cols.forEach((text, i) => {
+        doc.setFont("helvetica", isHeader ? "bold" : "normal");
+        doc.setFontSize(isHeader ? 7.5 : 8.5);
+        doc.setTextColor(isHeader ? [74,85,104] : [232,237,245]);
+        if (isHeader) doc.text(String(text).toUpperCase(), margin + i*colW + 2, y);
+        else doc.text(String(text), margin + i*colW + 2, y);
+      });
+      y += isHeader ? 5 : 7;
+    };
+
+    const checkPage = (needed=20) => {
+      if (y + needed > 275) { doc.addPage(); y = 18; }
+    };
+
+    sectionTitle("Weight Statistics");
+
+    const filteredWeights = allPoints.filter(p => p.ts >= periodStart);
+    const reg = userProfile.weight;
+    const cur = filteredWeights.length
+      ? [...filteredWeights].sort((a,b)=>b.ts-a.ts)[0].weight
+      : (reg ?? "—");
+    const tgt = userProfile.targetWeight ?? "—";
+    const startW = filteredWeights.length
+      ? [...filteredWeights].sort((a,b)=>a.ts-b.ts)[0].weight
+      : (reg ?? "—");
+    const diff = (cur && startW && cur !== "—" && startW !== "—")
+      ? (+(cur - startW).toFixed(1)) : null;
+
+    const bw = (W - margin*2 - 9) / 4;
+    statBox("Start Weight", startW, "kg", margin);
+    statBox("Current Weight", cur, "kg", margin + bw + 3);
+    statBox("Target Weight", tgt, "kg", margin + (bw+3)*2);
+    statBox("Change", diff !== null ? (diff > 0 ? `+${diff}` : diff) : "—", diff !== null ? "kg" : "", margin + (bw+3)*3);
+    y += 26;
+
+    checkPage(30);
+    sectionTitle("Weight Log");
+    drawRow(["Date","Weight","Change"], true);
+    doc.setDrawColor(255,255,255,0.05);
+    doc.line(margin, y-1, W-margin, y-1);
+
+    const sortedW = [...filteredWeights].sort((a,b)=>b.ts-a.ts);
+    sortedW.slice(0,15).forEach((r,i) => {
+      checkPage(10);
+      const prev = sortedW[i+1];
+      let diffStr = "—";
+      if (prev) {
+        const d = +(r.weight - prev.weight).toFixed(1);
+        diffStr = d > 0 ? `+${d} kg` : d < 0 ? `${d} kg` : "0 kg";
+      }
+      const isReg = r.isReg;
+      if (isReg) doc.setTextColor(251,191,36); else doc.setTextColor(232,237,245);
+      // ← ИСПРАВЛЕНО: fmtDatePdf вместо fmtDate
+      drawRow([fmtDatePdf(r.ts), `${r.weight} kg${isReg?" (reg.)":""}`, diffStr], false, i%2===0);
+    });
+    y += 4;
+
+    checkPage(40);
+    sectionTitle("Workout Statistics");
+
+    const filteredWorkouts = workoutHistory.filter(w => {
+      const ts = new Date(w.completedAt).getTime();
+      return ts >= periodStart;
+    });
+
+    const total = filteredWorkouts.length;
+    const fullyDone = filteredWorkouts.filter(w=>w.isFullyDone).length;
+    const totalEx = filteredWorkouts.reduce((s,w)=>s+(w.completedExercises||0),0);
+    const pct = total ? Math.round(fullyDone/total*100) : 0;
+
+    const bw2 = (W - margin*2 - 6) / 3;
+    [
+      ["Total Workouts", total, ""],
+      ["Completed", `${fullyDone} (${pct}%)`, ""],
+      ["Exercises Done", totalEx, ""],
+    ].forEach(([label, val, unit], i) => {
+      doc.setFillColor(19, 28, 46);
+      doc.roundedRect(margin + i*(bw2+3), y, bw2, 22, 3, 3, "F");
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(74,85,104);
+      doc.text(label.toUpperCase(), margin + i*(bw2+3) + 4, y + 6);
+      doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.setTextColor(255,255,255);
+      doc.text(String(val), margin + i*(bw2+3) + 4, y + 15);
+    });
+    y += 28;
+
+    if (filteredWorkouts.length) {
+      checkPage(30);
+      sectionTitle("Workout History");
+      drawRow(["Workout","Date","Exercises","Status"], true);
+      doc.line(margin, y-1, W-margin, y-1);
+
+      filteredWorkouts.slice(0,20).forEach((r,i) => {
+        checkPage(10);
+        const colW = (W - margin*2) / 4;
+        if (i%2===0) { doc.setFillColor(19,28,46); doc.rect(margin,y-3,W-margin*2,7,"F"); }
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5);
+        doc.setTextColor(232,237,245);
+        doc.text(r.workoutName||"Workout", margin+2, y, {maxWidth: colW-4});
+        // ← ИСПРАВЛЕНО: fmtDatePdf вместо fmtDate
+        doc.text(fmtDatePdf(r.completedAt), margin+colW+2, y);
+        doc.text(`${r.completedExercises??0}/${r.totalExercises??0}`, margin+colW*2+2, y);
+        doc.setTextColor(r.isFullyDone ? 34 : 251, r.isFullyDone ? 197 : 191, r.isFullyDone ? 94 : 36);
+        doc.text(r.isFullyDone ? "Done" : "Partial", margin+colW*3+2, y);
+        y += 7;
+      });
+    }
+
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i=1; i<=totalPages; i++) {
+      doc.setPage(i);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(74,85,104);
+      doc.text(`FitPlan Progress Report  |  Page ${i} of ${totalPages}`, W/2, 290, {align:"center"});
+      doc.setFillColor(59,142,240); doc.rect(0,293,W,2,"F");
+    }
+
+    const fname = `fitplan_report_${userName.replace(/\s+/g,"_")}_${new Date().toISOString().slice(0,10)}.pdf`;
+    doc.save(fname);
+    showToast("PDF скачан!");
+    closePdfModal();
+
+  } catch(err) {
+    console.error(err);
+    showToast("Ошибка генерации PDF", "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "Сгенерировать";
+  }
+}
 
 async function loadExerciseProgress() {
   const sel=document.getElementById("exSelect");
@@ -833,5 +1058,26 @@ async function loadExerciseProgress() {
   ]);
 })();
 </script>
+<!-- PDF MODAL -->
+<div id="pdfModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="background:#131c2e;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 32px;width:360px;max-width:90vw;">
+    <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:20px;">Экспорт PDF отчёта</div>
+    <div class="form-field" style="margin-bottom:14px;">
+      <label class="form-label">Период</label>
+      <select id="pdfPeriod" class="ex-select" style="width:100%;">
+        <option value="7">Последние 7 дней</option>
+        <option value="30" selected>Последние 30 дней</option>
+        <option value="90">Последние 3 месяца</option>
+        <option value="180">Последние 6 месяцев</option>
+        <option value="365">Последний год</option>
+        <option value="all">Всё время</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button onclick="closePdfModal()" class="btn-nav" style="flex:1;">Отмена</button>
+      <button onclick="generatePdf()" class="btn-add" id="genPdfBtn" style="flex:1;">Сгенерировать</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
