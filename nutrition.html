@@ -146,28 +146,33 @@ async function loadMeals(userId, start, end) {
 
     const groups = {};
 
-    data.forEach(m => {
-      const d = new Date(Number(m.date || Date.now()));
-      const key = d.toLocaleDateString("ru-RU");
+data.forEach(m => {
 
-      if (!groups[key]) {
-  groups[key] = {
-    date: key,
-    items: [],
-    calories: 0,
-    protein: 0,
-    fat: 0,
-    carbs: 0,
-    mealType: m.mealType || "Приём пищи"
-  };
-}
+  const d = new Date(Number(m.date || Date.now()));
+  const dateKey = d.toLocaleDateString("ru-RU");
 
-      groups[key].items.push(m);
-      groups[key].calories += Number(m.calories || 0);
-      groups[key].protein += Number(m.protein || 0);
-      groups[key].fat += Number(m.fat || 0);
-      groups[key].carbs += Number(m.carbs || 0);
-    });
+  const mealType = m.mealType || "Другое";
+
+  const key = `${dateKey}_${mealType}`;
+
+  if (!groups[key]) {
+    groups[key] = {
+      date: dateKey,
+      mealType: mealType,
+      items: [],
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      carbs: 0
+    };
+  }
+
+  groups[key].items.push(m);
+  groups[key].calories += Number(m.calories || 0);
+  groups[key].protein += Number(m.protein || 0);
+  groups[key].fat += Number(m.fat || 0);
+  groups[key].carbs += Number(m.carbs || 0);
+});
 
     Object.values(groups).forEach(g => {
 
