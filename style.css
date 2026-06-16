@@ -30,11 +30,19 @@ body{
     justify-content:center;
 }
 
-header{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:20px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px 20px 4px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .serch:hover{
@@ -277,4 +285,40 @@ tr:hover {
   cursor: pointer;
   background: rgba(255,255,255,0.03);
   color: white;
+}
+
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 20px rgba(168,85,247,0.3);
+  letter-spacing: 0.3px;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 35px rgba(168,85,247,0.45);
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+}
+
+.add-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ================= CARD ================= */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 18px;
+  backdrop-filter: blur(10px);
 }
