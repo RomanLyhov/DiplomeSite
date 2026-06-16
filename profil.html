@@ -785,26 +785,26 @@ async function calcGoalProgress(currentWeight, targetWeight) {
   if (isNaN(t)) return { pct: 0, hint: "Нет данных для расчёта" };
 
   let startWeight = null;
-  let latestWeight = parseFloat(currentWeight); // текущий из users.weight по умолчанию
+  let latestWeight = parseFloat(currentWeight);
 
   try {
     const res  = await fetch(`/progress/weight/${profileId}`);
     const rows = await res.json();
 
     if (rows && rows.length > 0) {
-      const sorted = [...rows].sort((a, b) => toMs(a.report_date) - toMs(b.report_date));
-      startWeight = parseFloat(sorted[0].current_weight);
+      // ✅ Текущий = последний замер по дате
+      const byDate = [...rows].sort((a, b) => toMs(b.report_date) - toMs(a.report_date));
+      latestWeight = parseFloat(byDate[0].current_weight);
 
-      // ✅ Берём актуальный вес из последнего замера
-      const latest = [...rows].sort((a, b) => toMs(b.report_date) - toMs(a.report_date));
-      latestWeight = parseFloat(latest[0].current_weight);
+      // ✅ Стартовый = самый ранний замер (он не меняется)
+      const earliest = [...rows].sort((a, b) => toMs(a.report_date) - toMs(b.report_date));
+      startWeight = parseFloat(earliest[0].current_weight);
 
-      // ✅ Обновляем отображение веса везде на странице
+      // ✅ Обновляем отображение текущего веса на странице
       document.getElementById("weight").innerText = latestWeight;
       document.getElementById("weightBig").innerHTML =
         `${latestWeight} <span class="weight-unit">кг</span>`;
 
-      // Обновляем блок "осталось сбросить/набрать"
       if (!isNaN(t)) {
         const diff = latestWeight - t;
         const col  = diff > 0 ? "#f87171" : "#4ade80";
@@ -827,14 +827,8 @@ async function calcGoalProgress(currentWeight, targetWeight) {
 
   if (isNaN(w)) return { pct: 0, hint: "Нет данных для расчёта" };
   if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
-
-  if (!startWeight || isNaN(startWeight)) {
-    return { pct: 0, hint: "Добавьте первый замер веса" };
-  }
-
-  if (Math.abs(startWeight - t) < 0.1) {
-    return { pct: 100, hint: "Цель достигнута!" };
-  }
+  if (!startWeight || isNaN(startWeight)) return { pct: 0, hint: "Добавьте первый замер веса" };
+  if (Math.abs(startWeight - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
 
   const totalPath = Math.abs(startWeight - t);
   const gonePath  = Math.abs(startWeight - w);
@@ -843,9 +837,7 @@ async function calcGoalProgress(currentWeight, targetWeight) {
     (t < startWeight && w <= startWeight) ||
     (t > startWeight && w >= startWeight);
 
-  if (!goingRight) {
-    return { pct: 0, hint: `Старт: ${startWeight} кг → Цель: ${t} кг` };
-  }
+  if (!goingRight) return { pct: 0, hint: `Старт: ${startWeight} кг → Цель: ${t} кг` };
 
   const pct = Math.min(100, Math.round((gonePath / totalPath) * 100));
   const diff = Math.abs(w - t).toFixed(1);
