@@ -561,12 +561,12 @@ app.post("/progress/weight", async (req, res) => {
         console.log("✅ INSERT done, reportid:", result.rows[0].reportid); // ← добавь
 
         await pool.query(
-            `UPDATE users 
-             SET weight = $1,
-                 start_weight = COALESCE(start_weight, $1)
-             WHERE userid = $2`,
-            [weight, userId]
-        );
+    `UPDATE users 
+     SET weight = $1::numeric,
+         start_weight = COALESCE(start_weight, $1::numeric)
+     WHERE userid = $2`,
+    [weight, userId]
+);
 
         console.log("✅ UPDATE users done"); // ← добавь
 
