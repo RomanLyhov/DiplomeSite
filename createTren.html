@@ -255,19 +255,11 @@ input:focus, select:focus{
 
 <script>
 let selected = [];
-function goBack() {
-  window.location.href = "workouts.html";
-}
+
 /* ===== КНОПКА НАЗАД ===== */
 function goBack() {
-  // Вариант 1: на главную админки (замените URL на свой)
-  window.location.href = "/admin";
-
-  // Вариант 2: в истории браузера (если она есть)
-  // window.history.back();
-
-  // Вариант 3: на конкретный URL
-  // window.location.href = "/dashboard";
+  // Возврат на страницу со списком тренировок
+  window.location.href = "workouts.html";
 }
 
 /* ===== LOAD EXERCISES ===== */
