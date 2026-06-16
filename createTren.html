@@ -178,6 +178,12 @@ input:focus, select:focus{
 }
 .btn:hover{ opacity:0.9; }
 .loading{ text-align:center; color:#64748B; padding:20px; font-size:14px; }
+
+/* скрытый элемент */
+.hidden{
+  display:none !important;
+}
+
 @media(max-width:900px){
   .grid, .columns{ grid-template-columns:1fr; }
   .item-grid{ grid-template-columns:1fr 1fr; }
@@ -220,7 +226,8 @@ input:focus, select:focus{
         </select>
       </div>
 
-      <div style="grid-column:1/-1; display:flex; align-items:center; gap:10px;">
+      <!-- ===== ЧЕКБОКС ТОЛЬКО ДЛЯ АДМИНА ===== -->
+      <div id="recommendWrapper" style="grid-column:1/-1; display:flex; align-items:center; gap:10px;" class="hidden">
         <input type="checkbox" id="isRecommended"
           style="width:18px; height:18px; cursor:pointer; accent-color:#4F46E5; flex-shrink:0;">
         <label for="isRecommended"
@@ -254,11 +261,17 @@ input:focus, select:focus{
 </div>
 
 <script>
+const role = (localStorage.getItem("role") || "").toLowerCase();
+
+// ===== ПОКАЗЫВАЕМ ЧЕКБОКС ТОЛЬКО АДМИНУ =====
+if (role === "admin") {
+  document.getElementById("recommendWrapper").classList.remove("hidden");
+}
+
 let selected = [];
 
 /* ===== КНОПКА НАЗАД ===== */
 function goBack() {
-  // Возврат на страницу со списком тренировок
   window.location.href = "workouts.html";
 }
 
@@ -410,11 +423,16 @@ async function createWorkout() {
     return;
   }
 
+  // Если пользователь не админ — isRecommended всегда false
+  const isRecommended = (role === "admin") 
+    ? document.getElementById("isRecommended").checked 
+    : false;
+
   const payload = {
     userId: Number(userId),
     name: name,
     difficulty: document.getElementById("difficulty").value,
-    isRecommended: document.getElementById("isRecommended").checked,
+    isRecommended: isRecommended,
     exercises: selected
   };
 
