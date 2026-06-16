@@ -151,15 +151,16 @@ async function loadMeals(userId, start, end) {
       const key = d.toLocaleDateString("ru-RU");
 
       if (!groups[key]) {
-        groups[key] = {
-          date: key,
-          items: [],
-          calories: 0,
-          protein: 0,
-          fat: 0,
-          carbs: 0
-        };
-      }
+  groups[key] = {
+    date: key,
+    items: [],
+    calories: 0,
+    protein: 0,
+    fat: 0,
+    carbs: 0,
+    mealType: m.mealType || "Приём пищи"
+  };
+}
 
       groups[key].items.push(m);
       groups[key].calories += Number(m.calories || 0);
@@ -175,7 +176,7 @@ async function loadMeals(userId, start, end) {
 
       card.innerHTML = `
         <div class="meal-header">
-          <div>🍽 Питание</div>
+         <div>${g.mealType}</div>
           <div>${g.date}</div>
         </div>
 
