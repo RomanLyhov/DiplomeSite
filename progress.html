@@ -5,173 +5,494 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitPlan — Прогресс</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-:root {
-  --bg:      #080c14;
-  --card:    #131c2e;
-  --border:  rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text:    #e8edf5;
-  --muted:   #4a5568;
-  --soft:    #8896a8;
-  --accent:  #3b8ef0;
-  --accent2: #60aaf8;
-  --green:   #22c55e;
-  --red:     #f87171;
-  --amber:   #fbbf24;
-  --purple:  #a78bfa;
-}
-body { min-height:100vh; background:var(--bg); font-family:'Inter',sans-serif; color:var(--text); }
-
-.top-nav {
-  width:100%; display:flex; justify-content:center; align-items:center;
-  padding:14px 24px;
-  background:rgba(8,12,20,0.85); border-bottom:1px solid var(--border);
-  backdrop-filter:blur(20px); position:sticky; top:0; z-index:100;
-}
-.navbar { display:flex; align-items:center; gap:4px; }
-.navbar a {
-  text-decoration:none; color:var(--soft); font-size:13px; font-weight:500;
-  padding:7px 16px; border-radius:20px; transition:all 0.2s;
-}
-.navbar a:hover { background:rgba(255,255,255,0.06); color:var(--text); }
-.navbar a.active { background:rgba(59,142,240,0.15); color:var(--accent2); border:1px solid rgba(59,142,240,0.25); }
-.nav-right { position:absolute; right:24px; display:flex; align-items:center; gap:8px; }
-.btn-nav {
-  padding:7px 16px; border-radius:20px; border:1px solid var(--border2);
-  background:transparent; color:var(--soft); font-size:13px; font-weight:500;
-  cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif;
-}
-.btn-nav:hover { background:rgba(255,255,255,0.06); color:var(--text); }
-.btn-nav.danger:hover { background:rgba(248,113,113,0.1); border-color:rgba(248,113,113,0.3); color:var(--red); }
-
-.container { max-width:960px; margin:0 auto; padding:32px 24px 56px; display:flex; flex-direction:column; gap:16px; }
-
-.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
-.page-title { font-size:22px; font-weight:800; color:#fff; }
-.page-sub { font-size:13px; color:var(--muted); margin-top:3px; }
-.viewing-pill {
-  display:inline-flex; align-items:center; gap:6px;
-  background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2);
-  border-radius:20px; padding:5px 14px; font-size:12px; color:var(--amber);
-}
-
-.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px 22px; }
-.card-title { font-size:11px; font-weight:600; color:var(--muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:0.6px; }
-
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
-.stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; transition:border-color 0.2s; }
-.stat-card:hover { border-color:var(--border2); }
-.s-label { font-size:11px; color:var(--muted); font-weight:500; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
-.s-val { font-size:26px; font-weight:700; color:#fff; line-height:1; }
-.s-unit { font-size:13px; font-weight:400; color:var(--muted); margin-left:2px; }
-.s-diff { font-size:12px; font-weight:600; margin-top:4px; }
-
-.add-weight-form { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
-.form-field { display:flex; flex-direction:column; gap:5px; }
-.form-label { font-size:11px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.4px; }
-.form-input {
-  background:rgba(255,255,255,0.04); border:1px solid var(--border2);
-  border-radius:10px; padding:8px 12px; color:var(--text); font-size:14px;
-  font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; width:130px;
-}
-.form-input:focus { border-color:var(--accent); }
-.form-input[type="date"] { width:160px; color-scheme:dark; }
-.btn-add {
-  padding:9px 20px; border-radius:10px; border:none;
-  background:var(--accent); color:#fff; font-size:13px; font-weight:600;
-  cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; white-space:nowrap;
-}
-.btn-add:hover { background:#2d7de0; }
-.btn-add:disabled { opacity:0.5; cursor:not-allowed; }
-
-.start-weight-banner {
-  background: rgba(59,142,240,0.08);
-  border: 1px solid rgba(59,142,240,0.2);
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+/* Дополнительные стили для страницы прогресса */
+.progress-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ХЕДЕР СТРАНИЦЫ */
+.page-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  padding: 0 4px 4px 4px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.page-header .subtitle {
   font-size: 13px;
-  color: var(--accent2);
+  color: #94a3b8;
+  margin-top: 4px;
 }
-.start-weight-banner .icon { font-size: 16px; flex-shrink: 0; }
-.start-weight-banner b { color: #fff; }
 
-.chart-wrap { position:relative; height:220px; margin-top:4px; }
-canvas { width:100% !important; }
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-.prog-table { width:100%; border-collapse:collapse; font-size:13px; }
+.viewing-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.15);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+/* СТАТИСТИКА */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 18px 20px;
+  transition: border-color 0.2s;
+}
+
+.stat-card:hover {
+  border-color: rgba(255,255,255,0.1);
+}
+
+.s-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.s-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.s-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #64748b;
+  margin-left: 3px;
+}
+
+.s-diff {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.diff-pos { color: #22c55e; }
+.diff-neg { color: #f87171; }
+.diff-zero { color: #64748b; }
+
+/* КАРТОЧКИ */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 20px 22px;
+  backdrop-filter: blur(10px);
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ДВЕ КОЛОНКИ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ГРАФИК */
+.chart-wrap {
+  position: relative;
+  height: 220px;
+  margin-top: 4px;
+}
+
+.chart-wrap canvas {
+  width: 100% !important;
+}
+
+/* ФОРМА ДОБАВЛЕНИЯ ВЕСА */
+.add-weight-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 130px;
+}
+
+.form-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
+}
+
+.form-input[type="date"] {
+  width: 160px;
+  color-scheme: dark;
+}
+
+.btn-add {
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #a78bfa, #4F46E5);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 8px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+.btn-danger {
+  background: rgba(239,68,68,0.12);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.15);
+}
+
+.btn-danger:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+/* ТАБЛИЦЫ */
+.prog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
 .prog-table th {
-  text-align:left; padding:6px 10px; font-size:10px; font-weight:600;
-  color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;
-  border-bottom:1px solid var(--border);
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.prog-table td { padding:9px 10px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text); }
-.prog-table tr:last-child td { border-bottom:none; }
-.prog-table tr:hover td { background:rgba(255,255,255,0.03); }
-.diff-pos { color:var(--green); font-weight:600; }
-.diff-neg { color:var(--red); font-weight:600; }
-.diff-zero { color:var(--muted); }
 
-.reg-row td { color: var(--muted) !important; font-style: italic; }
+.prog-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: #e2e8f0;
+}
+
+.prog-table tr:last-child td {
+  border-bottom: none;
+}
+
+.prog-table tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+.reg-row td {
+  color: #94a3b8 !important;
+  font-style: italic;
+}
+
 .reg-badge {
-  display:inline-block; padding:1px 8px; border-radius:999px; font-size:10px;
-  background:rgba(59,142,240,0.12); color:var(--accent2);
-  border:1px solid rgba(59,142,240,0.2);
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  background: rgba(167,139,250,0.12);
+  color: #a78bfa;
+  border: 1px solid rgba(167,139,250,0.15);
 }
-
-.ex-select-row { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:16px; }
-.ex-select {
-  background:rgba(255,255,255,0.04); border:1px solid var(--border2);
-  border-radius:10px; padding:8px 12px; color:var(--text); font-size:13px;
-  font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s;
-  min-width:220px; cursor:pointer;
-}
-.ex-select:focus { border-color:var(--accent); }
-option { background:#131c2e; }
-
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-
-.empty-state { text-align:center; padding:32px 16px; color:var(--muted); font-size:13px; }
-
-.toast {
-  position:fixed; bottom:24px; right:24px; z-index:999;
-  background:#1a2540; border:1px solid var(--border2);
-  border-radius:12px; padding:12px 18px; font-size:13px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
-  transform:translateY(80px); opacity:0;
-  transition:all 0.3s cubic-bezier(.4,0,.2,1);
-  display:flex; align-items:center; gap:8px;
-}
-.toast.show { transform:translateY(0); opacity:1; }
-.toast.ok  { border-color:rgba(34,197,94,0.3); color:var(--green); }
-.toast.err { border-color:rgba(248,113,113,0.3); color:var(--red); }
-
-.skel {
-  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);
-  background-size:200% 100%; animation:shimmer 1.4s infinite;
-  border-radius:6px; height:14px; margin:4px 0;
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
 .btn-del {
-  background:none; border:none; cursor:pointer; color:var(--muted);
-  font-size:14px; padding:2px 6px; border-radius:6px; transition:all 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.15s;
 }
-.btn-del:hover { background:rgba(248,113,113,0.1); color:var(--red); }
 
-@media(max-width:700px){
-  .stats-grid { grid-template-columns:1fr 1fr; }
-  .two-col { grid-template-columns:1fr; }
+.btn-del:hover {
+  background: rgba(239,68,68,0.1);
+  color: #f87171;
+}
+
+/* ПУСТЫЕ СОСТОЯНИЯ */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* СКЕЛЕТОН */
+.skel {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+  height: 14px;
+  margin: 4px 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* СЕЛЕКТ УПРАЖНЕНИЙ */
+.ex-select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 220px;
+  cursor: pointer;
+}
+
+.ex-select:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
+}
+
+.ex-select option {
+  background: #131c2e;
+}
+
+.ex-select-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* ТОСТ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  background: rgba(19,28,46,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 13px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast.ok {
+  border-color: rgba(34,197,94,0.3);
+  color: #22c55e;
+}
+
+.toast.err {
+  border-color: rgba(239,68,68,0.3);
+  color: #f87171;
+}
+
+/* МОДАЛКА PDF */
+.pdf-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(5,8,22,0.85);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-modal {
+  background: rgba(19,28,46,0.98);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px 32px;
+  width: 360px;
+  max-width: 90vw;
+  backdrop-filter: blur(10px);
+}
+
+.pdf-modal h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.pdf-modal .form-field {
+  margin-bottom: 14px;
+}
+
+.pdf-modal .form-field select {
+  width: 100%;
+}
+
+.pdf-modal .modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pdf-modal .modal-actions button {
+  flex: 1;
+}
+
+/* АДАПТИВ */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .add-weight-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .add-weight-form .form-input {
+    width: 100%;
+  }
+  .add-weight-form .form-input[type="date"] {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-card {
+    padding: 14px 16px;
+  }
+  .s-val {
+    font-size: 20px;
+  }
 }
 </style>
 </head>
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
   <div class="navbar">
     <a href="/profil.html">Профиль</a>
@@ -180,33 +501,33 @@ option { background:#131c2e; }
     <a href="/workouts.html">Тренировки</a>
     <a href="/users.html" id="adminBtn" style="display:none;">Пользователи</a>
   </div>
-  <div class="nav-right">
-    <button class="btn-nav" onclick="goBack()">← Профиль</button>
-    <button class="btn-nav danger" onclick="logout()">Выйти</button>
-  </div>
 </div>
 
-<div class="container">
+<!-- ================= PAGE ================= -->
+<div class="container progress-container">
 
   <div class="page-header">
-  <div>
-    <div class="page-title">Отчёт о прогрессе</div>
-    <div class="page-sub" id="pageSub">Загрузка...</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div id="viewingPill" style="display:none;">
-      <div class="viewing-pill">👁 Просмотр чужого профиля</div>
+    <div>
+      <h1>📈 Прогресс</h1>
+      <div class="subtitle" id="pageSub">Загрузка...</div>
     </div>
-    <button class="btn-add" onclick="openPdfModal()">⬇ Скачать PDF</button>
+    <div class="header-actions">
+      <div id="viewingPill" style="display:none;">
+        <span class="viewing-pill">👁 Просмотр чужого профиля</span>
+      </div>
+      <button class="add-btn" onclick="openPdfModal()" style="height:40px; padding:0 18px; font-size:13px;">
+        ⬇ PDF
+      </button>
+      <button class="btn-secondary" onclick="history.back()">← Назад</button>
+    </div>
   </div>
-</div>
 
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="s-label">Стартовый вес</div>
       <div class="s-val"><span id="startWeight">—</span><span class="s-unit">кг</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="startWeightSub"></div>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;" id="startWeightSub"></div>
     </div>
     <div class="stat-card">
       <div class="s-label">Текущий вес</div>
@@ -299,15 +620,16 @@ option { background:#131c2e; }
 
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- PDF MODAL -->
-<div id="pdfModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
-  <div style="background:#131c2e;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 32px;width:360px;max-width:90vw;">
-    <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:20px;">Экспорт PDF отчёта</div>
-    <div class="form-field" style="margin-bottom:14px;">
+<div class="pdf-modal-overlay" id="pdfModal">
+  <div class="pdf-modal">
+    <h3>📄 Экспорт PDF</h3>
+    <div class="form-field">
       <label class="form-label">Период</label>
-      <select id="pdfPeriod" class="ex-select" style="width:100%;">
+      <select class="ex-select" id="pdfPeriod" style="width:100%;">
         <option value="7">Последние 7 дней</option>
         <option value="30" selected>Последние 30 дней</option>
         <option value="90">Последние 3 месяца</option>
@@ -316,9 +638,9 @@ option { background:#131c2e; }
         <option value="all">Всё время</option>
       </select>
     </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button onclick="closePdfModal()" class="btn-nav" style="flex:1;">Отмена</button>
-      <button onclick="generatePdf()" class="btn-add" id="genPdfBtn" style="flex:1;">Сгенерировать</button>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closePdfModal()" style="flex:1;">Отмена</button>
+      <button class="btn-add" id="genPdfBtn" onclick="generatePdf()" style="flex:1;">Сгенерировать</button>
     </div>
   </div>
 </div>
@@ -342,7 +664,6 @@ if (isViewingOther) {
   document.getElementById("addWeightSection").style.display = "none";
 }
 
-function goBack() { history.back(); }
 function logout() {
   const uid = localStorage.getItem("userId");
   if (uid) fetch("/logout", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({userId:uid}) }).catch(()=>{});
@@ -377,6 +698,7 @@ function fmtDatePdf(ts) {
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 }
+
 function fmtDateShort(ts) {
   if (!ts) return "—";
   const asNum = Number(ts);
@@ -387,7 +709,7 @@ function fmtDateShort(ts) {
   return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
 
-Chart.defaults.color = "#4a5568";
+Chart.defaults.color = "#94a3b8";
 Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
 Chart.defaults.font.family = "Inter";
 
@@ -443,13 +765,6 @@ function buildAllPoints() {
     if (!alreadyExists) {
       allPoints.unshift({ ts: regTs, weight: registrationWeight, reportid: null, isReg: true });
     }
-
-    const banner = document.getElementById("startWeightBanner");
-    if (banner) {
-      document.getElementById("bannerStartWeight").textContent = registrationWeight;
-      banner.style.display = "flex";
-    }
-
     document.getElementById("startWeight").textContent = registrationWeight;
     document.getElementById("startWeightSub").textContent = `с ${fmtDateShort(regTs)}`;
   } else if (allPoints.length) {
@@ -496,13 +811,13 @@ function renderWeightHistory() {
   const changeEl = document.getElementById("changeVal");
   const subEl    = document.getElementById("changeSub");
   if (diff === 0) {
-    changeEl.innerHTML = `<span style="color:var(--soft)">0 кг</span>`;
+    changeEl.innerHTML = `<span style="color:#94a3b8">0 кг</span>`;
     subEl.textContent = "Вес не изменился"; subEl.className = "s-diff diff-zero";
   } else if (diff < 0) {
-    changeEl.innerHTML = `<span style="color:var(--green)">${diff} кг</span>`;
+    changeEl.innerHTML = `<span style="color:#22c55e">${diff} кг</span>`;
     subEl.textContent = `Похудели на ${Math.abs(diff)} кг`; subEl.className = "s-diff diff-pos";
   } else {
-    changeEl.innerHTML = `<span style="color:var(--red)">+${diff} кг</span>`;
+    changeEl.innerHTML = `<span style="color:#f87171">+${diff} кг</span>`;
     subEl.textContent = `Набрали ${diff} кг`; subEl.className = "s-diff diff-neg";
   }
 
@@ -551,12 +866,12 @@ function renderWeightChart() {
   const sorted = [...allPoints].sort((a,b) => a.ts - b.ts);
 
   if (!sorted.length) {
-    ctx.fillStyle="#4a5568"; ctx.font="13px Inter"; ctx.textAlign="center";
+    ctx.fillStyle="#94a3b8"; ctx.font="13px Inter"; ctx.textAlign="center";
     ctx.fillText("Нет данных", ctx.canvas.width/2, 100);
     return;
   }
 
-  const pointColors = sorted.map(p => p.isReg ? "#fbbf24" : "#60aaf8");
+  const pointColors = sorted.map(p => p.isReg ? "#fbbf24" : "#a78bfa");
   const pointRadii  = sorted.map(p => p.isReg ? 6 : 4);
 
   weightChartInst = new Chart(ctx, {
@@ -566,8 +881,8 @@ function renderWeightChart() {
       datasets: [{
         label: "Вес (кг)",
         data: sorted.map(p => p.weight),
-        borderColor: "#3b8ef0",
-        backgroundColor: "rgba(59,142,240,0.1)",
+        borderColor: "#a78bfa",
+        backgroundColor: "rgba(167,139,250,0.1)",
         borderWidth: 2.5,
         pointRadius: pointRadii,
         pointBackgroundColor: pointColors,
@@ -582,8 +897,8 @@ function renderWeightChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#1a2540",
-          borderColor: "rgba(255,255,255,0.1)",
+          backgroundColor: "rgba(19,28,46,0.95)",
+          borderColor: "rgba(255,255,255,0.08)",
           borderWidth: 1,
           callbacks: {
             label: ctx => ` ${ctx.parsed.y} кг`,
@@ -672,10 +987,10 @@ function renderWorkoutStats() {
 
   el.innerHTML=`
     <table class="prog-table"><tbody>
-      <tr><td style="color:var(--muted);">Всего тренировок</td><td style="font-weight:700;color:#fff;">${total}</td></tr>
-      <tr><td style="color:var(--muted);">Полностью выполнено</td><td style="font-weight:700;color:var(--green);">${fullyDone} (${pct}%)</td></tr>
-      <tr><td style="color:var(--muted);">Упражнений выполнено</td><td style="font-weight:700;color:var(--accent2);">${totalEx}</td></tr>
-      <tr><td style="color:var(--muted);">Последняя тренировка</td><td style="font-weight:600;">${lastDate}</td></tr>
+      <tr><td style="color:#94a3b8;">Всего тренировок</td><td style="font-weight:700;color:#fff;">${total}</td></tr>
+      <tr><td style="color:#94a3b8;">Полностью выполнено</td><td style="font-weight:700;color:#22c55e;">${fullyDone} (${pct}%)</td></tr>
+      <tr><td style="color:#94a3b8;">Упражнений выполнено</td><td style="font-weight:700;color:#a78bfa;">${totalEx}</td></tr>
+      <tr><td style="color:#94a3b8;">Последняя тренировка</td><td style="font-weight:600;">${lastDate}</td></tr>
     </tbody></table>
     <div style="margin-top:14px;">
       <div class="card-title" style="margin-bottom:8px;">Тренировки по неделям (последние 4)</div>
@@ -683,9 +998,9 @@ function renderWorkoutStats() {
         ${weeks.map((c,i)=>{
           const h=c>0?Math.max(16,Math.round(c/Math.max(...weeks,1)*52)):4;
           return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <div style="font-size:10px;color:var(--muted);">${c}</div>
-            <div style="width:100%;height:${h}px;background:${c>0?"var(--accent)":"rgba(255,255,255,0.06)"};border-radius:4px 4px 0 0;"></div>
-            <div style="font-size:9px;color:var(--muted);">нед ${i+1}</div>
+            <div style="font-size:10px;color:#94a3b8;">${c}</div>
+            <div style="width:100%;height:${h}px;background:${c>0?"linear-gradient(180deg,#a78bfa,#4F46E5)":"rgba(255,255,255,0.06)"};border-radius:4px 4px 0 0;"></div>
+            <div style="font-size:9px;color:#94a3b8;">нед ${i+1}</div>
           </div>`;
         }).join("")}
       </div>
@@ -696,7 +1011,7 @@ function renderWorkoutChart() {
   const ctx=document.getElementById("workoutChart").getContext("2d");
   if(workoutChartInst) workoutChartInst.destroy();
   if(!workoutHistory.length){
-    ctx.fillStyle="#4a5568"; ctx.font="13px Inter"; ctx.textAlign="center";
+    ctx.fillStyle="#94a3b8"; ctx.font="13px Inter"; ctx.textAlign="center";
     ctx.fillText("Нет данных", ctx.canvas.width/2, 80); return;
   }
   const days=14, labels=[], counts=[];
@@ -710,8 +1025,8 @@ function renderWorkoutChart() {
     type:"bar",
     data:{ labels, datasets:[{
       label:"Тренировки", data:counts,
-      backgroundColor:counts.map(c=>c>0?"rgba(59,142,240,0.7)":"rgba(255,255,255,0.04)"),
-      borderColor:counts.map(c=>c>0?"#3b8ef0":"transparent"),
+      backgroundColor:counts.map(c=>c>0?"rgba(167,139,250,0.7)":"rgba(255,255,255,0.04)"),
+      borderColor:counts.map(c=>c>0?"#a78bfa":"transparent"),
       borderWidth:1, borderRadius:4,
     }]},
     options:{
@@ -728,7 +1043,7 @@ function renderWorkoutChart() {
 function renderFullHistory() {
   const el=document.getElementById("fullHistory");
   if(!workoutHistory.length){el.innerHTML=`<div class="empty-state">Тренировок пока нет</div>`;return;}
-  const colors=["#3b8ef0","#22c55e","#fbbf24","#a78bfa","#f87171","#34d399"];
+  const colors=["#a78bfa","#22c55e","#fbbf24","#4F46E5","#f87171","#34d399"];
   el.innerHTML=`<table class="prog-table">
     <thead><tr><th>Тренировка</th><th>Дата</th><th>Упражнения</th><th>Статус</th></tr></thead>
     <tbody>
@@ -742,8 +1057,8 @@ function renderFullHistory() {
           <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0;"></div>
           ${r.workoutName||"Тренировка"}
         </td>
-        <td style="color:var(--muted);font-size:12px;">${fmtDate(r.completedAt)}</td>
-        <td style="color:var(--soft);">${r.completedExercises??"—"}/${r.totalExercises??"—"}</td>
+        <td style="color:#94a3b8;font-size:12px;">${fmtDate(r.completedAt)}</td>
+        <td style="color:#94a3b8;">${r.completedExercises??"—"}/${r.totalExercises??"—"}</td>
         <td>${badge}</td>
       </tr>`;
     }).join("")}
@@ -794,8 +1109,8 @@ async function loadExerciseProgress() {
           const isMax=r.weight===maxW&&maxW>0;
           return `<tr>
             <td>${fmtDate(r.progress_date)}</td>
-            <td style="font-weight:700;color:${isMax?"var(--amber)":"#fff"};">${r.weight>0?r.weight+" кг":"—"}</td>
-            <td style="color:var(--soft);">${r.sets_count??"—"} × ${r.reps??"—"}</td>
+            <td style="font-weight:700;color:${isMax?"#fbbf24":"#fff"};">${r.weight>0?r.weight+" кг":"—"}</td>
+            <td style="color:#94a3b8;">${r.sets_count??"—"} × ${r.reps??"—"}</td>
           </tr>`;
         }).join("")}
         </tbody>
@@ -831,16 +1146,11 @@ async function loadExerciseProgress() {
 })();
 
 // ── PDF EXPORT ────────────────────────────────────────────────────
-// Предварительно загружаем jspdf при открытии модалки
 let pdfLibLoaded = false;
 
 function openPdfModal() {
   document.getElementById("pdfModal").style.display = "flex";
-  
-  // Загружаем библиотеку заранее, если ещё не загружена
-  if (!pdfLibLoaded) {
-    loadPdfLibrary();
-  }
+  if (!pdfLibLoaded) loadPdfLibrary();
 }
 
 function closePdfModal() {
@@ -849,22 +1159,18 @@ function closePdfModal() {
 
 function loadPdfLibrary() {
   return new Promise((resolve, reject) => {
-    // Проверяем, загружена ли уже библиотека
     if (window.jspdf && window.jspdf.jsPDF) {
       pdfLibLoaded = true;
       resolve();
       return;
     }
-    
     const script = document.createElement("script");
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
     script.onload = function() {
-      // Проверяем, загрузилась ли библиотека
       if (window.jspdf && window.jspdf.jsPDF) {
         pdfLibLoaded = true;
         resolve();
       } else {
-        // Пробуем альтернативный URL
         const altScript = document.createElement("script");
         altScript.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
         altScript.onload = function() {
@@ -882,7 +1188,6 @@ function loadPdfLibrary() {
       }
     };
     script.onerror = function() {
-      // Пробуем альтернативный URL
       const altScript = document.createElement("script");
       altScript.src = "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js";
       altScript.onload = function() {
@@ -905,20 +1210,20 @@ function loadPdfLibrary() {
 async function generatePdf() {
   const btn = document.getElementById("genPdfBtn");
   btn.disabled = true;
-  btn.textContent = "Loading...";
+  btn.textContent = "Загрузка...";
 
   try {
     if (!pdfLibLoaded) {
-      btn.textContent = "Loading library...";
+      btn.textContent = "Загрузка библиотеки...";
       await loadPdfLibrary();
     }
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
-      showToast("PDF library load error", "err");
+      showToast("Ошибка загрузки PDF библиотеки", "err");
       return;
     }
 
-    btn.textContent = "Generating...";
+    btn.textContent = "Генерация...";
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -931,14 +1236,14 @@ async function generatePdf() {
     const periodStart = periodVal === "all" ? 0 : now - periodMs;
 
     const periodLabel = {
-      "7": "7 days", "30": "30 days", "90": "3 months",
-      "180": "6 months", "365": "1 year", "all": "All time"
+      "7": "7 дней", "30": "30 дней", "90": "3 месяца",
+      "180": "6 месяцев", "365": "1 год", "all": "Всё время"
     }[periodVal];
 
     // HEADER
     doc.setFillColor(8, 12, 20);
     doc.rect(0, 0, W, 40, "F");
-    doc.setFillColor(59, 142, 240);
+    doc.setFillColor(167, 139, 250);
     doc.rect(0, 0, 5, 40, "F");
 
     doc.setFont("helvetica", "bold");
@@ -949,16 +1254,16 @@ async function generatePdf() {
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(136, 150, 168);
-    doc.text("Progress Report", margin + 4, 24);
+    doc.text("Отчёт о прогрессе", margin + 4, 24);
 
     doc.setFontSize(10);
-    doc.setTextColor(96, 170, 248);
-    doc.text("Period: " + periodLabel, margin + 4, 33);
+    doc.setTextColor(167, 139, 250);
+    doc.text("Период: " + periodLabel, margin + 4, 33);
 
     const userName = userProfile.name || ("User #" + profileId);
-    const genDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    const genDate = new Date().toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
     doc.setTextColor(136, 150, 168);
-    doc.text(userName + "   |   Generated: " + genDate, W - margin, 20, { align: "right" });
+    doc.text(userName + "   |   Сгенерирован: " + genDate, W - margin, 20, { align: "right" });
 
     y = 50;
 
@@ -968,7 +1273,7 @@ async function generatePdf() {
       doc.rect(margin, y, W - margin * 2, 8, "F");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.setTextColor(96, 170, 248);
+      doc.setTextColor(167, 139, 250);
       doc.text(title.toUpperCase(), margin + 4, y + 5.5);
       y += 12;
     };
@@ -999,7 +1304,7 @@ async function generatePdf() {
     };
 
     // WEIGHT STATS
-    sectionTitle("Weight Statistics");
+    sectionTitle("Статистика веса");
 
     const filteredWeights = allPoints.filter(function(p) { return p.ts >= periodStart; });
     const startW = filteredWeights.length
@@ -1014,10 +1319,10 @@ async function generatePdf() {
 
     const bw = (W - margin * 2 - 9) / 4;
     const statBoxes = [
-      ["Start Weight", startW, "kg"],
-      ["Current Weight", curW, "kg"],
-      ["Target Weight", tgt, "kg"],
-      ["Change", diff !== null ? (diff > 0 ? "+" + diff : String(diff)) : "—", diff !== null ? "kg" : ""]
+      ["Стартовый вес", startW, "кг"],
+      ["Текущий вес", curW, "кг"],
+      ["Целевой вес", tgt, "кг"],
+      ["Изменение", diff !== null ? (diff > 0 ? "+" + diff : String(diff)) : "—", diff !== null ? "кг" : ""]
     ];
     statBoxes.forEach(function(item, i) {
       const col = margin + i * (bw + 3);
@@ -1041,8 +1346,8 @@ async function generatePdf() {
 
     // WEIGHT LOG
     checkPage(30);
-    sectionTitle("Weight Log");
-    drawRow(["Date", "Weight", "Change"], true, false);
+    sectionTitle("История замеров");
+    drawRow(["Дата", "Вес", "Изменение"], true, false);
     doc.setDrawColor(80, 100, 130);
     doc.line(margin, y - 1, W - margin, y - 1);
 
@@ -1053,7 +1358,7 @@ async function generatePdf() {
       let diffStr = "—";
       if (prev) {
         const d = +(r.weight - prev.weight).toFixed(1);
-        diffStr = d > 0 ? ("+" + d + " kg") : d < 0 ? (d + " kg") : "0 kg";
+        diffStr = d > 0 ? ("+" + d + " кг") : d < 0 ? (d + " кг") : "0 кг";
       }
       if (r.isReg) {
         doc.setTextColor(251, 191, 36);
@@ -1061,7 +1366,7 @@ async function generatePdf() {
         doc.setTextColor(232, 237, 245);
       }
       drawRow(
-        [fmtDatePdf(r.ts), r.weight + " kg" + (r.isReg ? " (reg.)" : ""), diffStr],
+        [fmtDatePdf(r.ts), r.weight + " кг" + (r.isReg ? " (при рег.)" : ""), diffStr],
         false,
         i % 2 === 0
       );
@@ -1070,7 +1375,7 @@ async function generatePdf() {
 
     // WORKOUT STATS
     checkPage(40);
-    sectionTitle("Workout Statistics");
+    sectionTitle("Статистика тренировок");
 
     const filteredWorkouts = workoutHistory.filter(function(w) {
       return new Date(w.completedAt).getTime() >= periodStart;
@@ -1082,9 +1387,9 @@ async function generatePdf() {
 
     const bw2 = (W - margin * 2 - 6) / 3;
     [
-      ["Total Workouts", total],
-      ["Completed", fullyDone + " (" + pct + "%)"],
-      ["Exercises Done", totalEx]
+      ["Всего тренировок", total],
+      ["Выполнено", fullyDone + " (" + pct + "%)"],
+      ["Упражнений", totalEx]
     ].forEach(function(item, i) {
       const col = margin + i * (bw2 + 3);
       doc.setFillColor(19, 28, 46);
@@ -1103,8 +1408,8 @@ async function generatePdf() {
     // WORKOUT HISTORY
     if (filteredWorkouts.length) {
       checkPage(30);
-      sectionTitle("Workout History");
-      drawRow(["Workout", "Date", "Exercises", "Status"], true, false);
+      sectionTitle("История тренировок");
+      drawRow(["Тренировка", "Дата", "Упражнения", "Статус"], true, false);
       doc.setDrawColor(80, 100, 130);
       doc.line(margin, y - 1, W - margin, y - 1);
 
@@ -1118,7 +1423,7 @@ async function generatePdf() {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8.5);
         doc.setTextColor(232, 237, 245);
-        doc.text(r.workoutName || "Workout", margin + 2, y, { maxWidth: colW4 - 4 });
+        doc.text(r.workoutName || "Тренировка", margin + 2, y, { maxWidth: colW4 - 4 });
         doc.text(fmtDatePdf(r.completedAt), margin + colW4 + 2, y);
         doc.text((r.completedExercises || 0) + "/" + (r.totalExercises || 0), margin + colW4 * 2 + 2, y);
         if (r.isFullyDone) {
@@ -1126,7 +1431,7 @@ async function generatePdf() {
         } else {
           doc.setTextColor(251, 191, 36);
         }
-        doc.text(r.isFullyDone ? "Done" : "Partial", margin + colW4 * 3 + 2, y);
+        doc.text(r.isFullyDone ? "Выполнено" : "Частично", margin + colW4 * 3 + 2, y);
         y += 7;
       });
     }
@@ -1138,25 +1443,24 @@ async function generatePdf() {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(74, 85, 104);
-      doc.text("FitPlan Progress Report  |  Page " + i + " of " + totalPages, W / 2, 290, { align: "center" });
-      doc.setFillColor(59, 142, 240);
+      doc.text("FitPlan Отчёт о прогрессе  |  Страница " + i + " из " + totalPages, W / 2, 290, { align: "center" });
+      doc.setFillColor(167, 139, 250);
       doc.rect(0, 293, W, 2, "F");
     }
 
     const fname = "fitplan_report_" + userName.replace(/\s+/g, "_") + "_" + new Date().toISOString().slice(0, 10) + ".pdf";
     doc.save(fname);
-    showToast("PDF downloaded!");
+    showToast("PDF скачан!");
     closePdfModal();
 
   } catch (err) {
     console.error("PDF Error:", err);
-    showToast("Error: " + (err.message || "unknown"), "err");
+    showToast("Ошибка: " + (err.message || "неизвестная"), "err");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Generate";
+    btn.textContent = "Сгенерировать";
   }
 }
-
 
 // ── INIT ──────────────────────────────────────────────────────────
 (async () => {
