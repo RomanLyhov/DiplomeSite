@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
-/* Дополнительные стили для профиля */
 .profile-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -18,7 +17,6 @@
   gap: 20px;
 }
 
-/* ХЕРО */
 .hero-profile {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
@@ -72,9 +70,7 @@
   display: none;
 }
 
-.hero-info {
-  flex: 1;
-}
+.hero-info { flex: 1; }
 
 .hero-info h2 {
   font-size: 22px;
@@ -100,15 +96,9 @@
   border: 1px solid rgba(34,197,94,0.2);
 }
 
-.hero-progress {
-  text-align: right;
-}
+.hero-progress { text-align: right; }
 
-.prog-label {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-bottom: 6px;
-}
+.prog-label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
 
 .prog-num {
   font-size: 32px;
@@ -132,6 +122,14 @@
   background: linear-gradient(90deg, #a78bfa, #4F46E5);
   border-radius: 999px;
   transition: width 0.9s cubic-bezier(.4,0,.2,1);
+}
+
+/* Подпись к прогрессу */
+.prog-hint {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 5px;
+  text-align: right;
 }
 
 .hero-online {
@@ -164,17 +162,12 @@
   animation: pulse-green 2s infinite;
 }
 
-.online-badge.offline .dot {
-  background: #64748b;
-}
-
-.online-badge.online {
-  color: #22c55e;
-}
+.online-badge.offline .dot { background: #64748b; }
+.online-badge.online { color: #22c55e; }
 
 @keyframes pulse-green {
   0%,100% { box-shadow: 0 0 3px rgba(34,197,94,0.5); }
-  50% { box-shadow: 0 0 10px rgba(34,197,94,0.9); }
+  50%      { box-shadow: 0 0 10px rgba(34,197,94,0.9); }
 }
 
 .hero-lastseen {
@@ -184,7 +177,6 @@
   text-align: right;
 }
 
-/* СТАТИСТИКА */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -199,9 +191,7 @@
   transition: border-color 0.2s;
 }
 
-.stat-card:hover {
-  border-color: rgba(255,255,255,0.1);
-}
+.stat-card:hover { border-color: rgba(255,255,255,0.1); }
 
 .s-label {
   font-size: 11px;
@@ -226,14 +216,12 @@
   margin-left: 3px;
 }
 
-/* ДВЕ КОЛОНКИ */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-/* КАРТОЧКИ */
 .card-profile {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
@@ -250,7 +238,6 @@
   letter-spacing: 0.6px;
 }
 
-/* КБЖУ */
 .kbju-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -267,9 +254,7 @@
   transition: border-color 0.2s;
 }
 
-.kbju-item:hover {
-  border-color: rgba(255,255,255,0.1);
-}
+.kbju-item:hover { border-color: rgba(255,255,255,0.1); }
 
 .k-num {
   font-size: 20px;
@@ -293,16 +278,8 @@
   margin-bottom: 10px;
 }
 
-.intake-eaten {
-  font-size: 22px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.intake-goal {
-  font-size: 13px;
-  color: #94a3b8;
-}
+.intake-eaten { font-size: 22px; font-weight: 700; color: #fff; }
+.intake-goal  { font-size: 13px; color: #94a3b8; }
 
 .intake-bar-track {
   height: 7px;
@@ -318,13 +295,8 @@
   transition: width 0.7s cubic-bezier(.4,0,.2,1);
 }
 
-.intake-sub {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 7px;
-}
+.intake-sub { font-size: 12px; color: #94a3b8; margin-top: 7px; }
 
-/* ВЕС */
 .weight-big {
   font-size: 38px;
   font-weight: 800;
@@ -333,11 +305,7 @@
   margin-bottom: 6px;
 }
 
-.weight-unit {
-  font-size: 16px;
-  font-weight: 400;
-  color: #64748b;
-}
+.weight-unit { font-size: 16px; font-weight: 400; color: #64748b; }
 
 .weight-row {
   display: flex;
@@ -348,24 +316,10 @@
   border-top: 1px solid rgba(255,255,255,0.06);
 }
 
-.weight-meta-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-bottom: 3px;
-}
+.weight-meta-label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
+.weight-meta-val   { font-size: 15px; font-weight: 600; color: #e2e8f0; }
 
-.weight-meta-val {
-  font-size: 15px;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-
-/* АКТИВНОСТЬ */
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
+.activity-list { display: flex; flex-direction: column; gap: 7px; }
 
 .activity-row {
   display: flex;
@@ -383,19 +337,8 @@
   border-color: rgba(255,255,255,0.1);
 }
 
-.act-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.act-name {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-  color: #e2e8f0;
-}
+.act-dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.act-name  { flex: 1; font-size: 13px; font-weight: 500; color: #e2e8f0; }
 
 .act-meta {
   display: flex;
@@ -404,16 +347,8 @@
   gap: 2px;
 }
 
-.act-date {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.act-sub {
-  font-size: 10px;
-  color: #64748b;
-  opacity: 0.7;
-}
+.act-date { font-size: 12px; color: #94a3b8; }
+.act-sub  { font-size: 10px; color: #64748b; opacity: 0.7; }
 
 .act-badge {
   font-size: 11px;
@@ -424,7 +359,6 @@
   margin-left: 8px;
 }
 
-/* ТАБЛИЦА УПРАЖНЕНИЙ */
 .strength-table {
   width: 100%;
   border-collapse: collapse;
@@ -448,13 +382,8 @@
   color: #e2e8f0;
 }
 
-.strength-table tr:last-child td {
-  border-bottom: none;
-}
-
-.strength-table tr:hover td {
-  background: rgba(255,255,255,0.03);
-}
+.strength-table tr:last-child td { border-bottom: none; }
+.strength-table tr:hover td { background: rgba(255,255,255,0.03); }
 
 .s-pill {
   display: inline-block;
@@ -467,7 +396,6 @@
   border: 1px solid rgba(167,139,250,0.15);
 }
 
-/* ПУСТЫЕ СОСТОЯНИЯ */
 .empty-state {
   text-align: center;
   padding: 32px 16px;
@@ -475,7 +403,6 @@
   font-size: 13px;
 }
 
-/* СКЕЛЕТОН */
 .skel {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.04) 25%,
@@ -489,11 +416,10 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
+  0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-/* БАННЕР ПРОСМОТРА */
 .viewing-banner {
   background: rgba(251,191,36,0.08);
   border: 1px solid rgba(251,191,36,0.15);
@@ -520,11 +446,8 @@
   transition: all 0.2s;
 }
 
-.viewing-banner button:hover {
-  background: rgba(251,191,36,0.15);
-}
+.viewing-banner button:hover { background: rgba(251,191,36,0.15); }
 
-/* КНОПКИ В НАВБАРЕ */
 .nav-right {
   position: absolute;
   right: 24px;
@@ -547,9 +470,7 @@
   display: none;
 }
 
-.my-profile-btn:hover {
-  background: rgba(167,139,250,0.2);
-}
+.my-profile-btn:hover { background: rgba(167,139,250,0.2); }
 
 .logout-btn {
   padding: 7px 16px;
@@ -570,60 +491,29 @@
   color: #f87171;
 }
 
-/* АДАПТИВ */
 @media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .two-col {
-    grid-template-columns: 1fr;
-  }
-  .kbju-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero-profile {
-    flex-wrap: wrap;
-  }
-  .hero-progress {
-    width: 100%;
-    text-align: left;
-  }
-  .prog-bar-wrap {
-    margin-left: 0;
-    width: 100%;
-  }
-  .hero-online {
-    justify-content: flex-start;
-  }
-  .hero-lastseen {
-    text-align: left;
-  }
-  .nav-right {
-    position: static;
-    margin-left: auto;
-  }
+  .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+  .two-col     { grid-template-columns: 1fr; }
+  .kbju-grid   { grid-template-columns: repeat(2, 1fr); }
+  .hero-profile { flex-wrap: wrap; }
+  .hero-progress { width: 100%; text-align: left; }
+  .prog-bar-wrap { margin-left: 0; width: 100%; }
+  .prog-hint    { text-align: left; }
+  .hero-online  { justify-content: flex-start; }
+  .hero-lastseen { text-align: left; }
+  .nav-right    { position: static; margin-left: auto; }
 }
 
 @media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .hero-profile {
-    padding: 20px;
-  }
-  .navbar {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .nav-right {
-    flex-wrap: wrap;
-  }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .hero-profile { padding: 20px; }
+  .navbar { flex-wrap: wrap; gap: 10px; }
+  .nav-right { flex-wrap: wrap; }
 }
 </style>
 </head>
 <body>
 
-<!-- ================= NAVBAR ================= -->
 <div class="top-nav">
   <div class="navbar">
     <a href="/profil.html" class="active">Профиль</a>
@@ -639,16 +529,13 @@
   </div>
 </div>
 
-<!-- ================= PAGE ================= -->
 <div class="container profile-container">
 
-  <!-- баннер "вы смотрите профиль другого пользователя" -->
   <div class="viewing-banner" id="viewingBanner">
     <span>👁 Вы просматриваете профиль другого пользователя</span>
     <button onclick="goToMyProfile()">Перейти к своему профилю</button>
   </div>
 
-  <!-- HERO -->
   <div class="hero-profile">
     <div class="avatar-profile" id="avatar">
       U
@@ -661,10 +548,11 @@
     </div>
     <div class="hero-progress">
       <div class="prog-label">Прогресс цели</div>
-      <div class="prog-num" id="progressText">0%</div>
+      <div class="prog-num" id="progressText">—</div>
       <div class="prog-bar-wrap">
         <div class="prog-bar-fill" id="bar" style="width:0%"></div>
       </div>
+      <div class="prog-hint" id="progHint"></div>
       <div class="hero-online">
         <span class="online-badge" id="onlineBadge">
           <span class="dot"></span>
@@ -675,7 +563,6 @@
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="s-label">Вес</div>
@@ -695,7 +582,6 @@
     </div>
   </div>
 
-  <!-- KBJU + WEIGHT -->
   <div class="two-col">
     <div class="card-profile">
       <div class="card-title">Дневное КБЖУ</div>
@@ -724,7 +610,6 @@
     </div>
   </div>
 
-  <!-- ИСТОРИЯ + УПРАЖНЕНИЯ -->
   <div class="two-col">
     <div class="card-profile">
       <div class="card-title">Последние тренировки</div>
@@ -768,37 +653,44 @@ function tr(map, val) {
   return map[k] || val;
 }
 
+// Универсальная нормализация timestamp → миллисекунды
+function toMs(val) {
+  if (!val) return 0;
+  const n = Number(val);
+  if (!isNaN(n) && n > 978307200000) return n;
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? 0 : d.getTime();
+}
+
 function formatDateFull(ts) {
-  if (!ts) return "—";
-  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
-  if (isNaN(d)) return "—";
-  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  const ms = toMs(ts);
+  if (!ms) return "—";
+  return new Date(ms).toLocaleDateString("ru-RU", { day:"numeric", month:"long", year:"numeric" });
 }
 
 function formatDateShort(ts) {
-  if (!ts) return "—";
-  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
-  if (isNaN(d)) return "—";
+  const ms = toMs(ts);
+  if (!ms) return "—";
+  const d     = new Date(ms);
   const now   = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
   const tgt   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   if (tgt.getTime() === today.getTime()) return "Сегодня";
   if (tgt.getTime() === yest.getTime())  return "Вчера";
-  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  return d.toLocaleDateString("ru-RU", { day:"numeric", month:"short" });
 }
 
 function timeAgo(ts) {
-  if (!ts) return null;
-  const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
-  if (isNaN(d)) return null;
-  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+  const ms = toMs(ts);
+  if (!ms) return null;
+  const diff = Math.floor((Date.now() - ms) / 1000);
   if (diff < 60)    return "только что";
   if (diff < 3600)  return `${Math.floor(diff / 60)} мин. назад`;
   if (diff < 86400) return `${Math.floor(diff / 3600)} ч. назад`;
   const days = Math.floor(diff / 86400);
-  if (days === 1)   return "вчера";
-  if (days < 30)    return `${days} дн. назад`;
+  if (days === 1) return "вчера";
+  if (days < 30)  return `${days} дн. назад`;
   return formatDateFull(ts);
 }
 
@@ -808,7 +700,6 @@ const authUserId = localStorage.getItem("userId");
 if (!authUserId) window.location.href = "/adminvh.html";
 if (role === "admin") document.getElementById("adminBtn").style.display = "inline-block";
 
-// ── ОПРЕДЕЛЯЕМ чей профиль смотрим ──
 let profileId = authUserId;
 let isViewingOther = false;
 
@@ -820,26 +711,19 @@ if (role === "admin") {
   }
 }
 
-// === УПРАВЛЕНИЕ ВИДИМОСТЬЮ КНОПОК ===
-const progressBtn = document.getElementById('progressBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const myProfileBtn = document.getElementById('myProfileBtn');
+const progressBtn  = document.getElementById("progressBtn");
+const logoutBtn    = document.getElementById("logoutBtn");
+const myProfileBtn = document.getElementById("myProfileBtn");
 
 if (isViewingOther) {
-  // Показываем баннер
   document.getElementById("viewingBanner").style.display = "flex";
-  
-  // Показываем кнопку "Мой профиль"
-  myProfileBtn.style.display = "inline-block";
-  
-  // Скрываем кнопки "Прогресс" и "Выйти"
-  progressBtn.style.display = "none";
-  logoutBtn.style.display = "none";
+  myProfileBtn.style.display  = "inline-block";
+  progressBtn.style.display   = "none";
+  logoutBtn.style.display     = "none";
 } else {
-  // Свой профиль — показываем прогресс и выход
-  progressBtn.style.display = "inline-block";
-  logoutBtn.style.display = "inline-block";
-  myProfileBtn.style.display = "none";
+  progressBtn.style.display   = "inline-block";
+  logoutBtn.style.display     = "inline-block";
+  myProfileBtn.style.display  = "none";
 }
 
 function goToMyProfile() {
@@ -863,91 +747,165 @@ function resolveOnlineStatus(data) {
   const rawOnline = data.isOnline === true || data.isOnline === "true";
   if (!rawOnline) return false;
   if (data.lastSeen) {
-    const lastSeenTs = typeof data.lastSeen === "number"
-      ? data.lastSeen
-      : Date.parse(data.lastSeen);
-    if (!isNaN(lastSeenTs)) {
-      const age = Date.now() - lastSeenTs;
-      if (age > ONLINE_TIMEOUT_MS) return false;
-    }
+    const lastSeenTs = toMs(data.lastSeen);
+    if (lastSeenTs && (Date.now() - lastSeenTs) > ONLINE_TIMEOUT_MS) return false;
   }
   return true;
 }
 
 function renderOnlineStatus(data) {
   const isOnline = resolveOnlineStatus(data);
-  const lastSeen = data.lastSeen;
-
   const dot = document.getElementById("avatarOnlineDot");
   if (dot) dot.style.display = isOnline ? "block" : "none";
 
-  const badge   = document.getElementById("onlineBadge");
-  const textEl  = document.getElementById("onlineText");
-  const subEl   = document.getElementById("lastSeenSub");
+  const badge  = document.getElementById("onlineBadge");
+  const textEl = document.getElementById("onlineText");
+  const subEl  = document.getElementById("lastSeenSub");
 
   if (isOnline) {
-    badge.className = "online-badge online";
-    textEl.innerText = "В сети";
-    subEl.innerText  = "";
+    badge.className    = "online-badge online";
+    textEl.innerText   = "В сети";
+    subEl.innerText    = "";
   } else {
-    badge.className = "online-badge offline";
-    textEl.innerText = "Не в сети";
-    if (lastSeen) {
-      const ago = timeAgo(lastSeen);
-      subEl.innerText = ago ? `Был(а) ${ago}` : formatDateFull(lastSeen);
-    } else {
-      subEl.innerText = "";
-    }
+    badge.className    = "online-badge offline";
+    textEl.innerText   = "Не в сети";
+    subEl.innerText    = data.lastSeen ? (`Был(а) ${timeAgo(data.lastSeen)}` || "") : "";
   }
+}
+
+// ── КЛЮЧЕВАЯ ФУНКЦИЯ: считаем прогресс через историю замеров ──────
+// Логика:
+//   1. Берём самый ранний замер как стартовый вес
+//   2. Берём самый свежий замер как текущий вес
+//   3. Считаем: прошли / нужно было пройти * 100%
+//   Если замеров нет — показываем 0% (цель не начата)
+//   Если вес уже равен целевому — 100%
+async function calcGoalProgress(currentWeight, targetWeight) {
+  const w = parseFloat(currentWeight);
+  const t = parseFloat(targetWeight);
+
+  // Нет данных — прогресс не считаем
+  if (isNaN(w) || isNaN(t)) return { pct: 0, hint: "Нет данных для расчёта" };
+
+  // Уже достигли цели
+  if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
+
+  let startWeight = null;
+
+  try {
+    // Пытаемся взять реальный стартовый вес из истории замеров
+    const res  = await fetch(`/progress/weight/${profileId}`);
+    const rows = await res.json();
+
+    if (rows && rows.length > 0) {
+      // Сортируем по дате (самый старый первый)
+      const sorted = [...rows].sort((a, b) => toMs(a.report_date) - toMs(b.report_date));
+      startWeight = parseFloat(sorted[0].current_weight);
+    }
+  } catch (e) {
+    // Если API недоступен — используем текущий вес как старт (0%)
+  }
+
+  // Если замеров нет вообще — стартовый вес неизвестен, показываем 0%
+  if (!startWeight || isNaN(startWeight)) {
+    return { pct: 0, hint: "Добавьте первый замер веса" };
+  }
+
+  // Стартовый вес совпадает с целевым — некорректные данные
+  if (Math.abs(startWeight - t) < 0.1) {
+    return { pct: 100, hint: "Цель достигнута!" };
+  }
+
+  // Считаем: сколько прошли из нужного пути
+  const totalPath   = Math.abs(startWeight - t);  // всего нужно пройти
+  const gonePath    = Math.abs(startWeight - w);  // уже прошли
+
+  // Проверяем что двигаемся в правильную сторону
+  const goingRight =
+    (t < startWeight && w <= startWeight) ||  // худеем
+    (t > startWeight && w >= startWeight);    // набираем
+
+  if (!goingRight) {
+    // Откатились назад — 0%
+    return { pct: 0, hint: `Старт: ${startWeight} кг → Цель: ${t} кг` };
+  }
+
+  const pct = Math.min(100, Math.round((gonePath / totalPath) * 100));
+
+  const diff = Math.abs(w - t).toFixed(1);
+  const direction = t < w ? "сбросить" : "набрать";
+  const hint = pct >= 100
+    ? "Цель достигнута!"
+    : `Осталось ${direction} ${diff} кг`;
+
+  return { pct, hint };
 }
 
 async function loadProfile() {
   const res  = await fetch(`/users/${profileId}`);
   const data = await res.json();
 
-  document.getElementById("userId").innerText    = profileId;
-  document.getElementById("nameTitle").innerText = data.name || "—";
+  document.getElementById("userId").innerText        = profileId;
+  document.getElementById("nameTitle").innerText     = data.name || "—";
   document.getElementById("avatar").childNodes[0].textContent = (data.name?.[0] || "U").toUpperCase();
-  document.getElementById("weight").innerText    = data.weight  ?? "—";
-  document.getElementById("height").innerText    = data.height  ?? "—";
+  document.getElementById("weight").innerText        = data.weight  ?? "—";
+  document.getElementById("height").innerText        = data.height  ?? "—";
   document.getElementById("activityLevel").innerText = tr(ACTIVITY_MAP, data.activity);
 
   const goalRu = tr(GOAL_MAP, data.goal);
   document.getElementById("goal").innerText      = goalRu;
   document.getElementById("goalBadge").innerText = goalRu;
 
-  document.getElementById("calories").innerText  = data.dailyCaloriesGoal ?? "—";
-  document.getElementById("protein").innerText   = data.dailyProteinGoal  ?? "—";
-  document.getElementById("fat").innerText       = data.dailyFatGoal      ?? "—";
-  document.getElementById("carbs").innerText     = data.dailyCarbsGoal    ?? "—";
-  document.getElementById("goalCal").innerText   = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
-
-  let p = 0;
-  if (data.weight && data.targetWeight && data.weight !== data.targetWeight) {
-    const w = parseFloat(data.weight), t = parseFloat(data.targetWeight);
-    const start = t < w ? t + 15 : t - 15;
-    p = Math.round(Math.abs(start - w) / Math.abs(start - t) * 100);
-    p = Math.min(100, Math.max(0, p));
-  }
-  document.getElementById("progressText").innerText = p + "%";
-  document.getElementById("bar").style.width        = p + "%";
+  document.getElementById("calories").innerText = data.dailyCaloriesGoal ?? "—";
+  document.getElementById("protein").innerText  = data.dailyProteinGoal  ?? "—";
+  document.getElementById("fat").innerText      = data.dailyFatGoal      ?? "—";
+  document.getElementById("carbs").innerText    = data.dailyCarbsGoal    ?? "—";
+  document.getElementById("goalCal").innerText  = `из ${data.dailyCaloriesGoal ?? "—"} ккал`;
 
   document.getElementById("weightBig").innerHTML =
     `${data.weight ?? "—"} <span class="weight-unit">кг</span>`;
 
+  // Блок с целевым весом
   const rows = [];
   if (data.targetWeight) {
     const diff = parseFloat(data.weight) - parseFloat(data.targetWeight);
     const col  = diff > 0 ? "#f87171" : "#4ade80";
     const lbl  = diff > 0 ? "осталось сбросить" : "осталось набрать";
     rows.push(`<div class="weight-row">
-      <div><div class="weight-meta-label">Целевой вес</div><div class="weight-meta-val">${data.targetWeight} кг</div></div>
-      <div style="text-align:right"><div class="weight-meta-label">${lbl}</div><div class="weight-meta-val" style="color:${col}">${Math.abs(diff).toFixed(1)} кг</div></div>
+      <div>
+        <div class="weight-meta-label">Целевой вес</div>
+        <div class="weight-meta-val">${data.targetWeight} кг</div>
+      </div>
+      <div style="text-align:right">
+        <div class="weight-meta-label">${lbl}</div>
+        <div class="weight-meta-val" style="color:${col}">${Math.abs(diff).toFixed(1)} кг</div>
+      </div>
     </div>`);
   }
   document.getElementById("weightRows").innerHTML = rows.join("");
 
   renderOnlineStatus(data);
+
+  // Считаем прогресс после загрузки истории замеров
+  if (data.weight && data.targetWeight) {
+    // Сначала показываем лоадер
+    document.getElementById("progressText").innerText = "...";
+
+    const { pct, hint } = await calcGoalProgress(data.weight, data.targetWeight);
+
+    document.getElementById("progressText").innerText = pct + "%";
+    document.getElementById("bar").style.width        = pct + "%";
+    document.getElementById("progHint").innerText     = hint;
+
+    // Меняем цвет бара если 100%
+    if (pct >= 100) {
+      document.getElementById("bar").style.background = "linear-gradient(90deg,#22c55e,#16a34a)";
+    }
+  } else {
+    document.getElementById("progressText").innerText = "—";
+    document.getElementById("progHint").innerText     = "Укажите целевой вес в профиле";
+  }
+
   return data;
 }
 
@@ -963,14 +921,15 @@ async function loadTodayCalories(goalCal) {
     const pct   = goal > 0 ? Math.min(100, Math.round((eaten / goal) * 100)) : 0;
     const left  = Math.max(0, goal - eaten);
 
-    document.getElementById("eatenCal").innerText          = Math.round(eaten);
-    document.getElementById("intakeFill").style.width      = pct + "%";
-    document.getElementById("intakeFill").style.background = pct >= 100 ? "#fbbf24" : "linear-gradient(90deg, #a78bfa, #4F46E5)";
+    document.getElementById("eatenCal").innerText     = Math.round(eaten);
+    document.getElementById("intakeFill").style.width = pct + "%";
+    document.getElementById("intakeFill").style.background =
+      pct >= 100 ? "#fbbf24" : "linear-gradient(90deg, #a78bfa, #4F46E5)";
     document.getElementById("intakeSub").innerText =
       goal > 0
         ? (left > 0 ? `Ещё ${Math.round(left)} ккал до цели` : "Дневная цель достигнута")
         : "Цель по калориям не задана";
-  } catch (e) {
+  } catch {
     document.getElementById("eatenCal").innerText  = "—";
     document.getElementById("intakeSub").innerText = "Не удалось загрузить данные питания";
   }
@@ -992,7 +951,7 @@ async function loadWorkoutHistory() {
       const badge = r.isFullyDone
         ? `<span class="act-badge" style="${BADGE_STYLES[i % BADGE_STYLES.length]}">Выполнено</span>`
         : `<span class="act-badge" style="background:rgba(248,113,113,0.12);color:#fca5a5;border:1px solid rgba(248,113,113,0.2);">Частично</span>`;
-      const sub = r.completedExercises != null ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
+      const sub       = r.completedExercises != null ? `${r.completedExercises}/${r.totalExercises} упр.` : "";
       const dateShort = formatDateShort(r.completedAt);
       const dateFull  = formatDateFull(r.completedAt);
       return `<div class="activity-row">
@@ -1006,7 +965,7 @@ async function loadWorkoutHistory() {
         ${badge}
       </div>`;
     }).join("");
-  } catch (e) {
+  } catch {
     list.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
@@ -1036,23 +995,23 @@ async function loadWorkoutsWithExercises() {
       return;
     }
 
-    const trs = withWeight.slice(0, 8).map(ex => `
-      <tr>
-        <td>${ex.name}</td>
-        <td style="color:#94a3b8;font-size:12px;">${ex.workout}</td>
-        <td style="text-align:center;color:#94a3b8;">${ex.sets}×${ex.reps}</td>
-        <td style="text-align:center;"><span class="s-pill">${ex.weight} кг</span></td>
-      </tr>`).join("");
-
     el.innerHTML = `<table class="strength-table">
       <thead><tr>
         <th>Упражнение</th><th>Тренировка</th>
         <th style="text-align:center;">Подх×Повт</th>
         <th style="text-align:center;">Вес</th>
       </tr></thead>
-      <tbody>${trs}</tbody>
+      <tbody>
+      ${withWeight.slice(0, 8).map(ex => `
+        <tr>
+          <td>${ex.name}</td>
+          <td style="color:#94a3b8;font-size:12px;">${ex.workout}</td>
+          <td style="text-align:center;color:#94a3b8;">${ex.sets}×${ex.reps}</td>
+          <td style="text-align:center;"><span class="s-pill">${ex.weight} кг</span></td>
+        </tr>`).join("")}
+      </tbody>
     </table>`;
-  } catch (e) {
+  } catch {
     el.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
