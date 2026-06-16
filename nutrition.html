@@ -22,11 +22,9 @@
 </div>
 
 <div class="header">
-
   <h1>Журнал питания</h1>
 
   <div class="filters">
-
     <div class="select-wrapper">
       <select id="userFilter"></select>
     </div>
@@ -34,12 +32,11 @@
     <div class="date-wrapper">
       <input type="date" id="dayFilter">
     </div>
-
   </div>
-
 </div>
 
-</div>
+<!-- ✅ ВАЖНО: контейнер ОБЯЗАТЕЛЬНО -->
+<div id="nutrition-cards"></div>
 
 <script>
 const role = (localStorage.getItem("role") || "").toLowerCase();
@@ -58,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ================= USERS =================
-async function loadUsers(){
+async function loadUsers() {
   const res = await fetch("/users");
   const users = await res.json();
 
@@ -69,21 +66,23 @@ async function loadUsers(){
     select.innerHTML += `<option value="${u.userid}">${u.name}</option>`;
   });
 
-  select.value = userId;
+  select.value = String(userId);
 }
 
 // ================= MEALS =================
-async function loadMeals(userId, startDate = null, endDate = null){
+async function loadMeals(userId, start, end) {
+  const container = document.getElementById("nutrition-cards");
+  if (!container) return;
+
   let url = `/meals?userId=${userId}`;
 
-  if (startDate && endDate) {
-    url += `&start=${startDate}&end=${endDate}`;
+  if (start && end) {
+    url += `&start=${start}&end=${end}`;
   }
 
   const res = await fetch(url);
   const data = await res.json();
 
-  const container = document.getElementById("nutrition-cards");
   container.innerHTML = "";
 
   if (!data.length) {
@@ -91,13 +90,11 @@ async function loadMeals(userId, startDate = null, endDate = null){
     return;
   }
 
-  // ================= GROUPING =================
+  // ===== grouping =====
   const groups = {};
 
   data.forEach(m => {
     const d = new Date(Number(m.date));
-
-    // ключ = дата + тип приема пищи
     const dateKey = d.toLocaleDateString("ru-RU");
     const key = `${dateKey}_${m.mealType || "Другое"}`;
 
@@ -115,14 +112,13 @@ async function loadMeals(userId, startDate = null, endDate = null){
     }
 
     groups[key].items.push(m);
-
     groups[key].calories += Number(m.calories || 0);
     groups[key].protein += Number(m.protein || 0);
     groups[key].fat += Number(m.fat || 0);
     groups[key].carbs += Number(m.carbs || 0);
   });
 
-  // ================= RENDER =================
+  // ===== render =====
   Object.values(groups).forEach(g => {
 
     const card = document.createElement("div");
@@ -151,10 +147,10 @@ async function loadMeals(userId, startDate = null, endDate = null){
         </div>
 
         <div class="meal-kbju">
-          <span> ${g.calories} ккал</span>
-          <span> ${g.protein} Б</span>
-          <span> ${g.fat} Ж</span>
-          <span> ${g.carbs} У</span>
+          <span>${g.calories} ккал</span>
+          <span>${g.protein} Б</span>
+          <span>${g.fat} Ж</span>
+          <span>${g.carbs} У</span>
         </div>
 
       </div>
@@ -168,6 +164,7 @@ async function loadMeals(userId, startDate = null, endDate = null){
   });
 }
 
+// ================= INIT (ОДИН РАЗ!) =================
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUsers();
 
@@ -181,11 +178,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const uid = userSelect.value;
     const date = dateInput.value;
 
-    const start = new Date(date);
-    const end = new Date(date);
-    end.setDate(end.getDate() + 1);
+    const start = new Date(date).getTime();
+    const end = start + 24 * 60 * 60 * 1000;
 
-    await loadMeals(uid, start.getTime(), end.getTime());
+    await loadMeals(uid, start, end);
   }
 
   userSelect.addEventListener("change", refreshMeals);
