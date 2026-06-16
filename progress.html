@@ -193,7 +193,7 @@ option { background:#131c2e; }
 
   <div class="page-header">
     <div>
-      <div class="page-title">📈 Отчёт о прогрессе</div>
+      <div class="page-title"> Отчёт о прогрессе</div>
       <div class="page-sub" id="pageSub">Загрузка...</div>
     </div>
     <div id="viewingPill" style="display:none;">
@@ -238,7 +238,7 @@ option { background:#131c2e; }
       <div id="addWeightSection">
         <!-- баннер со стартовым весом -->
         <div class="start-weight-banner" id="startWeightBanner" style="display:none;">
-          <span class="icon">⚖️</span>
+          <span class="icon"></span>
           <span>Стартовый вес при регистрации: <b id="bannerStartWeight">—</b> кг — уже учтён как первая точка</span>
         </div>
         <div class="add-weight-form">
@@ -789,7 +789,6 @@ async function loadExerciseProgress() {
             <td>${fmtDate(r.progress_date)}</td>
             <td style="font-weight:700;color:${isMax?"var(--amber)":"#fff"};">${r.weight>0?r.weight+" кг":"—"}</td>
             <td style="color:var(--soft);">${r.sets_count??"—"} × ${r.reps??"—"}</td>
-            <td>${isMax?`<span style="color:var(--amber);font-size:16px;">🏆</span>`:""}</td>
           </tr>`;
         }).join("")}
         </tbody>
