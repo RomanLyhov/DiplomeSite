@@ -909,20 +909,20 @@ function loadPdfLibrary() {
 async function generatePdf() {
   const btn = document.getElementById("genPdfBtn");
   btn.disabled = true;
-  btn.textContent = "Загрузка...";
+  btn.textContent = "Loading...";
 
   try {
     if (!pdfLibLoaded) {
-      btn.textContent = "Загрузка библиотеки...";
+      btn.textContent = "Loading library...";
       await loadPdfLibrary();
     }
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
-      showToast("Ошибка загрузки PDF библиотеки", "err");
+      showToast("PDF library load error", "err");
       return;
     }
 
-    btn.textContent = "Генерация...";
+    btn.textContent = "Generating...";
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -935,11 +935,11 @@ async function generatePdf() {
     const periodStart = periodVal === "all" ? 0 : now - periodMs;
 
     const periodLabel = {
-      "7": "7 дней", "30": "30 дней", "90": "3 месяца",
-      "180": "6 месяцев", "365": "1 год", "all": "Всё время"
+      "7": "7 days", "30": "30 days", "90": "3 months",
+      "180": "6 months", "365": "1 year", "all": "All time"
     }[periodVal];
 
-    // ── ШАПКА ──
+    // HEADER
     doc.setFillColor(8, 12, 20);
     doc.rect(0, 0, W, 40, "F");
     doc.setFillColor(59, 142, 240);
@@ -957,17 +957,17 @@ async function generatePdf() {
 
     doc.setFontSize(10);
     doc.setTextColor(96, 170, 248);
-    doc.text("Период: " + periodLabel, margin + 4, 33);
+    doc.text("Period: " + periodLabel, margin + 4, 33);
 
     const userName = userProfile.name || ("User #" + profileId);
-    const genDate = new Date().toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+    const genDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
     doc.setTextColor(136, 150, 168);
-    doc.text(userName + "   |   " + genDate, W - margin, 20, { align: "right" });
+    doc.text(userName + "   |   Generated: " + genDate, W - margin, 20, { align: "right" });
 
     y = 50;
 
-    // ── ХЕЛПЕРЫ ──
-    const sectionTitle = (title) => {
+    // HELPERS
+    const sectionTitle = function(title) {
       doc.setFillColor(19, 28, 46);
       doc.rect(margin, y, W - margin * 2, 8, "F");
       doc.setFont("helvetica", "bold");
@@ -977,12 +977,12 @@ async function generatePdf() {
       y += 12;
     };
 
-    const checkPage = (needed) => {
+    const checkPage = function(needed) {
       needed = needed || 20;
       if (y + needed > 275) { doc.addPage(); y = 18; }
     };
 
-    const drawRow = (cols, isHeader, shade) => {
+    const drawRow = function(cols, isHeader, shade) {
       const colW = (W - margin * 2) / cols.length;
       if (shade) {
         doc.setFillColor(19, 28, 46);
@@ -1002,26 +1002,26 @@ async function generatePdf() {
       y += isHeader ? 5 : 7;
     };
 
-    // ── ВЕС: статистика ──
-    sectionTitle("Статистика веса");
+    // WEIGHT STATS
+    sectionTitle("Weight Statistics");
 
     const filteredWeights = allPoints.filter(function(p) { return p.ts >= periodStart; });
     const startW = filteredWeights.length
       ? [...filteredWeights].sort(function(a, b) { return a.ts - b.ts; })[0].weight
-      : (userProfile.weight ?? "—");
+      : (userProfile.weight != null ? userProfile.weight : "—");
     const curW = filteredWeights.length
       ? [...filteredWeights].sort(function(a, b) { return b.ts - a.ts; })[0].weight
-      : (userProfile.weight ?? "—");
-    const tgt = userProfile.targetWeight ?? "—";
+      : (userProfile.weight != null ? userProfile.weight : "—");
+    const tgt = userProfile.targetWeight != null ? userProfile.targetWeight : "—";
     const diff = (curW && startW && curW !== "—" && startW !== "—")
       ? (+(curW - startW).toFixed(1)) : null;
 
     const bw = (W - margin * 2 - 9) / 4;
     const statBoxes = [
-      ["Стартовый вес", startW, "кг"],
-      ["Текущий вес", curW, "кг"],
-      ["Целевой вес", tgt, "кг"],
-      ["Изменение", diff !== null ? (diff > 0 ? "+" + diff : String(diff)) : "—", diff !== null ? "кг" : ""]
+      ["Start Weight", startW, "kg"],
+      ["Current Weight", curW, "kg"],
+      ["Target Weight", tgt, "kg"],
+      ["Change", diff !== null ? (diff > 0 ? "+" + diff : String(diff)) : "—", diff !== null ? "kg" : ""]
     ];
     statBoxes.forEach(function(item, i) {
       const col = margin + i * (bw + 3);
@@ -1043,11 +1043,11 @@ async function generatePdf() {
     });
     y += 26;
 
-    // ── ВЕС: история ──
+    // WEIGHT LOG
     checkPage(30);
-    sectionTitle("История замеров");
-    drawRow(["Дата", "Вес", "Изменение"], true, false);
-    doc.setDrawColor(255, 255, 255);
+    sectionTitle("Weight Log");
+    drawRow(["Date", "Weight", "Change"], true, false);
+    doc.setDrawColor(80, 100, 130);
     doc.line(margin, y - 1, W - margin, y - 1);
 
     const sortedW = [...filteredWeights].sort(function(a, b) { return b.ts - a.ts; });
@@ -1057,7 +1057,7 @@ async function generatePdf() {
       let diffStr = "—";
       if (prev) {
         const d = +(r.weight - prev.weight).toFixed(1);
-        diffStr = d > 0 ? ("+" + d + " кг") : d < 0 ? (d + " кг") : "0 кг";
+        diffStr = d > 0 ? ("+" + d + " kg") : d < 0 ? (d + " kg") : "0 kg";
       }
       if (r.isReg) {
         doc.setTextColor(251, 191, 36);
@@ -1065,16 +1065,16 @@ async function generatePdf() {
         doc.setTextColor(232, 237, 245);
       }
       drawRow(
-        [fmtDatePdf(r.ts), r.weight + " кг" + (r.isReg ? " (рег.)" : ""), diffStr],
+        [fmtDatePdf(r.ts), r.weight + " kg" + (r.isReg ? " (reg.)" : ""), diffStr],
         false,
         i % 2 === 0
       );
     });
     y += 4;
 
-    // ── ТРЕНИРОВКИ: статистика ──
+    // WORKOUT STATS
     checkPage(40);
-    sectionTitle("Статистика тренировок");
+    sectionTitle("Workout Statistics");
 
     const filteredWorkouts = workoutHistory.filter(function(w) {
       return new Date(w.completedAt).getTime() >= periodStart;
@@ -1086,9 +1086,9 @@ async function generatePdf() {
 
     const bw2 = (W - margin * 2 - 6) / 3;
     [
-      ["Всего тренировок", total],
-      ["Выполнено", fullyDone + " (" + pct + "%)"],
-      ["Упражнений", totalEx]
+      ["Total Workouts", total],
+      ["Completed", fullyDone + " (" + pct + "%)"],
+      ["Exercises Done", totalEx]
     ].forEach(function(item, i) {
       const col = margin + i * (bw2 + 3);
       doc.setFillColor(19, 28, 46);
@@ -1104,11 +1104,12 @@ async function generatePdf() {
     });
     y += 28;
 
-    // ── ТРЕНИРОВКИ: история ──
+    // WORKOUT HISTORY
     if (filteredWorkouts.length) {
       checkPage(30);
-      sectionTitle("История тренировок");
-      drawRow(["Тренировка", "Дата", "Упражнения", "Статус"], true, false);
+      sectionTitle("Workout History");
+      drawRow(["Workout", "Date", "Exercises", "Status"], true, false);
+      doc.setDrawColor(80, 100, 130);
       doc.line(margin, y - 1, W - margin, y - 1);
 
       const colW4 = (W - margin * 2) / 4;
@@ -1121,7 +1122,7 @@ async function generatePdf() {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8.5);
         doc.setTextColor(232, 237, 245);
-        doc.text(r.workoutName || "Тренировка", margin + 2, y, { maxWidth: colW4 - 4 });
+        doc.text(r.workoutName || "Workout", margin + 2, y, { maxWidth: colW4 - 4 });
         doc.text(fmtDatePdf(r.completedAt), margin + colW4 + 2, y);
         doc.text((r.completedExercises || 0) + "/" + (r.totalExercises || 0), margin + colW4 * 2 + 2, y);
         if (r.isFullyDone) {
@@ -1129,34 +1130,34 @@ async function generatePdf() {
         } else {
           doc.setTextColor(251, 191, 36);
         }
-        doc.text(r.isFullyDone ? "Выполнено" : "Частично", margin + colW4 * 3 + 2, y);
+        doc.text(r.isFullyDone ? "Done" : "Partial", margin + colW4 * 3 + 2, y);
         y += 7;
       });
     }
 
-    // ── ФУТЕР ──
+    // FOOTER
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(74, 85, 104);
-      doc.text("FitPlan Progress Report  |  Стр. " + i + " из " + totalPages, W / 2, 290, { align: "center" });
+      doc.text("FitPlan Progress Report  |  Page " + i + " of " + totalPages, W / 2, 290, { align: "center" });
       doc.setFillColor(59, 142, 240);
       doc.rect(0, 293, W, 2, "F");
     }
 
     const fname = "fitplan_report_" + userName.replace(/\s+/g, "_") + "_" + new Date().toISOString().slice(0, 10) + ".pdf";
     doc.save(fname);
-    showToast("PDF скачан!");
+    showToast("PDF downloaded!");
     closePdfModal();
 
   } catch (err) {
     console.error("PDF Error:", err);
-    showToast("Ошибка: " + (err.message || "неизвестная"), "err");
+    showToast("Error: " + (err.message || "unknown"), "err");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Сгенерировать";
+    btn.textContent = "Generate";
   }
 }
 
