@@ -9,7 +9,7 @@
 
 </head>
 <body class="page-profile">
-
+<script>document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');</script>
 <div class="top-nav">
   <div class="navbar">
     <a href="/profil.html" class="active">Профиль</a>
@@ -37,11 +37,12 @@
       U
       <div class="avatar-online-dot" id="avatarOnlineDot"></div>
     </div>
-    <div class="hero-info">
-      <h2 id="nameTitle">Загрузка...</h2>
-      <small>ID: <span id="userId"></span></small><br>
-      <span class="hero-badge" id="goalBadge">—</span>
-    </div>
+  <div class="hero-info">
+  <h2 id="nameTitle">Загрузка...</h2>
+  <small>ID: <span id="userId"></span></small><br>
+  <span class="hero-badge" id="goalBadge">—</span>
+  <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Сменить тему" style="margin-left:10px; vertical-align:middle;">🌙</button>
+</div>
     <div class="hero-progress">
       <div class="prog-label">Прогресс цели</div>
       <div class="prog-num" id="progressText">—</div>
@@ -515,6 +516,19 @@ async function loadWorkoutsWithExercises() {
     el.innerHTML = `<div class="empty-state">Не удалось загрузить</div>`;
   }
 }
+function applyTheme(theme) {
+  document.body.setAttribute("data-theme", theme);
+  const btn = document.getElementById("themeToggleBtn");
+  if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+  const next = (localStorage.getItem("theme") || "dark") === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", next);
+  applyTheme(next);
+}
+
+applyTheme(localStorage.getItem("theme") || "dark");
 
 function logout() {
   const uid = localStorage.getItem("userId");

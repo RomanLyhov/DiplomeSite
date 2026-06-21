@@ -4,20 +4,61 @@
   padding: 0;
   box-sizing: border-box;
 }
+:root {
+  --bg: #050816;
+  --text: #ffffff;
+  --muted: #94a3b8;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.06);
+  --navbar-bg: rgba(255,255,255,0.03);
+}
+body[data-theme="light"] {
+  --bg: #f1f5f9;
+  --text: #0f172a;
+  --muted: #64748b;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --navbar-bg: #ffffff;
+}
 
 body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color .3s ease, color .3s ease;
   min-height: 100vh;
-  background: #050816;
   font-family: 'Inter', sans-serif;
   padding-top: 40px 20px; /* как в исходном файле */
-  color: white;
 }
 
 .hidden {
   display: none !important;
 }
 
-
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: #e2e8f0;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.theme-toggle-btn:hover {
+  background: rgba(167,139,250,0.15);
+  border-color: rgba(167,139,250,0.3);
+  transform: translateY(-1px);
+}
+body[data-theme="light"] .theme-toggle-btn {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
 /* ===================================================================
    2. NAVBAR (общий для всех страниц)
    =================================================================== */
