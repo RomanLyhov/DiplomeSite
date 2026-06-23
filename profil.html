@@ -288,7 +288,6 @@ async function calcGoalProgress(currentWeight, targetWeight) {
       const earliest = [...rows].sort((a, b) => (toMs(a.report_date) - toMs(b.report_date)) || (a.reportid - b.reportid));
       startWeight = parseFloat(earliest[0].current_weight);
 
-      // ✅ Обновляем отображение текущего веса на странице
       document.getElementById("weight").innerText = latestWeight;
       document.getElementById("weightBig").innerHTML =
         `${latestWeight} <span class="weight-unit">кг</span>`;
@@ -314,8 +313,13 @@ async function calcGoalProgress(currentWeight, targetWeight) {
   const w = latestWeight;
 
   if (isNaN(w)) return { pct: 0, hint: "Нет данных для расчёта" };
-  if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
   if (!startWeight || isNaN(startWeight)) return { pct: 0, hint: "Добавьте первый замер веса" };
+
+  const diffToTarget = Math.abs(w - t).toFixed(1);
+
+  // Цель практически точно совпадает с текущим весом
+  if (Math.abs(w - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
+
   if (Math.abs(startWeight - t) < 0.1) return { pct: 100, hint: "Цель достигнута!" };
 
   const totalPath = Math.abs(startWeight - t);
@@ -327,10 +331,24 @@ async function calcGoalProgress(currentWeight, targetWeight) {
 
   if (!goingRight) return { pct: 0, hint: `Старт: ${startWeight} кг → Цель: ${t} кг` };
 
+  // Перешли цель в нужную сторону (например, похудели сильнее, чем планировали)
+  const overshot =
+    (t < startWeight && w < t) ||
+    (t > startWeight && w > t);
+
   const pct = Math.min(100, Math.round((gonePath / totalPath) * 100));
-  const diff = Math.abs(w - t).toFixed(1);
-  const direction = t < w ? "сбросить" : "набрать";
-  const hint = pct >= 100 ? "Цель достигнута!" : `Осталось ${direction} ${diff} кг`;
+
+  let hint;
+  if (overshot) {
+    hint = t < startWeight
+      ? `Цель достигнута! Вес уже на ${diffToTarget} кг ниже цели`
+      : `Цель достигнута! Вес уже на ${diffToTarget} кг выше цели`;
+  } else if (pct >= 100) {
+    hint = "Цель достигнута!";
+  } else {
+    const direction = t < w ? "сбросить" : "набрать";
+    hint = `Осталось ${direction} ${diffToTarget} кг`;
+  }
 
   return { pct, hint };
 }
