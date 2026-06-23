@@ -792,12 +792,16 @@ async function generatePdf() {
         userName: { fontSize: 11, color: "#666", marginBottom: 20 },
         sectionTitle: { fontSize: 12, bold: true, color: "#a78bfa", marginTop: 15, marginBottom: 8 },
       },
-      defaultStyle: { font: "Helvetica", fontSize: 10 }  
+     defaultStyle: { fontSize: 10 }
     };
 
-    pdfMake.createPdf(docDef).download("fitplan_report_" + new Date().toISOString().slice(0, 10) + ".pdf");
+pdfMake.createPdf(docDef).download(
+  "fitplan_report_" + new Date().toISOString().slice(0, 10) + ".pdf",
+  () => {
     showToast("PDF скачан!");
     closePdfModal();
+  }
+);
 
   } catch (err) {
     console.error("PDF Error:", err);
