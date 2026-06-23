@@ -164,6 +164,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
 <script>
 // ── AUTH ──────────────────────────────────────────────────────────
 const role = (localStorage.getItem("role") || "").toLowerCase();
@@ -745,6 +747,25 @@ function loadPdfLibrary() {
   });
 }
 
+async function loadRobotoFont() {
+    const response = await fetch("/fonts/Roboto-Regular.ttf");
+
+    if (!response.ok) {
+        throw new Error("Roboto-Regular.ttf не найден");
+    }
+
+    const buffer = await response.arrayBuffer();
+
+    let binary = "";
+    const bytes = new Uint8Array(buffer);
+
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+
+    return btoa(binary);
+}
+
 async function generatePdf() {
   const btn = document.getElementById("genPdfBtn");
   btn.disabled = true;
@@ -764,7 +785,17 @@ async function generatePdf() {
     btn.textContent = "Генерация...";
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+});
+
+const fontData = await loadRobotoFont();
+
+doc.addFileToVFS("Roboto-Regular.ttf", fontData);
+doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+doc.setFont("Roboto", "normal");
     const W = 210, margin = 18;
     let y = 0;
 
@@ -784,13 +815,13 @@ async function generatePdf() {
     doc.setFillColor(167, 139, 250);
     doc.rect(0, 0, 5, 40, "F");
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont("Roboto", "normal");
     doc.setFontSize(22);
     doc.setTextColor(255, 255, 255);
     doc.text("FitPlan", margin + 4, 16);
 
     doc.setFontSize(11);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("Roboto", "normal");
     doc.setTextColor(136, 150, 168);
     doc.text("Отчёт о прогрессе", margin + 4, 24);
 
@@ -809,7 +840,7 @@ async function generatePdf() {
     const sectionTitle = function(title) {
       doc.setFillColor(19, 28, 46);
       doc.rect(margin, y, W - margin * 2, 8, "F");
-      doc.setFont("helvetica", "bold");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(9);
       doc.setTextColor(167, 139, 250);
       doc.text(title.toUpperCase(), margin + 4, y + 5.5);
@@ -828,7 +859,7 @@ async function generatePdf() {
         doc.rect(margin, y - 3, W - margin * 2, 7, "F");
       }
       cols.forEach(function(text, i) {
-        doc.setFont("helvetica", isHeader ? "bold" : "normal");
+        doc.setFont("Roboto", isHeader ? "normal" : "normal");
         doc.setFontSize(isHeader ? 7.5 : 8.5);
         if (isHeader) {
           doc.setTextColor(74, 85, 104);
@@ -866,11 +897,11 @@ async function generatePdf() {
       const col = margin + i * (bw + 3);
       doc.setFillColor(19, 28, 46);
       doc.rect(col, y, bw, 22, "F");
-      doc.setFont("helvetica", "normal");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(7);
       doc.setTextColor(74, 85, 104);
       doc.text(item[0].toUpperCase(), col + 4, y + 6);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(14);
       doc.setTextColor(255, 255, 255);
       doc.text(String(item[1]), col + 4, y + 15);
@@ -932,11 +963,11 @@ async function generatePdf() {
       const col = margin + i * (bw2 + 3);
       doc.setFillColor(19, 28, 46);
       doc.rect(col, y, bw2, 22, "F");
-      doc.setFont("helvetica", "normal");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(7);
       doc.setTextColor(74, 85, 104);
       doc.text(item[0].toUpperCase(), col + 4, y + 6);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(14);
       doc.setTextColor(255, 255, 255);
       doc.text(String(item[1]), col + 4, y + 15);
@@ -958,7 +989,7 @@ async function generatePdf() {
           doc.setFillColor(19, 28, 46);
           doc.rect(margin, y - 3, W - margin * 2, 7, "F");
         }
-        doc.setFont("helvetica", "normal");
+        doc.setFont("Roboto", "normal");
         doc.setFontSize(8.5);
         doc.setTextColor(232, 237, 245);
         doc.text(r.workoutName || "Тренировка", margin + 2, y, { maxWidth: colW4 - 4 });
@@ -979,7 +1010,7 @@ async function generatePdf() {
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
-      doc.setFont("helvetica", "normal");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(8);
       doc.setTextColor(74, 85, 104);
       doc.text("FitPlan Отчёт о прогрессе  |  Страница " + i + " из " + totalPages, W / 2, 290, { align: "center" });
