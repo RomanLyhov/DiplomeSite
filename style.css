@@ -1,4 +1,3 @@
-
 * {
   margin: 0;
   padding: 0;
@@ -398,30 +397,30 @@ select option { background: #0b1020; color: white; }
 
 /* -------------------------------------------------------------
    addEx.html — Упражнение (создание / редактирование)
+   База — тёмная тема (по умолчанию, как на остальных страницах).
+   Светлая тема с фоновым фото переопределена ниже, в разделе 5.
    ------------------------------------------------------------- */
 body.page-add-exercise,
 body.page-create-workout {
-  background:
-    linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.55)),
-    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438") center/cover no-repeat;
+  background: var(--bg);
   min-height: 100vh;
-  color: #0F172A;
+  color: var(--text);
 }
 
 body.page-add-exercise .container { max-width: 900px; margin: 60px auto; padding: 0 20px; }
 
 body.page-add-exercise .card {
-  background: rgba(255,255,255,0.82);
-  border: 1px solid rgba(255,255,255,0.35);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 22px;
   padding: 28px;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
 }
 
-body.page-add-exercise h1 { margin: 0; font-size: 26px; font-weight: 700; color: #0F172A; }
-body.page-add-exercise .hint { margin-top: 6px; font-size: 13px; color: #64748B; }
+body.page-add-exercise h1 { margin: 0; font-size: 26px; font-weight: 700; color: var(--text); }
+body.page-add-exercise .hint { margin-top: 6px; font-size: 13px; color: var(--muted); }
 
 body.page-add-exercise .btn-back {
   display: inline-flex;
@@ -430,9 +429,9 @@ body.page-add-exercise .btn-back {
   margin-bottom: 16px;
   padding: 8px 16px;
   border-radius: 10px;
-  border: 1px solid rgba(148,163,184,0.25);
-  background: rgba(255,255,255,0.5);
-  color: #475569;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -440,9 +439,9 @@ body.page-add-exercise .btn-back {
   cursor: pointer;
 }
 body.page-add-exercise .btn-back:hover {
-  background: rgba(255,255,255,0.8);
-  border-color: #4F46E5;
-  color: #0F172A;
+  background: rgba(167,139,250,0.12);
+  border-color: rgba(167,139,250,0.3);
+  color: #fff;
 }
 
 body.page-add-exercise .form-grid {
@@ -453,16 +452,16 @@ body.page-add-exercise .form-grid {
 }
 body.page-add-exercise .form-group { display: flex; flex-direction: column; gap: 6px; }
 body.page-add-exercise .full { grid-column: 1 / -1; }
-body.page-add-exercise label { font-size: 12px; font-weight: 600; color: #475569; }
+body.page-add-exercise label { font-size: 12px; font-weight: 600; color: var(--muted); }
 
 body.page-add-exercise input,
 body.page-add-exercise select,
 body.page-add-exercise textarea {
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(148,163,184,0.35);
-  background: rgba(255,255,255,0.6);
-  color: #0F172A;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
   outline: none;
   font-size: 14px;
   transition: 0.2s;
@@ -470,10 +469,11 @@ body.page-add-exercise textarea {
 body.page-add-exercise input:focus,
 body.page-add-exercise select:focus,
 body.page-add-exercise textarea:focus {
-  border-color: #4F46E5;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+  border-color: #a78bfa;
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 4px rgba(167,139,250,0.15);
 }
+body.page-add-exercise select option { background: #1a1a2e; color: #fff; }
 body.page-add-exercise textarea { min-height: 110px; resize: none; }
 
 body.page-add-exercise .btn {
@@ -490,9 +490,9 @@ body.page-add-exercise .btn {
 }
 body.page-add-exercise .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 18px 35px rgba(79,70,229,0.25);
+  box-shadow: 0 18px 35px rgba(79,70,229,0.35);
 }
-body.page-add-exercise .message { margin-top: 10px; font-size: 14px; color: #64748B; }
+body.page-add-exercise .message { margin-top: 10px; font-size: 14px; color: var(--muted); }
 
 @media (max-width: 700px) {
   body.page-add-exercise .form-grid { grid-template-columns: 1fr; }
@@ -503,20 +503,20 @@ body.page-add-exercise .video-upload-row { display: flex; align-items: center; g
 body.page-add-exercise .video-upload-btn {
   padding: 12px 20px;
   border-radius: 14px;
-  border: 1px solid rgba(148,163,184,0.35);
-  background: rgba(255,255,255,0.6);
-  color: #0F172A;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
 }
 body.page-add-exercise .video-upload-btn:hover {
-  background: rgba(255,255,255,0.95);
-  border-color: #4F46E5;
-  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+  background: rgba(167,139,250,0.12);
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 4px rgba(167,139,250,0.15);
 }
-body.page-add-exercise .video-file-name { font-size: 13px; color: #64748B; }
+body.page-add-exercise .video-file-name { font-size: 13px; color: var(--muted); }
 body.page-add-exercise .video-preview-box { margin-top: 10px; display: none; }
 body.page-add-exercise .video-preview-box.active { display: block; }
 body.page-add-exercise .video-preview-box video {
@@ -530,48 +530,49 @@ body.page-add-exercise .video-remove-btn {
   padding: 6px 16px;
   border-radius: 10px;
   border: none;
-  background: rgba(239,68,68,0.12);
-  color: #ef4444;
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
-body.page-add-exercise .video-remove-btn:hover { background: rgba(239,68,68,0.2); }
+body.page-add-exercise .video-remove-btn:hover { background: rgba(239,68,68,0.25); }
 
 
 /* -------------------------------------------------------------
    createTren.html — Создание тренировки
+   База — тёмная тема (по умолчанию).
    ------------------------------------------------------------- */
 body.page-create-workout .container { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
 
 body.page-create-workout .card {
-  background: rgba(255,255,255,0.90);
-  border: 1px solid rgba(255,255,255,0.35);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 22px;
   padding: 32px;
   backdrop-filter: blur(18px);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
 }
 
 body.page-create-workout .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
 body.page-create-workout .header-left { display: flex; align-items: center; gap: 14px; }
 body.page-create-workout .back-btn {
-  background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(148,163,184,0.3);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: var(--muted);
   cursor: pointer;
   transition: 0.2s;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-body.page-create-workout .back-btn:hover { background: #F1F5F9; border-color: #94A3B8; transform: translateX(-2px); }
-body.page-create-workout .title { font-size: 24px; font-weight: 700; }
-body.page-create-workout .subtitle { font-size: 13px; color: #64748B; margin-top: 4px; }
+body.page-create-workout .back-btn:hover { background: rgba(167,139,250,0.12); border-color: #a78bfa; color: #fff; transform: translateX(-2px); }
+body.page-create-workout .title { font-size: 24px; font-weight: 700; color: var(--text); }
+body.page-create-workout .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
 body.page-create-workout .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
 
@@ -580,8 +581,9 @@ body.page-create-workout select {
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(148,163,184,0.35);
-  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
   outline: none;
   font-size: 14px;
   transition: 0.2s;
@@ -589,17 +591,18 @@ body.page-create-workout select {
 }
 body.page-create-workout input:focus,
 body.page-create-workout select:focus {
-  border-color: #4F46E5;
-  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
-  background: white;
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 4px rgba(167,139,250,0.15);
+  background: rgba(255,255,255,0.08);
 }
+body.page-create-workout select option { background: #1a1a2e; color: #fff; }
 
 body.page-create-workout .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
-body.page-create-workout .section-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #334155; }
+body.page-create-workout .section-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--muted); }
 
 body.page-create-workout .list {
-  background: rgba(255,255,255,0.6);
-  border: 1px solid #e5e7eb;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 16px;
   padding: 12px;
   max-height: 420px;
@@ -607,8 +610,8 @@ body.page-create-workout .list {
 }
 
 body.page-create-workout .item {
-  background: rgba(255,255,255,0.97);
-  border: 1px solid #E2E8F0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
   padding: 16px;
   margin-bottom: 14px;
@@ -617,9 +620,9 @@ body.page-create-workout .item {
   justify-content: space-between;
   align-items: center;
 }
-body.page-create-workout .item:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(15,23,42,0.10); }
+body.page-create-workout .item:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(0,0,0,0.3); border-color: rgba(167,139,250,0.2); }
 body.page-create-workout .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-body.page-create-workout .item-header b { font-size: 15px; font-weight: 700; }
+body.page-create-workout .item-header b { font-size: 15px; font-weight: 700; color: var(--text); }
 
 body.page-create-workout .badge {
   display: inline-block;
@@ -627,8 +630,8 @@ body.page-create-workout .badge {
   padding: 4px 10px;
   font-size: 11px;
   border-radius: 999px;
-  background: #EEF2FF;
-  color: #4F46E5;
+  background: rgba(167,139,250,0.15);
+  color: #a78bfa;
 }
 
 body.page-create-workout .small-btn {
@@ -646,7 +649,7 @@ body.page-create-workout .field { display: flex; flex-direction: column; gap: 4p
 body.page-create-workout .field label {
   font-size: 10px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -654,14 +657,15 @@ body.page-create-workout .field input {
   padding: 8px 10px;
   font-size: 13px;
   border-radius: 10px;
-  border: 1px solid #E2E8F0;
-  background: #F8FAFC;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
+  color: var(--text);
   text-align: center;
 }
 body.page-create-workout .field input:focus {
-  border-color: #4F46E5;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+  border-color: #a78bfa;
+  background: rgba(0,0,0,0.4);
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.12);
 }
 
 body.page-create-workout .btn {
@@ -678,7 +682,7 @@ body.page-create-workout .btn {
 }
 body.page-create-workout .btn:hover { opacity: 0.9; }
 
-body.page-create-workout .loading { text-align: center; color: #64748B; padding: 20px; font-size: 14px; }
+body.page-create-workout .loading { text-align: center; color: var(--muted); padding: 20px; font-size: 14px; }
 
 @media (max-width: 900px) {
   body.page-create-workout .grid,
@@ -1670,6 +1674,115 @@ body[data-theme="light"] .btn-edit { background: var(--accent-soft); color: var(
 body[data-theme="light"] .btn-edit:hover { background: #e2d6fb; }
 body[data-theme="light"] .btn-delete { background: var(--danger-soft); color: var(--danger); }
 body[data-theme="light"] .btn-delete:hover { background: #fbd9d9; }
+
+/* --- addEx.html / createTren.html: светлая тема (как было изначально — фон с фото) --- */
+body.page-add-exercise[data-theme="light"],
+body.page-create-workout[data-theme="light"] {
+  background:
+    linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.55)),
+    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438") center/cover no-repeat;
+  color: #0F172A;
+}
+
+body.page-add-exercise[data-theme="light"] .card {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+}
+body.page-add-exercise[data-theme="light"] h1 { color: #0F172A; }
+body.page-add-exercise[data-theme="light"] .hint { color: #64748B; }
+body.page-add-exercise[data-theme="light"] .btn-back {
+  border: 1px solid rgba(148,163,184,0.25);
+  background: rgba(255,255,255,0.5);
+  color: #475569;
+}
+body.page-add-exercise[data-theme="light"] .btn-back:hover {
+  background: rgba(255,255,255,0.8);
+  border-color: #4F46E5;
+  color: #0F172A;
+}
+body.page-add-exercise[data-theme="light"] label { color: #475569; }
+body.page-add-exercise[data-theme="light"] input,
+body.page-add-exercise[data-theme="light"] select,
+body.page-add-exercise[data-theme="light"] textarea {
+  border: 1px solid rgba(148,163,184,0.35);
+  background: rgba(255,255,255,0.6);
+  color: #0F172A;
+}
+body.page-add-exercise[data-theme="light"] input:focus,
+body.page-add-exercise[data-theme="light"] select:focus,
+body.page-add-exercise[data-theme="light"] textarea:focus {
+  border-color: #4F46E5;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+}
+body.page-add-exercise[data-theme="light"] select option { background: #fff; color: #0F172A; }
+body.page-add-exercise[data-theme="light"] .message { color: #64748B; }
+
+body.page-add-exercise[data-theme="light"] .video-upload-btn {
+  border: 1px solid rgba(148,163,184,0.35);
+  background: rgba(255,255,255,0.6);
+  color: #0F172A;
+}
+body.page-add-exercise[data-theme="light"] .video-upload-btn:hover {
+  background: rgba(255,255,255,0.95);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+}
+body.page-add-exercise[data-theme="light"] .video-file-name { color: #64748B; }
+body.page-add-exercise[data-theme="light"] .video-remove-btn { background: rgba(239,68,68,0.12); color: #ef4444; }
+body.page-add-exercise[data-theme="light"] .video-remove-btn:hover { background: rgba(239,68,68,0.2); }
+
+body.page-create-workout[data-theme="light"] .card {
+  background: rgba(255,255,255,0.90);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+}
+body.page-create-workout[data-theme="light"] .back-btn {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(148,163,184,0.3);
+  color: #334155;
+}
+body.page-create-workout[data-theme="light"] .back-btn:hover { background: #F1F5F9; border-color: #94A3B8; }
+body.page-create-workout[data-theme="light"] .title { color: #0F172A; }
+body.page-create-workout[data-theme="light"] .subtitle { color: #64748B; }
+body.page-create-workout[data-theme="light"] input,
+body.page-create-workout[data-theme="light"] select {
+  border: 1px solid rgba(148,163,184,0.35);
+  background: rgba(255,255,255,0.7);
+  color: #0F172A;
+}
+body.page-create-workout[data-theme="light"] input:focus,
+body.page-create-workout[data-theme="light"] select:focus {
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+  background: white;
+}
+body.page-create-workout[data-theme="light"] select option { background: #fff; color: #0F172A; }
+body.page-create-workout[data-theme="light"] .section-title { color: #334155; }
+body.page-create-workout[data-theme="light"] .list {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid #e5e7eb;
+}
+body.page-create-workout[data-theme="light"] .item {
+  background: rgba(255,255,255,0.97);
+  border: 1px solid #E2E8F0;
+}
+body.page-create-workout[data-theme="light"] .item:hover { box-shadow: 0 14px 35px rgba(15,23,42,0.10); }
+body.page-create-workout[data-theme="light"] .item-header b { color: #0F172A; }
+body.page-create-workout[data-theme="light"] .badge { background: #EEF2FF; color: #4F46E5; }
+body.page-create-workout[data-theme="light"] .field label { color: #64748B; }
+body.page-create-workout[data-theme="light"] .field input {
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #0F172A;
+}
+body.page-create-workout[data-theme="light"] .field input:focus {
+  border-color: #4F46E5;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+}
+body.page-create-workout[data-theme="light"] .loading { color: #64748B; }
 
 /* --- edit-workout.html --- */
 body.page-edit-workout[data-theme="light"] .card { box-shadow: var(--shadow-sm); }
