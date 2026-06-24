@@ -36,7 +36,7 @@
                 <label>Название тренировки</label>
                 <input id="workoutName" placeholder="Введите название">
             </div>
-            <div class="checkbox-group">
+            <div class="checkbox-group" id="recommendGroup">
                 <input type="checkbox" id="isRecommended">
                 <label for="isRecommended">⭐ Рекомендовать пользователям</label>
             </div>
@@ -74,6 +74,7 @@
         let isRecommended = false;
         let selected = [];
         let allExercises = [];
+        let isAdmin = false;
 
         // ===== DOM REFS =====
         const workoutNameInput = document.getElementById('workoutName');
@@ -100,10 +101,15 @@
                 return;
             }
 
-            // Кнопка админа
+            // Кнопка админа и доступ к "рекомендовать"
             const role = (localStorage.getItem('role') || '').toLowerCase();
-            if (role === 'admin') {
+            isAdmin = role === 'admin';
+
+            if (isAdmin) {
                 document.getElementById('adminBtn').style.display = 'inline-block';
+            } else {
+                // Обычным пользователям нельзя рекомендовать тренировки — прячем блок
+                document.getElementById('recommendGroup').style.display = 'none';
             }
 
             // Загружаем данные
@@ -145,8 +151,8 @@
 
                 renderSelected();
 
-                // Проверяем статус recommended
-                // Нужно отдельно получить инфо о тренировке
+                // Проверяем статус recommended (показываем только админу, но
+                // данные грузим в любом случае — для консистентности состояния)
                 const workoutInfoRes = await fetch(`/workouts/full/${userId}`);
                 const allWorkouts = await workoutInfoRes.json();
                 const fullWorkout = allWorkouts.find(w => w.id == workoutId);
@@ -337,13 +343,17 @@
                     body: JSON.stringify({ name })
                 });
 
-                // 2. Обновляем статус recommended
-                const recommended = isRecommendedCheckbox.checked;
-                await fetch(`/workouts/${workoutId}/recommend`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ isRecommended: recommended })
-                });
+                // 2. Обновляем статус recommended — только для админа.
+                //    Обычные пользователи не должны иметь возможность
+                //    помечать тренировки как рекомендованные.
+                if (isAdmin) {
+                    const recommended = isRecommendedCheckbox.checked;
+                    await fetch(`/workouts/${workoutId}/recommend`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isRecommended: recommended })
+                    });
+                }
 
                 // 3. Удаляем старые упражнения
                 await fetch(`/workouts/${workoutId}/exercises`, {
